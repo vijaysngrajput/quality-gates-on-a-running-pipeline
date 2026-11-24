@@ -7,7 +7,7 @@
 
 ## 1. The business problem
 
-Lotus Retails is a fictional chain of supermarkets. It has six stores in three towns. Customers pay at the tills in the store.
+Lotus Retails is a fictional chain of supermarkets. It has six stores in three towns. Customers pay at the tills in the store. A **till** is the machine at the counter where a customer pays. It is also called a cash register.
 
 Every store manager is paid a weekly bonus: **1% of the store's net sales**. Net sales are the money taken for sales, less the money given back for refunds.
 

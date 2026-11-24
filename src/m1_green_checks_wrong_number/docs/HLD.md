@@ -63,6 +63,8 @@ The full story of Airflow is in [Daily Orders](https://github.com/vijaysngrajput
 
 ## 3. One night, step by step
 
+A **till** is the machine at the counter where a customer pays. It is also called a cash register. Each store has two, and they are closed every night.
+
 ```mermaid
 sequenceDiagram
     autonumber

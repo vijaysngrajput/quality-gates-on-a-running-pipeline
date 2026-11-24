@@ -72,7 +72,7 @@ This project teaches the step that comes **before** writing a check.
 
 ## The business
 
-**Lotus Retails** is a fictional chain of supermarkets: six stores in three towns. Customers pay at the tills. Four groups use the data, and each is hurt in a different way when it is wrong.
+**Lotus Retails** is a fictional chain of supermarkets: six stores in three towns. Customers pay at the tills. A **till** is the machine at the counter where a customer pays. It is also called a cash register. Four groups use the data, and each is hurt in a different way when it is wrong.
 
 | Who | What a wrong value does |
 |---|---|

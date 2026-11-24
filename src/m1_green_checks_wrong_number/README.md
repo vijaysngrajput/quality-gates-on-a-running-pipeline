@@ -8,7 +8,9 @@ This folder is self-contained. Nothing in it imports from another milestone.
 
 ## Why this milestone exists
 
-Lotus Retails pays each store manager a bonus from the store's net sales. A pipeline works that number out every night. It has five checks, and they are green every night. So everybody trusts the number.
+Lotus Retails is a chain of supermarkets. Customers pay at the tills. A **till** is the machine at the counter where a customer pays. It is also called a cash register.
+
+Lotus pays each store manager a bonus from the store's net sales. A pipeline works that number out every night. It has five checks, and they are green every night. So everybody trusts the number.
 
 Nobody has ever asked what those five checks protect.
 

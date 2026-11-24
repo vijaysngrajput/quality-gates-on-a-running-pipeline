@@ -81,6 +81,10 @@
      "answered": true,
      "blocks": [
       {
+       "type": "p",
+       "text": "A **till** is the machine at the counter where a customer pays. It is also called a cash register."
+      },
+      {
        "type": "table",
        "head": [
         "Step",

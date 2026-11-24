@@ -893,7 +893,8 @@ def _built() -> str:
         "milestone": 1,
         "of": 5,
         "title": "Green checks, wrong number",
-        "lede": "The pipeline is given to you, and it runs every night on Airflow. "
+        "lede": "Customers of Lotus Retails pay at a till: the machine at the counter, also "
+        "called a cash register. The pipeline is given to you, and it runs every night on Airflow. "
         "Pick a fault, and watch real rows from a Lotus store walk through five green "
         "checks and reach a person.",
         "question": QUESTION,

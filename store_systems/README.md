@@ -2,7 +2,9 @@
 
 This folder is **the source**: Lotus Retails' tills, back offices, suppliers and loyalty app. It is a small fake, written for this project. It is the outside world. No pipeline code lives here, and every milestone uses the same one.
 
-It is not a server. It is a program that writes the files a pipeline receives.
+A **till** is the machine at the counter where a customer pays. It is also called a cash register. Each store has two.
+
+The source is not a server. It is a program that writes the files a pipeline receives.
 
 ## Make the stores send files
 

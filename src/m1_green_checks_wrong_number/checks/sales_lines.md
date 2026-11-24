@@ -22,6 +22,8 @@ Two outputs and three groups of people read this table. It is the most critical 
 
 ## 3. How is the data made? So what can go wrong?
 
+A **till** is the machine at the counter where a customer pays. It is also called a cash register.
+
 | Step | Made by | What can go wrong |
 |---|---|---|
 | A cashier scans a product | A person and a till | A wrong quantity. A weight in the wrong unit |
