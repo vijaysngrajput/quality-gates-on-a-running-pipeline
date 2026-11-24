@@ -18,8 +18,8 @@
    "card_in": 1,
    "has_card": true,
    "file": "checks/sales_lines.md",
-   "state": "**State after milestone 1:** questions 1 to 5 are answered. Questions 6 to 8 need the checks, and those are written in milestone 2.",
-   "answered": 5,
+   "state": "**State after milestone 2:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.",
+   "answered": 7,
    "questions": [
     {
      "number": 1,
@@ -227,11 +227,136 @@
      "number": 6,
      "question": "The check",
      "title": "The check",
-     "answered": false,
+     "answered": true,
      "blocks": [
       {
        "type": "p",
-       "text": "Not yet. Milestone 2 writes the rule, the limit, the lens and how serious a failure is."
+       "text": "Thirteen checks. Each is a query that returns the bad rows. The SQL is in `lotus_pipeline/sales_checks.py`."
+      },
+      {
+       "type": "p",
+       "text": "\"How serious\" is a first opinion. Milestone 4 turns it into what the pipeline does."
+      },
+      {
+       "type": "table",
+       "head": [
+        "#",
+        "Check",
+        "The limit",
+        "Lens",
+        "Question",
+        "How serious"
+       ],
+       "rows": [
+        [
+         "1",
+         "A cell that must be filled is filled",
+         "No empty amount, quantity, price, time, product or receipt. A refund names its receipt",
+         "Data",
+         "Complete?",
+         "High"
+        ],
+        [
+         "2",
+         "One item line is stored once",
+         "Each `receipt_id` + `line_no` is there once",
+         "Data",
+         "Unique?",
+         "High"
+        ],
+        [
+         "3",
+         "A receipt id has the right shape",
+         "The line's own store, its own till, six digits",
+         "Data",
+         "Valid?",
+         "Low"
+        ],
+        [
+         "4",
+         "A line adds up",
+         "`amount_cents` is `quantity` × `unit_price_cents`",
+         "Data",
+         "Consistent?",
+         "High"
+        ],
+        [
+         "5",
+         "Every sale is for a product that exists",
+         "No raw line is without a product or a store",
+         "Data",
+         "Consistent?",
+         "High"
+        ],
+        [
+         "6",
+         "A refund gives money back",
+         "A refund is below zero. A sale is above zero",
+         "Business",
+         "Valid?",
+         "High"
+        ],
+        [
+         "7",
+         "A refund is not larger than the sale",
+         "The receipt exists, and gave at least that much",
+         "Business",
+         "Consistent?",
+         "Medium"
+        ],
+        [
+         "8",
+         "The price charged is the price valid that day",
+         "Equal to the price list, exactly",
+         "Business",
+         "Accurate?",
+         "Medium. The table is right. The store lost money"
+        ],
+        [
+         "9",
+         "Nothing is sold while the store is closed",
+         "`sold_at` is inside the opening hours of that day",
+         "Business",
+         "Valid?",
+         "High"
+        ],
+        [
+         "10",
+         "A weight is a believable weight",
+         "Not above 20 kg on one line. Pieces are whole numbers",
+         "Business",
+         "Valid?",
+         "High"
+        ],
+        [
+         "11",
+         "The receipts add up to the till's own total",
+         "Equal to the cent, per till per day",
+         "Business",
+         "Accurate?",
+         "High"
+        ],
+        [
+         "12",
+         "Every open store reported",
+         "At least one line per open store per day",
+         "Operational",
+         "Complete?",
+         "High"
+        ],
+        [
+         "13",
+         "A store's day is near its normal day",
+         "60% to 140% of the same weekday in the four weeks before",
+         "Operational",
+         "Complete?",
+         "Medium. It is a reason to look"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "Worry 6 of question 4, an empty `member_id`, still has no check. It has no answer to question 2."
       }
      ]
     },
@@ -243,7 +368,7 @@
      "blocks": [
       {
        "type": "p",
-       "text": "Not yet. Milestone 4 decides: stop, set the rows aside, or warn. And who is told."
+       "text": "Not yet. Today a failed check changes nothing: the checks are run by hand, with `python -m lotus_pipeline inspect`. Milestone 4 decides for each one: stop, set the rows aside, or warn. And who is told."
       }
      ]
     },
@@ -251,11 +376,95 @@
      "number": 8,
      "question": "The proof",
      "title": "The proof",
-     "answered": false,
+     "answered": true,
      "blocks": [
       {
        "type": "p",
-       "text": "Not yet. Milestone 2 plants each fault and shows the check catching it, and one fault it does not catch."
+       "text": "Each fault is planted on a known day. The check must return exactly its rows. Every check is also run on four clean weeks, where it must return nothing."
+      },
+      {
+       "type": "table",
+       "head": [
+        "Planted fault",
+        "Caught by",
+        "A check that does not catch it, and why"
+       ],
+       "rows": [
+        [
+         "1. A refund stored as a positive amount, `S03` 08-24",
+         "6, 4 and 11",
+         "7: the size of the refund is right. Only its sign is wrong"
+        ],
+        [
+         "2. One receipt twice, `S01` 08-25",
+         "2 and 11",
+         "Standard check 3: every `line_id` is new"
+        ],
+        [
+         "3. A weight in grams, `S05` 08-27",
+         "10 and 11",
+         "4: the export worked the amount out again, so the line adds up"
+        ],
+        [
+         "4. Yesterday's price, `S04` 08-28",
+         "8",
+         "11: the till charged the same wrong price, so both counts agree"
+        ],
+        [
+         "5. A sale at 03:10, `S02` 08-30",
+         "9 and 11",
+         "13: one receipt does not change the size of a day"
+        ],
+        [
+         "6. A product nobody typed, `S06` 08-29",
+         "5 and 11",
+         "Every check on the clean table: the rows are gone"
+        ],
+        [
+         "7. No file, `S04` 08-25",
+         "12 and 11",
+         "13: a day with no rows has nothing to compare"
+        ],
+        [
+         "8. A late file, `S06` 08-27",
+         "12, on that night only",
+         "Every check, one night later: the file has arrived"
+        ],
+        [
+         "9. The whole file twice, `S02` 08-28",
+         "2, 13 and 11",
+         "12: the store did report"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "Three things look wrong and are not. No check returns them."
+      },
+      {
+       "type": "table",
+       "head": [
+        "Looks wrong",
+        "Why no check fires"
+       ],
+       "rows": [
+        [
+         "A public holiday, 08-26, about 40% of a normal day",
+         "The calendar says it is a holiday. Check 13 leaves calendar days out"
+        ],
+        [
+         "A closed store, `S01` 08-27",
+         "The calendar says it is closed. Check 12 does not expect it"
+        ],
+        [
+         "A sale of 400 bottles, `S02` 08-29",
+         "Check 10 limits weight, not pieces. 400 pieces is a whole number"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "The cost of the calendar: a real fault on a holiday is not caught by check 13. That is a false negative, taken on purpose."
       }
      ]
     }
@@ -266,12 +475,263 @@
    "one_row": "One till's own total for one day",
    "made": "The till adds it up when it is closed",
    "why": "A second, independent count of the same money. It exists to be compared with sales_lines",
-   "card_in": 3,
-   "has_card": false,
-   "file": null,
-   "state": "",
-   "answered": 0,
-   "questions": []
+   "card_in": 2,
+   "has_card": true,
+   "file": "checks/till_totals.md",
+   "state": "**State after milestone 2:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.",
+   "answered": 7,
+   "questions": [
+    {
+     "number": 1,
+     "question": "What does one row mean?",
+     "title": "What does one row mean?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "One till's own total for one day. Two tills in a store make two rows a day."
+      },
+      {
+       "type": "p",
+       "text": "The key is `store_id` + `till_id` + `business_date`."
+      }
+     ]
+    },
+    {
+     "number": 2,
+     "question": "Who uses this table, and what do they decide with it?",
+     "title": "Who uses this table, and what do they decide with it?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Who",
+        "What they decide",
+        "What goes wrong for them when the data is bad"
+       ],
+       "rows": [
+        [
+         "Nobody reads it as an output",
+         "",
+         ""
+        ],
+        [
+         "Check 11 on `sales_lines` reads it",
+         "Whether a day's money is right",
+         "A wrong total here makes a right day look wrong, or a wrong day look right"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "This table has no reader of its own. It still gets a card, because it is a **control total**: a total counted a second way, kept only to be compared. Seven of the nine planted sales faults are caught by it."
+      }
+     ]
+    },
+    {
+     "number": 3,
+     "question": "How is the data made? So what can go wrong?",
+     "title": "How is the data made? So what can go wrong?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Step",
+        "Made by",
+        "What can go wrong"
+       ],
+       "rows": [
+        [
+         "The till adds up each receipt as it prints it",
+         "The till",
+         "Very little. It is the same machine that took the money"
+        ],
+        [
+         "The cashier closes the till at night",
+         "A person",
+         "A till is not closed, so it sends no total"
+        ],
+        [
+         "The store sends the file",
+         "A back-office computer",
+         "No file. The file twice"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "It never passes through the export program that writes `sales_lines`. That is what makes it a second, independent count."
+      }
+     ]
+    },
+    {
+     "number": 4,
+     "question": "Which of those would hurt most?",
+     "title": "Which of those would hurt most?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Rank",
+        "Worry",
+        "Why it is here"
+       ],
+       "rows": [
+        [
+         "1",
+         "A till sends no total",
+         "The money check has nothing to compare with"
+        ],
+        [
+         "2",
+         "A total stored twice",
+         "The join would double it, and every day would look wrong"
+        ],
+        [
+         "3",
+         "A total that does not add up",
+         "The control itself cannot be trusted"
+        ],
+        [
+         "4",
+         "A total that is late by minutes",
+         "It hurts nobody. **No check**"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 5,
+     "question": "What must be prepared before it can be checked?",
+     "title": "What must be prepared before it can be checked?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Worry",
+        "What must be prepared first"
+       ],
+       "rows": [
+        [
+         "A till sends no total",
+         "The list of tills a day should have: two for every open store"
+        ],
+        [
+         "A total stored twice",
+         "Group by the key"
+        ],
+        [
+         "A total that does not add up",
+         "Nothing. The three numbers are on one row"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 6,
+     "question": "The check",
+     "title": "The check",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Three checks. The SQL is in `lotus_pipeline/till_checks.py`."
+      },
+      {
+       "type": "table",
+       "head": [
+        "#",
+        "Check",
+        "The limit",
+        "Lens",
+        "Question",
+        "How serious"
+       ],
+       "rows": [
+        [
+         "14",
+         "A till has one total for a day",
+         "Each `store_id` + `till_id` + `business_date` is there once",
+         "Data",
+         "Unique?",
+         "High"
+        ],
+        [
+         "15",
+         "A till's total adds up",
+         "Net is gross less refunds. No number is below zero",
+         "Business",
+         "Consistent?",
+         "High"
+        ],
+        [
+         "16",
+         "Every till of an open store sent its total",
+         "Two totals per open store per day",
+         "Operational",
+         "Complete?",
+         "High"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 7,
+     "question": "What happens when it fails?",
+     "title": "What happens when it fails?",
+     "answered": false,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Not yet. Milestone 4 decides."
+      }
+     ]
+    },
+    {
+     "number": 8,
+     "question": "The proof",
+     "title": "The proof",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "The tills' own totals are right on every day of the five weeks, so no planted case breaks this table. Each fault is planted in a test, on a private copy."
+      },
+      {
+       "type": "table",
+       "head": [
+        "Fault planted in a test",
+        "Caught by",
+        "A check that does not catch it, and why"
+       ],
+       "rows": [
+        [
+         "One total stored twice",
+         "14",
+         "15: both copies add up"
+        ],
+        [
+         "Net is not gross less refunds",
+         "15",
+         "14: the row is there once"
+        ],
+        [
+         "One till sends no total",
+         "16, and check 11 on `sales_lines`",
+         "15: a row that is not there cannot fail"
+        ]
+       ]
+      }
+     ]
+    }
+   ]
   },
   {
    "table": "products",

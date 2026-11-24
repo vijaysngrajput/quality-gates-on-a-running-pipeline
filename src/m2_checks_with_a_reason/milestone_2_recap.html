@@ -1,0 +1,1122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Milestone 2 recap: Checks with a reason</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f4ef; --surface: #fffdf9; --ink: #1d2327; --muted: #5c6670; --line: #d9d4c8;
+    --accent: #0f6b5c; --accent-ink: #ffffff; --accent-soft: #dcefe9;
+    --neg: #a23b2a; --neg-soft: #f6e1dc; --pos: #1f6f43; --pos-soft: #dff0e5;
+    --warn: #8a5a00; --warn-soft: #f7ebcf; --tag-bg: #ecebe4;
+    --shadow: 0 1px 2px rgba(29, 35, 39, .06), 0 6px 18px rgba(29, 35, 39, .06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --bg: #14181a; --surface: #1c2226; --ink: #e8e6e1; --muted: #9aa4ab; --line: #2e373c;
+      --accent: #5fc5b0; --accent-ink: #0d1f1c; --accent-soft: #1d3a35;
+      --neg: #e58a78; --neg-soft: #3a2420; --pos: #7fd0a0; --pos-soft: #1d3527;
+      --warn: #e2b85c; --warn-soft: #3a3019; --tag-bg: #262e33;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 18px rgba(0, 0, 0, .25);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15.5px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .page { max-width: 980px; margin: 0 auto; padding: 36px 24px 64px; }
+  .eyebrow { margin: 0 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0 0 8px; font: 600 38px/1.12 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; text-wrap: balance; }
+  h2 { margin: 0 0 6px; font: 600 26px/1.2 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; text-wrap: balance; }
+  h3 { margin: 0 0 4px; font-size: 16px; }
+  p { margin: 0 0 12px; }
+  .lede { max-width: 62ch; color: var(--muted); font-size: 17px; }
+  .num { font-variant-numeric: tabular-nums; }
+  a { color: var(--accent); }
+  code { font: 13.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+  /* Jump links */
+  .nav { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 6px; margin: 22px -8px 0; padding: 10px 8px; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .nav a { padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font-size: 13.5px; font-weight: 500; text-decoration: none; }
+  .nav a:hover, .nav a.on { border-color: var(--accent); }
+  .nav a.on { background: var(--accent); color: var(--accent-ink); }
+  a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  section { padding: 44px 0 6px; scroll-margin-top: 56px; }
+  .kicker { margin: 0 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+  /* Things slide up as they come into view. They are never hidden, so the page reads without JavaScript. */
+  .js .rise { opacity: .25; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+  .js .rise.in { opacity: 1; transform: none; }
+
+  .tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
+  .tile { padding: 14px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; text-align: center; }
+  .tile b { display: block; font: 600 30px/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-variant-numeric: tabular-nums; }
+  .tile span { color: var(--muted); font-size: 13px; line-height: 1.3; display: block; }
+  .tile.bad b { color: var(--neg); }
+
+  blockquote { margin: 14px 0 18px; padding: 14px 18px; border-left: 4px solid var(--accent); background: var(--surface); border-radius: 0 12px 12px 0; font: 500 18px/1.45 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+  .card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  .card .a { display: block; margin: 4px 0 2px; font-size: 23px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .card small { color: var(--muted); }
+
+  /* The bonus report, as a table */
+  .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 8px 14px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  tr:last-child td { border-bottom: 0; }
+  td.r, th.r { text-align: right; }
+  tr.bad td { background: var(--neg-soft); }
+  tr.bad td.flag { color: var(--neg); font-weight: 600; }
+  .green { color: var(--pos); font-weight: 600; }
+
+  /* The pipeline, drawn small */
+  .pipe { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px; margin: 16px 0 12px; }
+  .box { position: relative; padding: 12px; background: var(--surface); border: 2px solid var(--line); border-radius: 12px; transition: border-color .4s, box-shadow .4s; }
+  .box + .box::before { content: "\2192"; position: absolute; left: -17px; top: 16px; color: var(--muted); }
+  .box.lit { border-color: var(--accent); box-shadow: var(--shadow); }
+  .box .role { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .box b { display: block; line-height: 1.25; }
+  .box > span:not(.role) { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; }
+  .box .n { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .btn { padding: 7px 14px; font: inherit; font-weight: 500; color: var(--bg); background: var(--ink); border: 1px solid var(--ink); border-radius: 8px; cursor: pointer; }
+  .hand { margin-top: 10px; padding: 9px 12px; border: 2px dashed var(--line); border-radius: 12px; color: var(--muted); font-size: 13.5px; }
+  .tasks { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 4px; margin: 0 0 12px; font-size: 13.5px; color: var(--muted); }
+  .tasks code { padding: 2px 10px; border: 2px solid var(--pos); border-radius: 999px; background: var(--pos-soft); color: var(--ink); font-weight: 600; font-size: 12.5px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  ul.plain { margin: 6px 0 0; padding-left: 18px; }
+
+  .versus { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .versus .bad { border-color: var(--neg); background: var(--neg-soft); }
+  .versus .good { border-color: var(--pos); background: var(--pos-soft); }
+  .versus .bad h3 { color: var(--neg); }
+  .versus .good h3 { color: var(--pos); }
+  .line {
+    margin: 12px 0 0; padding: 10px 14px; overflow-x: auto; background: var(--surface); border: 1px solid var(--neg); border-radius: 10px;
+    font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  ol.learned { margin: 12px 0 0; padding: 0; list-style: none; counter-reset: n; display: grid; gap: 10px; }
+  ol.learned li { counter-increment: n; position: relative; padding: 12px 16px 12px 56px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  ol.learned li::before { content: counter(n); position: absolute; left: 14px; top: 12px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  ol.learned b { display: block; }
+  ol.learned span { color: var(--muted); }
+
+  .words { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+  .word { padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  .word b { color: var(--accent); }
+  .word span { display: block; font-size: 14px; }
+
+  /* The week: what the report says against the answer key */
+  .chart { display: grid; gap: 8px; margin: 16px 0 6px; padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  .chart-row { display: grid; grid-template-columns: 44px minmax(0, 1fr) 190px; gap: 12px; align-items: center; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .track { position: relative; height: 22px; border-radius: 6px; background: var(--tag-bg); }
+  .track i { display: block; height: 100%; width: 0; border-radius: 6px; background: var(--neg); transition: width 1s ease; }
+  .chart-row .what { color: var(--neg); font-weight: 600; }
+  .limit { position: absolute; top: -5px; bottom: -5px; width: 3px; border-radius: 2px; background: var(--ink); }
+  .chart .legend { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+  details.quiz { margin-top: 10px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  details.quiz summary { cursor: pointer; font-weight: 600; }
+  details.quiz p { margin: 8px 0 0; color: var(--muted); }
+  details.quiz[open] { border-color: var(--accent); }
+
+  .wrong { margin-top: 14px; padding: 16px 20px; border: 1px solid var(--neg); border-radius: 12px; background: var(--neg-soft); }
+  .wrong b { display: block; color: var(--neg); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .wrong span { font: 600 20px/1.35 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+
+  pre { margin: 8px 0 0; padding: 12px 14px; overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .next { margin-top: 14px; padding: 18px 20px; background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; }
+  .foot { margin: 40px 0 0; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 760px) {
+    .page { padding: 24px 16px 48px; }
+    h1 { font-size: 29px; } h2 { font-size: 22px; }
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .versus, .words, .two { grid-template-columns: minmax(0, 1fr); }
+    .pipe { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .box + .box::before { content: "\2193"; left: 16px; top: -22px; }
+    .chart-row { grid-template-columns: 40px minmax(0, 1fr); }
+    .chart-row .what { grid-column: 2; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .js .rise { opacity: 1; transform: none; }
+  }
+
+  /* New in milestone 2 */
+  td.wrap, th.wrap { white-space: normal; }
+  td.name { min-width: 230px; }
+  .tile span i { font-style: normal; }
+  td small { display: block; color: var(--muted); font-size: 12.5px; white-space: normal; }
+  .lens-tag { display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--tag-bg); color: var(--muted); font-size: 11.5px; font-weight: 600; }
+  tr.caught td.flag { color: var(--neg); font-weight: 600; }
+  .lens-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 14px 0; }
+  .lens-row .card b.n { display: block; font: 600 26px/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+  .beside { margin-top: 12px; padding: 12px 14px; border: 2px solid var(--accent); border-radius: 12px; background: var(--surface); }
+  .beside .tag { display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 11.5px; font-weight: 600; }
+  .beside b { display: block; margin-top: 4px; }
+  .beside span.what { display: block; color: var(--muted); font-size: 13.5px; }
+  @media (max-width: 760px) { .lens-row { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <p class="eyebrow">Milestone 2 of 5 · recap</p>
+    <h1>Checks with a reason</h1>
+    <p class="lede">Lotus Retails is a chain of supermarkets. Customers pay at a <strong>till</strong>: the machine at the counter, also called a cash register. Last time, five green checks let a wrong number through. This time you wrote the checks that catch it, one worry at a time, and each one can say who it protects. Here is what you did, what you learned, and what is still wrong.</p>
+    <div class="tiles">
+      <div class="tile rise"><b class="num" data-k="numbers.notebooks" data-count></b><span>lab notebooks</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.tests" data-count></b><span>tests</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.checks_with_a_reason" data-count></b><span>checks with a reason</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.planted_cases_caught" data-count></b><span>of <i data-k="numbers.planted_cases_in_sales"></i> planted sales cases caught</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.false_alarms" data-count></b><span>false alarms on what is not wrong</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.words" data-count></b><span>new words</span></div>
+    </div>
+  </header>
+
+  <nav class="nav" aria-label="Sections">
+    <a href="#asked">1. Asked</a>
+    <a href="#built">2. Built</a>
+    <a href="#week">3. The week</a>
+    <a href="#notwrong">4. Not a fault</a>
+    <a href="#learned">5. Learned</a>
+    <a href="#words">6. Words</a>
+    <a href="#quiz">7. Quiz</a>
+    <a href="#wrong">8. Still wrong</a>
+    <a href="#setup">Set up</a>
+  </nav>
+
+  <section id="asked">
+    <p class="kicker">1 · What was asked</p>
+    <h2>Which check, and why does it exist?</h2>
+    <p><b>Why this milestone exists.</b> Every Monday the head of retail operations asks:</p>
+    <blockquote class="rise" data-k="question"></blockquote>
+    <p>Milestone 1 ended with one wrong row found by luck, and a list of worries. So this milestone asks a second question:</p>
+    <blockquote class="rise" data-k="own_question"></blockquote>
+    <p>These are the planted cases in <code>sales_lines</code>. All of them pass the five standard checks. The last column is new.</p>
+    <div class="table-wrap rise">
+      <table>
+        <thead><tr><th>Case</th><th>Where</th><th class="r">The pipeline says</th><th class="r">The answer key says</th><th class="wrap">Caught by</th></tr></thead>
+        <tbody id="case-rows"></tbody>
+      </table>
+    </div>
+    <p style="margin-top:12px"><span data-k="numbers.planted_cases_caught"></span> of <span data-k="numbers.planted_cases_in_sales"></span> cases are caught. In case 4 the two numbers are equal, and it is still a fault: the store charged yesterday's price. A check can protect money that no table shows.</p>
+  </section>
+
+  <section id="built">
+    <p class="kicker">2 · What you built</p>
+    <h2><span data-k="numbers.checks_with_a_reason"></span> checks, through three lenses</h2>
+    <p>The pipeline itself did not change. Airflow still starts the same <span data-k="numbers.tasks"></span> tasks, with the same <span data-k="numbers.standard_checks"></span> standard checks.</p>
+    <p class="tasks" id="tasks">Airflow DAG <b data-k="dag.id"></b>: </p>
+    <div class="beside rise"><span class="tag">new in this milestone</span><b><span data-k="numbers.checks_on_sales_lines"></span> checks on <code>sales_lines</code>, and <span data-k="numbers.checks_on_till_totals"></span> on <code>till_totals</code></b><span class="what">They sit beside the pipeline. You start them by hand: <code>python -m lotus_pipeline inspect</code>. A check is still a query that returns the bad rows. What is new is the work before the rule: a join, a total, or a comparison with a normal day.</span></div>
+    <div class="lens-row" id="lens-row"></div>
+    <p class="hand"><b>Gates: <span data-k="numbers.gates"></span>.</b> Nothing stops a bad night. <b>Rows set aside: <span data-k="numbers.rows_set_aside"></span>.</b> There is no quarantine yet.</p>
+    <div class="two" style="margin-top:14px">
+      <div class="card rise"><h3>Given, ready-made</h3>
+        <ul class="plain"><li>The stores' systems, and the nightly pipeline</li><li>One Airflow DAG with <span data-k="numbers.tasks"></span> tasks</li><li><span data-k="numbers.standard_checks"></span> standard checks, still all green</li><li>The answer key</li></ul></div>
+      <div class="card rise"><h3>Built by you</h3>
+        <ul class="plain"><li><span data-k="numbers.checks_with_a_reason"></span> checks, each written by hand first</li><li>A calendar: a small list of days that are not normal</li><li>The command <code>inspect</code>, which runs every check and shows the bad rows</li><li>Check cards for <span data-k="numbers.tables_with_a_card"></span> of <span data-k="numbers.tables"></span> tables: <code>sales_lines</code>, now complete, and <code>till_totals</code></li><li>Two tests for every check: its fault, and clean data</li></ul></div>
+    </div>
+    <p style="margin-top:14px"><b>The outcome.</b> For every wrong number of the week you can name the check that catches it, the work it needs first, and the person it protects. Open the <a href="milestone_2_flow.html">flow page</a> to watch each fault pass the old checks and get caught by the new ones.</p>
+  </section>
+
+  <section id="week">
+    <p class="kicker">3 · The whole week, through the new checks</p>
+    <h2><span data-k="week.checks_with_bad_rows"></span> of <span data-k="numbers.checks_with_a_reason"></span> checks find bad rows</h2>
+    <p>The pipeline ran for all <span data-k="week.nights"></span> nights. The five standard checks were green every night: <span data-k="week.checks_green"></span> of <span data-k="week.checks_run"></span>. Then you ran your own checks on the same tables.</p>
+    <div class="table-wrap rise">
+      <table>
+        <thead><tr><th>#</th><th class="wrap">Check</th><th>Lens</th><th class="wrap">What it needs first</th><th class="r">Bad rows</th><th class="wrap">Store and day</th></tr></thead>
+        <tbody id="check-rows"></tbody>
+      </table>
+    </div>
+    <p style="margin-top:12px">Look at check 11, the receipts against the till's own total. It catches cases <span id="till-cases"></span>. It is a second count of the same money, and it needs two totals and a join before it can test anything.</p>
+    <p>Six checks find nothing this week. That is not a reason to delete them. Each one has its own test, where its fault is planted by hand.</p>
+  </section>
+
+  <section id="notwrong">
+    <p class="kicker">4 · What is not a fault</p>
+    <h2>Three strange days, <span data-k="not_a_fault.false_alarms"></span> false alarms</h2>
+    <p>A check that cries wolf gets switched off. So each check was also held against three things that look wrong and are not:</p>
+    <div class="table-wrap rise">
+      <table>
+        <thead><tr><th class="wrap">What happened</th><th>Where</th><th>What the checks say</th></tr></thead>
+        <tbody id="thing-rows"></tbody>
+      </table>
+    </div>
+    <p style="margin-top:12px">A volume check that knows no calendar would raise <b><span data-k="not_a_fault.careless_alarms"></span> alarms</b> on the holiday, one for every store. Yours reads a calendar of <span data-k="not_a_fault.calendar_rows"></span> rows, kept by head office, and stays silent. The price is honest: a real fault on a holiday would get no alarm from that check.</p>
+  </section>
+
+  <section id="learned">
+    <p class="kicker">5 · What you learned</p>
+    <h2>Five things</h2>
+    <ol class="learned">
+      <li class="rise"><b>A check is only as good as the question behind it.</b><span>Unique on which columns? Empty in which rows? The common version passes. The careful version catches the fault.</span></li>
+      <li class="rise"><b>Most useful checks need the data prepared first.</b><span>A join, a total, a comparison. That is why one-line checks on one column miss so much.</span></li>
+      <li class="rise"><b>A valid value can still be wrong.</b><span>Accuracy needs a second source that saw the same thing. For Lotus it is the till's own total.</span></li>
+      <li class="rise"><b>A limit comes from the data.</b><span>A normal day depends on the store and on the weekday. One fixed number is wrong for somebody.</span></li>
+      <li class="rise"><b>A check that cries wolf gets switched off.</b><span>So prove that it stays silent on what is not wrong: a holiday, a closed store, a real sale of 400 bottles.</span></li>
+    </ol>
+  </section>
+
+  <section id="words">
+    <p class="kicker">6 · New words</p>
+    <h2>Words you can now explain</h2>
+    <div class="words" id="word-list"></div>
+    <p style="margin-top:12px">Each word has an interview line in the project's <a href="../../GLOSSARY.md">glossary</a>.</p>
+  </section>
+
+  <section id="quiz">
+    <p class="kicker">7 · Three questions</p>
+    <h2>What would you say?</h2>
+    <p>Answer in your head first. Then open the answer.</p>
+    <div id="quiz-list"></div>
+  </section>
+
+  <section id="wrong">
+    <p class="kicker">8 · What is still wrong</p>
+    <h2>One table of seven</h2>
+    <p>The checks are good, and they cover <code>sales_lines</code> and the till totals it leans on. The products, the stores, the stock counts, the suppliers' prices and the loyalty members have no check card and no check. They are typed by people, counted by hand, or sent by another company, so they fail in other ways.</p>
+    <div class="wrong rise"><b>Still wrong</b><span data-k="still_wrong"></span></div>
+    <p style="margin-top:12px" data-k="not_in_the_run"></p>
+    <div class="next rise"><b>Next: milestone 3, every table is different.</b> A check card and checks for the other five tables: a price with a start and an end date, a missing day that is read as zero stock, the same person stored twice, a supplier who renames a column.</div>
+  </section>
+
+  <section id="setup">
+    <p class="kicker">Set up</p>
+    <h2>What this milestone needs</h2>
+    <p>Nothing new. Git, Python 3.12 or later, <a href="https://docs.astral.sh/uv/">uv</a>, and Docker, as in milestone 1. No API key, no cloud account, no AI.</p>
+    <h3 style="margin-top:14px">From the project folder</h3>
+    <pre>uv sync                          # makes the virtual environment
+docker compose up -d --build     # starts the warehouse and Airflow</pre>
+    <p style="margin-top:10px">To run the bonus week and then your checks, as plain programs:</p>
+    <pre>uv run python -m store_systems deliver --through 2026-08-30
+cd src/m2_checks_with_a_reason
+uv run python -m lotus_pipeline run --day 2026-08-30   # the nightly run; repeat for each night
+uv run python -m lotus_pipeline inspect                # every check, and what it found
+uv run pytest                                          # runs this milestone's tests</pre>
+    <p style="margin-top:10px">When you are done: <code>docker compose down</code>.</p>
+  </section>
+
+  <p class="foot">Every number on this page is written by <code>lotus_pipeline/flow_data.py</code> from a real run of this milestone's code, and a test checks that they still match. All data is fictional. Lotus Retails does not exist.</p>
+</div>
+
+<script id="page-data" type="application/json">
+{
+ "question": "Can I pay the bonus from last week's net sales, store by store? And if I cannot trust a number, which one, and why?",
+ "own_question": "Which check would have caught each wrong number, and why does that check exist?",
+ "week": {
+  "stores": [
+   {
+    "store": "S01",
+    "store_name": "Lotus Ashby High Street",
+    "report": "$5,171.32",
+    "answer_key": "$5,153.25",
+    "error": "+$18.07",
+    "wrong": true
+   },
+   {
+    "store": "S02",
+    "store_name": "Lotus Ashby Market Square",
+    "report": "$6,758.96",
+    "answer_key": "$5,748.63",
+    "error": "+$1,010.33",
+    "wrong": true
+   },
+   {
+    "store": "S03",
+    "store_name": "Lotus Calder Bridge",
+    "report": "$5,106.60",
+    "answer_key": "$5,087.62",
+    "error": "+$18.98",
+    "wrong": true
+   },
+   {
+    "store": "S04",
+    "store_name": "Lotus Calder Station",
+    "report": "$4,585.57",
+    "answer_key": "$5,172.99",
+    "error": "-$587.42",
+    "wrong": true
+   },
+   {
+    "store": "S05",
+    "store_name": "Lotus Fenwick Green",
+    "report": "$5,113.73",
+    "answer_key": "$3,593.05",
+    "error": "+$1,520.68",
+    "wrong": true
+   },
+   {
+    "store": "S06",
+    "store_name": "Lotus Fenwick Harbour",
+    "report": "$4,400.92",
+    "answer_key": "$4,418.89",
+    "error": "-$17.97",
+    "wrong": true
+   }
+  ],
+  "stores_wrong": 6,
+  "checks_green": 35,
+  "checks_run": 35,
+  "nights": 7,
+  "checks_with_bad_rows": 10,
+  "bad_rows": 200
+ },
+ "checks": [
+  {
+   "number": 1,
+   "key": "required_cells",
+   "name": "A cell that must be filled is filled",
+   "lens": "data",
+   "question": "Complete?",
+   "table": "sales_lines",
+   "protects": "Store managers and the head of retail operations: net sales, so pay",
+   "prepare": "Decide, column by column, in which rows an empty cell is wrong",
+   "limit": "No empty amount, quantity, price, time, product or receipt. A refund names its receipt, and a sale does not",
+   "bad_rows": 0,
+   "where": [],
+   "cases": []
+  },
+  {
+   "number": 2,
+   "key": "true_key_unique",
+   "name": "One item line is stored once",
+   "lens": "data",
+   "question": "Unique?",
+   "table": "sales_lines",
+   "protects": "Store managers and the head of retail operations: net sales, so pay",
+   "prepare": "Group by the key that means something: receipt_id + line_no, not line_id",
+   "limit": "Each receipt_id + line_no is there exactly once",
+   "bad_rows": 171,
+   "where": [
+    "S01 08-25",
+    "S02 08-28"
+   ],
+   "cases": [
+    2,
+    9
+   ]
+  },
+  {
+   "number": 3,
+   "key": "right_shape",
+   "name": "A receipt id has the right shape",
+   "lens": "data",
+   "question": "Valid?",
+   "table": "sales_lines",
+   "protects": "Finance and the stores: a refund must find the receipt it refunds",
+   "prepare": "Take the id apart: store, till, six digits",
+   "limit": "receipt_id is the line's own store, its own till, and six digits: S03-T1-004493",
+   "bad_rows": 0,
+   "where": [],
+   "cases": []
+  },
+  {
+   "number": 4,
+   "key": "line_adds_up",
+   "name": "A line adds up",
+   "lens": "data",
+   "question": "Consistent?",
+   "table": "sales_lines",
+   "protects": "Store managers and the head of retail operations: net sales, so pay",
+   "prepare": "Work the amount out again from the line's own quantity and price",
+   "limit": "amount_cents is quantity x unit_price_cents, to the cent",
+   "bad_rows": 1,
+   "where": [
+    "S03 08-24"
+   ],
+   "cases": [
+    1
+   ]
+  },
+  {
+   "number": 5,
+   "key": "every_sale_has_a_product",
+   "name": "Every sale is for a product that exists",
+   "lens": "data",
+   "question": "Consistent?",
+   "table": "sales_lines",
+   "protects": "Everyone who reads the two outputs: a line with no product is dropped, and no row is left to look at",
+   "prepare": "Go back to the raw rows, and join each to the product valid on its day",
+   "limit": "No raw sales line is without a product or a store",
+   "bad_rows": 3,
+   "where": [
+    "S06 08-29"
+   ],
+   "cases": [
+    6
+   ]
+  },
+  {
+   "number": 6,
+   "key": "refund_gives_money_back",
+   "name": "A refund gives money back",
+   "lens": "business",
+   "question": "Valid?",
+   "table": "sales_lines",
+   "protects": "Store managers and the head of retail operations: net sales, so pay",
+   "prepare": "Read sales and refunds apart",
+   "limit": "A refund has a quantity and an amount below zero. A sale has both above zero",
+   "bad_rows": 1,
+   "where": [
+    "S03 08-24"
+   ],
+   "cases": [
+    1
+   ]
+  },
+  {
+   "number": 7,
+   "key": "refund_not_larger_than_sale",
+   "name": "A refund is not larger than the sale",
+   "lens": "business",
+   "question": "Consistent?",
+   "table": "sales_lines",
+   "protects": "Finance: money given back for something that was never sold",
+   "prepare": "Join each refund to the receipt it names, and add up what that receipt sold of the same product",
+   "limit": "The receipt exists, and the money given back is not more than it took",
+   "bad_rows": 0,
+   "where": [],
+   "cases": []
+  },
+  {
+   "number": 8,
+   "key": "price_of_the_day",
+   "name": "The price charged is the price valid that day",
+   "lens": "business",
+   "question": "Accurate?",
+   "table": "sales_lines",
+   "protects": "Finance and the store: money the store should have taken and did not",
+   "prepare": "Join each line to the product's price row that is valid on the day of the sale",
+   "limit": "unit_price_cents equals the price list, exactly",
+   "bad_rows": 6,
+   "where": [
+    "S04 08-28"
+   ],
+   "cases": [
+    4
+   ]
+  },
+  {
+   "number": 9,
+   "key": "inside_opening_hours",
+   "name": "Nothing is sold while the store is closed",
+   "lens": "business",
+   "question": "Valid?",
+   "table": "sales_lines",
+   "protects": "Store managers and the head of retail operations: net sales, so pay. A wrong time can be a wrong day, and a wrong week",
+   "prepare": "Join each line to its store for the opening hours, and to the calendar for a day with other hours",
+   "limit": "sold_at is between opens_at and closes_at of that store on that day",
+   "bad_rows": 4,
+   "where": [
+    "S02 08-31"
+   ],
+   "cases": [
+    5
+   ]
+  },
+  {
+   "number": 10,
+   "key": "believable_quantity",
+   "name": "A weight is a believable weight",
+   "lens": "business",
+   "question": "Valid?",
+   "table": "sales_lines",
+   "protects": "Store managers and the head of retail operations: net sales, so pay",
+   "prepare": "Join each line to its product for the unit: pieces or kilograms",
+   "limit": "Goods sold by weight: not more than 20 kg on one line. Goods sold by the piece: a whole number",
+   "bad_rows": 1,
+   "where": [
+    "S05 08-27"
+   ],
+   "cases": [
+    3
+   ]
+  },
+  {
+   "number": 11,
+   "key": "till_total",
+   "name": "The receipts add up to the till's own total",
+   "lens": "business",
+   "question": "Accurate?",
+   "table": "sales_lines",
+   "protects": "Store managers and the head of retail operations: net sales, so pay. It is the only check that can say a whole day's money is right",
+   "prepare": "Add the lines up per till per day. Join that to till_totals, the till's own count of the same money",
+   "limit": "The two totals are equal, to the cent. A till with no lines, and lines with no till, both fail",
+   "bad_rows": 11,
+   "where": [
+    "S03 08-24",
+    "S01 08-25",
+    "S04 08-25",
+    "S05 08-27",
+    "S02 08-28",
+    "S06 08-29",
+    "S02 08-30",
+    "S02 08-31"
+   ],
+   "cases": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "number": 12,
+   "key": "every_store_reported",
+   "name": "Every open store reported",
+   "lens": "operational",
+   "question": "Complete?",
+   "table": "sales_lines",
+   "protects": "Store managers and the head of retail operations: net sales, so pay, and the replenishment team: a store with no sales orders nothing",
+   "prepare": "Make the list of days a store should have: every loaded day, for every store, less the days the calendar says it was closed",
+   "limit": "Each open store has at least one sales line on each day",
+   "bad_rows": 1,
+   "where": [
+    "S04 08-25"
+   ],
+   "cases": [
+    7,
+    8
+   ]
+  },
+  {
+   "number": 13,
+   "key": "normal_volume",
+   "name": "A store's day is near its normal day",
+   "lens": "operational",
+   "question": "Complete?",
+   "table": "sales_lines",
+   "protects": "Store managers and the head of retail operations: net sales, so pay",
+   "prepare": "Count the lines per store per day. Work out a normal day: the average of the same weekday in the four weeks before. Leave out the days in the calendar",
+   "limit": "Between 60% and 140% of the normal day, when at least three earlier days can be compared",
+   "bad_rows": 1,
+   "where": [
+    "S02 08-28"
+   ],
+   "cases": [
+    9
+   ]
+  },
+  {
+   "number": 14,
+   "key": "one_total_per_till_per_day",
+   "name": "A till has one total for a day",
+   "lens": "data",
+   "question": "Unique?",
+   "table": "till_totals",
+   "protects": "Everyone who is protected by the till total check: it is only as good as this table",
+   "prepare": "Group by the key: store, till and day",
+   "limit": "Each store_id + till_id + business_date is there exactly once",
+   "bad_rows": 0,
+   "where": [],
+   "cases": []
+  },
+  {
+   "number": 15,
+   "key": "till_adds_up",
+   "name": "A till's total adds up",
+   "lens": "business",
+   "question": "Consistent?",
+   "table": "till_totals",
+   "protects": "Everyone who is protected by the till total check: it is only as good as this table",
+   "prepare": "Nothing. The three numbers are on one row",
+   "limit": "net_total_cents is gross_sales_cents less refunds_cents. No number is below zero",
+   "bad_rows": 0,
+   "where": [],
+   "cases": []
+  },
+  {
+   "number": 16,
+   "key": "every_till_reported",
+   "name": "Every till of an open store sent its total",
+   "lens": "operational",
+   "question": "Complete?",
+   "table": "till_totals",
+   "protects": "Everyone who is protected by the till total check: it is only as good as this table. A missing total would make a missing sales file look fine",
+   "prepare": "Make the list of tills a day should have: two for every open store",
+   "limit": "Each open store has a total for T1 and for T2 on each day",
+   "bad_rows": 0,
+   "where": [],
+   "cases": []
+  }
+ ],
+ "lenses": [
+  {
+   "id": "data",
+   "name": "Data",
+   "meaning": "A data check tests the values themselves.",
+   "checks": 6,
+   "standard": 5
+  },
+  {
+   "id": "business",
+   "name": "Business",
+   "meaning": "A business check tests a rule of how the company works.",
+   "checks": 7,
+   "standard": 0
+  },
+  {
+   "id": "operational",
+   "name": "Operational",
+   "meaning": "An operational check tests the pipeline: did it run, on time, with a normal amount of data.",
+   "checks": 3,
+   "standard": 0
+  }
+ ],
+ "cases": [
+  {
+   "case": 1,
+   "name": "A refund stored as a positive amount",
+   "day": "Mon 08-24",
+   "store": "S03",
+   "pipeline_says": "$796.18",
+   "answer_key_says": "$777.20",
+   "caught_by": [
+    "4. A line adds up",
+    "6. A refund gives money back",
+    "11. The receipts add up to the till's own total"
+   ],
+   "lenses": [
+    "business",
+    "data"
+   ]
+  },
+  {
+   "case": 2,
+   "name": "One receipt in the file twice, with different line ids",
+   "day": "Tue 08-25",
+   "store": "S01",
+   "pipeline_says": "$837.84",
+   "answer_key_says": "$819.77",
+   "caught_by": [
+    "2. One item line is stored once",
+    "11. The receipts add up to the till's own total"
+   ],
+   "lenses": [
+    "business",
+    "data"
+   ]
+  },
+  {
+   "case": 3,
+   "name": "A weight entered in grams, not kilograms",
+   "day": "Thu 08-27",
+   "store": "S05",
+   "pipeline_says": "$2,101.52",
+   "answer_key_says": "$580.84",
+   "caught_by": [
+    "10. A weight is a believable weight",
+    "11. The receipts add up to the till's own total"
+   ],
+   "lenses": [
+    "business"
+   ]
+  },
+  {
+   "case": 4,
+   "name": "A price that was changed yesterday, charged at the old price",
+   "day": "Fri 08-28",
+   "store": "S04",
+   "pipeline_says": "$844.60",
+   "answer_key_says": "$844.60",
+   "caught_by": [
+    "8. The price charged is the price valid that day"
+   ],
+   "lenses": [
+    "business"
+   ]
+  },
+  {
+   "case": 5,
+   "name": "A sale at 03:10 in a store that closes at 22:00",
+   "day": "Sun 08-30",
+   "store": "S02",
+   "pipeline_says": "$881.35",
+   "answer_key_says": "$905.30",
+   "caught_by": [
+    "9. Nothing is sold while the store is closed",
+    "11. The receipts add up to the till's own total"
+   ],
+   "lenses": [
+    "business"
+   ]
+  },
+  {
+   "case": 6,
+   "name": "A sale for a product that is not in products",
+   "day": "Sat 08-29",
+   "store": "S06",
+   "pipeline_says": "$978.26",
+   "answer_key_says": "$996.23",
+   "caught_by": [
+    "5. Every sale is for a product that exists",
+    "11. The receipts add up to the till's own total"
+   ],
+   "lenses": [
+    "business",
+    "data"
+   ]
+  },
+  {
+   "case": 7,
+   "name": "One store sends no file",
+   "day": "Tue 08-25",
+   "store": "S04",
+   "pipeline_says": "no row",
+   "answer_key_says": "$587.42",
+   "caught_by": [
+    "11. The receipts add up to the till's own total",
+    "12. Every open store reported"
+   ],
+   "lenses": [
+    "business",
+    "operational"
+   ]
+  },
+  {
+   "case": 8,
+   "name": "One store's file arrives a day late",
+   "day": "Thu 08-27",
+   "store": "S06",
+   "pipeline_says": "no row",
+   "answer_key_says": "$616.44",
+   "caught_by": [
+    "11. The receipts add up to the till's own total",
+    "12. Every open store reported"
+   ],
+   "lenses": [
+    "business",
+    "operational"
+   ]
+  },
+  {
+   "case": 9,
+   "name": "One store's whole file sent twice",
+   "day": "Fri 08-28",
+   "store": "S02",
+   "pipeline_says": "$2,068.56",
+   "answer_key_says": "$1,034.28",
+   "caught_by": [
+    "2. One item line is stored once",
+    "11. The receipts add up to the till's own total",
+    "13. A store's day is near its normal day"
+   ],
+   "lenses": [
+    "business",
+    "data",
+    "operational"
+   ]
+  }
+ ],
+ "not_a_fault": {
+  "things": [
+   {
+    "what": "Founders' Day, a public holiday",
+    "where": "Wed 08-26, all stores"
+   },
+   {
+    "what": "A store closed for a planned refit",
+    "where": "Thu 08-27, S01"
+   },
+   {
+    "what": "A café buys 400 bottles of water",
+    "where": "Sat 08-29, S02"
+   }
+  ],
+  "false_alarms": 0,
+  "careless_alarms": 6,
+  "calendar_rows": 7
+ },
+ "quiz": [
+  {
+   "question": "A teammate says: we already have a unique check on line_id, and it passes every night. So no sale is counted twice. What do you show them?",
+   "answer": "The check is on the wrong columns. line_id is new on every export, so a copy always gets a new one. Grouped by the true key, receipt_id + line_no, the week has 171 lines stored twice: S01 08-25 and S02 08-28. Unique on which columns is the whole question."
+  },
+  {
+   "question": "Store S04 sells butter at yesterday's price on Fri 08-28. The receipts add up to the tills' own total, to the cent. Is the day right?",
+   "answer": "The table is right. The store is $6.00 short. The tills made the mistake themselves, so both counts agree. A second count only catches a fault that is born after the till. This one needs the price list: check 8, the price charged is the price valid that day."
+  },
+  {
+   "question": "On Wed 08-26 every store sells less than half of a normal Wednesday. Your volume check stays silent. A colleague calls that a bug. Is it?",
+   "answer": "No. Wed 08-26 is Founders' Day, and the calendar says so. Without the calendar the check would raise an alarm for every store, on a day when nothing is wrong. A check that cries wolf gets switched off. The price is honest too: a real fault on a holiday gets no alarm from this check."
+  }
+ ],
+ "words": [
+  {
+   "term": "Not-null check",
+   "meaning": "A check that a cell is filled. The skill is saying in which rows an empty cell is wrong."
+  },
+  {
+   "term": "Unique check",
+   "meaning": "A check that one thing is stored once."
+  },
+  {
+   "term": "Composite key",
+   "meaning": "A key made of more than one column, such as `receipt_id` + `line_no`."
+  },
+  {
+   "term": "Range check",
+   "meaning": "A check that a number is between a smallest and a largest believable value."
+  },
+  {
+   "term": "Format check",
+   "meaning": "A check that a text value has the right shape, such as a receipt id."
+  },
+  {
+   "term": "Business rule",
+   "meaning": "A rule of how the company works, such as \"a refund gives money back\". The data cannot tell you the rule. A person must."
+  },
+  {
+   "term": "Reference data",
+   "meaning": "A small list that people keep by hand, and that other data is judged against: prices, opening hours, holidays."
+  },
+  {
+   "term": "Validity and accuracy",
+   "meaning": "A valid value is allowed by the rules. An accurate value matches the real world. A value can be valid and wrong."
+  },
+  {
+   "term": "Reconciliation",
+   "meaning": "Comparing your numbers with another source that saw the same thing."
+  },
+  {
+   "term": "Control total",
+   "meaning": "A total counted a second way, kept only to be compared. The till's own total is one."
+  },
+  {
+   "term": "Referential integrity",
+   "meaning": "Every row that points to another table finds a row there."
+  },
+  {
+   "term": "Orphan row",
+   "meaning": "A row that points to something that does not exist, such as a sale for a product nobody typed."
+  },
+  {
+   "term": "Baseline",
+   "meaning": "The number you compare with. It is what normal looks like."
+  },
+  {
+   "term": "Limit",
+   "meaning": "The line between good and bad in a check. Also called a threshold."
+  },
+  {
+   "term": "Anomaly",
+   "meaning": "A value far from the baseline. It is a reason to look, not a proof of a fault."
+  },
+  {
+   "term": "False positive",
+   "meaning": "An alarm when nothing is wrong. Also called a false alarm."
+  },
+  {
+   "term": "False negative",
+   "meaning": "A fault with no alarm."
+  },
+  {
+   "term": "Seasonality",
+   "meaning": "A pattern that repeats with the calendar: Saturdays are busy, holidays are quiet."
+  }
+ ],
+ "still_wrong": "One table is done well. There are five more, and they are nothing like it.",
+ "not_in_the_run": "And the checks are not part of the nightly run. You start them by hand, so a failed check changes nothing yet.",
+ "example": {
+  "case_1": {
+   "store": "S03",
+   "day": "Mon 08-24",
+   "says": "$796.18",
+   "right": "$777.20",
+   "caught_by": [
+    "A line adds up",
+    "A refund gives money back",
+    "The receipts add up to the till's own total"
+   ]
+  },
+  "case_3": {
+   "store": "S05",
+   "says": "$2,101.52",
+   "right": "$580.84"
+  },
+  "case_7": {
+   "store": "S04",
+   "day": "Tue 08-25",
+   "right": "$587.42"
+  },
+  "till_total_cases": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "till_total_rows": 11
+ },
+ "planted_cases_caught": 9,
+ "planted_cases_shown": 9,
+ "numbers": {
+  "notebooks": 8,
+  "tests": 148,
+  "tables": 7,
+  "tables_with_a_card": 2,
+  "checks_with_a_reason": 16,
+  "checks_on_sales_lines": 13,
+  "checks_on_till_totals": 3,
+  "standard_checks": 5,
+  "tasks": 5,
+  "planted_cases_caught": 9,
+  "planted_cases_in_sales": 9,
+  "false_alarms": 0,
+  "stores_wrong": 6,
+  "gates": 0,
+  "rows_set_aside": 0,
+  "words": 18
+ },
+ "cards": [
+  "sales_lines",
+  "till_totals"
+ ],
+ "dag": {
+  "id": "lotus_nightly_m2",
+  "tasks": [
+   "stores_send_files",
+   "load",
+   "clean",
+   "check",
+   "publish"
+  ]
+ }
+}
+</script>
+<script>
+(function () {
+  'use strict';
+  var DATA = JSON.parse(document.getElementById('page-data').textContent);
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function get(path) { return path.split('.').reduce(function (o, k) { return o == null ? o : o[k]; }, DATA); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function byId(id) { return document.getElementById(id); }
+
+  // Fill every number from the data.
+  document.querySelectorAll('[data-k]').forEach(function (node) { node.textContent = get(node.dataset.k); });
+
+  // The tasks of the DAG.
+  DATA.dag.tasks.forEach(function (name, i) {
+    if (i) byId('tasks').appendChild(document.createTextNode(' → '));
+    byId('tasks').appendChild(el('code', null, name));
+  });
+
+  // The planted cases, and the checks that catch each one.
+  DATA.cases.forEach(function (c) {
+    var same = c.pipeline_says === c.answer_key_says;
+    var row = el('tr', same ? null : 'bad');
+    var name = el('td', 'wrap name', c.case + '. ' + c.name);
+    row.appendChild(name);
+    row.appendChild(el('td', null, c.day + ', ' + c.store));
+    row.appendChild(el('td', 'r flag', c.pipeline_says));
+    row.appendChild(el('td', 'r', c.answer_key_says));
+    var caught = el('td', 'wrap green');
+    c.caught_by.forEach(function (text, i) { if (i) caught.appendChild(el('br')); caught.appendChild(document.createTextNode(text)); });
+    row.appendChild(caught);
+    byId('case-rows').appendChild(row);
+  });
+
+  // The three lenses, with their counts.
+  DATA.lenses.forEach(function (lens) {
+    var card = el('div', 'card rise');
+    card.appendChild(el('h3', null, lens.name + ' lens'));
+    card.appendChild(el('b', 'n', lens.checks + ' checks'));
+    card.appendChild(el('small', null, lens.meaning));
+    byId('lens-row').appendChild(card);
+  });
+
+  // Every check, and what it found in the week.
+  DATA.checks.forEach(function (c) {
+    var row = el('tr', c.bad_rows ? 'caught' : null);
+    row.appendChild(el('td', null, c.number));
+    var name = el('td', 'wrap name', c.name);
+    name.appendChild(el('small', null, 'on ' + c.table + ' · answers: ' + c.question));
+    row.appendChild(name);
+    var lens = el('td');
+    lens.appendChild(el('span', 'lens-tag', c.lens));
+    row.appendChild(lens);
+    row.appendChild(el('td', 'wrap', c.prepare));
+    row.appendChild(el('td', 'r flag', c.bad_rows ? c.bad_rows : 'none'));
+    row.appendChild(el('td', 'wrap', c.where.join(', ')));
+    byId('check-rows').appendChild(row);
+  });
+  byId('till-cases').textContent = DATA.example.till_total_cases.join(', ');
+
+  DATA.not_a_fault.things.forEach(function (t) {
+    var row = el('tr');
+    row.appendChild(el('td', 'wrap', t.what));
+    row.appendChild(el('td', null, t.where));
+    row.appendChild(el('td', 'green', 'no bad rows, in any check'));
+    byId('thing-rows').appendChild(row);
+  });
+
+  DATA.words.forEach(function (w) {
+    var card = el('div', 'word rise');
+    card.appendChild(el('b', null, w.term));
+    card.appendChild(el('span', null, w.meaning.replace(/`/g, '')));
+    byId('word-list').appendChild(card);
+  });
+
+  DATA.quiz.forEach(function (q, i) {
+    var box = el('details', 'quiz rise');
+    box.appendChild(el('summary', null, (i + 1) + '. ' + q.question));
+    box.appendChild(el('p', null, q.answer));
+    byId('quiz-list').appendChild(box);
+  });
+
+  function countUp(node) {
+    var target = Number(get(node.dataset.k));
+    if (reduce || !isFinite(target)) return;
+    var start = performance.now();
+    (function tick(now) {
+      var t = Math.min(1, (now - start) / 900);
+      node.textContent = Math.round(target * (1 - Math.pow(1 - t, 3)));
+      if (t < 1) requestAnimationFrame(tick);
+    })(start);
+  }
+
+  // Reveal things as they scroll into view.
+  document.documentElement.classList.add('js');
+  var waiting = Array.prototype.slice.call(document.querySelectorAll('.rise'));
+  function reveal() {
+    var line = window.innerHeight * 0.92;
+    waiting = waiting.filter(function (node) {
+      if (node.getBoundingClientRect().top > line) return true;
+      node.classList.add('in');
+      node.querySelectorAll('[data-count]').forEach(countUp);
+      return false;
+    });
+  }
+  window.addEventListener('scroll', reveal, { passive: true });
+  window.addEventListener('resize', reveal);
+  reveal();
+
+  // Mark the section you are reading in the jump links.
+  var links = document.querySelectorAll('.nav a');
+  var spy = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + entry.target.id); });
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  document.querySelectorAll('section[id]').forEach(function (s) { spy.observe(s); });
+})();
+</script>
+</body>
+</html>

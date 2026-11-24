@@ -49,7 +49,7 @@ TABLES = [
         "one_row": "One till's own total for one day",
         "made": "The till adds it up when it is closed",
         "why": "A second, independent count of the same money. It exists to be compared with sales_lines",
-        "card_in": 3,
+        "card_in": 2,
     },
     {
         "table": "products",

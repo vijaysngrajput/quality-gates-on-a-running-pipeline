@@ -31,6 +31,29 @@ For the full theory of each word, read the chapters of the [D8Loop Data Pipeline
 
 The six dimensions have formal names at work: completeness, uniqueness, validity, accuracy, consistency and timeliness.
 
-## Milestones 2 to 5
+## Milestone 2: Checks with a reason
+
+| Word | Meaning | Taught in | Say it in an interview |
+|---|---|---|---|
+| **Not-null check** | A check that a cell is filled. The skill is saying in which rows an empty cell is wrong. | Milestone 2, notebook 1 | "A not-null check on the key was green while an empty amount hid behind it, because a sum ignores an empty cell. I check the cells that must be filled, and I say in which rows: a refund must name its receipt, a sale must not." |
+| **Unique check** | A check that one thing is stored once. | Milestone 2, notebook 2 | "Our unique check was on a line id that the export made new every time, so it could never find a receipt sent twice. I moved it to the receipt and its line number, and it found 171 rows." |
+| **Composite key** | A key made of more than one column, such as `receipt_id` + `line_no`. | Milestone 2, notebook 2 | "The true key of a sales line was a composite key: the receipt and the position on it. One column alone did not name a row in the real world." |
+| **Range check** | A check that a number is between a smallest and a largest believable value. | Milestone 2, notebook 3 | "A scale sent grams as kilograms: 1,180 kg of bananas on one line, $1,522. I set a range per unit, 20 kg at most for weighed goods. A limit on money would have fired on a real sale of 400 bottles." |
+| **Format check** | A check that a text value has the right shape, such as a receipt id. | Milestone 2, notebook 3 | "A receipt id had to be the line's own store, its own till and six digits. A format check costs one line and catches an id that can never be joined." |
+| **Business rule** | A rule of how the company works, such as "a refund gives money back". The data cannot tell you the rule. A person must. | Milestone 2, notebook 4 | "Five data checks passed a refund stored as a positive amount. Only a business rule could see it: a refund gives money back. I got the rules from finance and store operations, not from the table." |
+| **Reference data** | A small list that people keep by hand, and that other data is judged against: prices, opening hours, holidays. | Milestone 2, notebook 4 | "The price check joined each sale to the price list valid that day, and found one store charging yesterday's price on 12 packs of butter. Reference data must be checked too, because every row is judged against it." |
+| **Validity and accuracy** | A valid value is allowed by the rules. An accurate value matches the real world. A value can be valid and wrong. | Milestone 2, notebook 4 | "The butter lines were valid: a real product, a positive price, a store that was open. They were not accurate, because the price was a day old. Validity can be tested on the row. Accuracy needs something outside it." |
+| **Reconciliation** | Comparing your numbers with another source that saw the same thing. | Milestone 2, notebook 5 | "Each till adds up its own day. I reconciled the sales lines against those totals, per till per day, to the cent. That one check found seven of the nine planted faults." |
+| **Control total** | A total counted a second way, kept only to be compared. The till's own total is one. | Milestone 2, notebook 5 | "Nobody read the till totals table, and every money check leaned on it. It was a control total. I gave it three checks of its own, because a control you cannot trust is worse than none." |
+| **Referential integrity** | Every row that points to another table finds a row there. | Milestone 2, notebook 5 | "The cleaning step joined sales to products. A product nobody had typed yet meant three sales lines were dropped, with no error. I check referential integrity on the raw rows, before the join can hide them." |
+| **Orphan row** | A row that points to something that does not exist, such as a sale for a product nobody typed. | Milestone 2, notebook 5 | "Three sales of pumpkin soup were orphan rows: the product was not in the price list yet. An inner join deletes orphans silently, and the store's sales were $17.97 too low." |
+| **Baseline** | The number you compare with. It is what normal looks like. | Milestone 2, notebook 6 | "My baseline for a store's day was the same weekday in the four weeks before. One number for every day would not work: a Saturday had twice the lines of a Tuesday." |
+| **Limit** | The line between good and bad in a check. Also called a threshold. | Milestone 2, notebook 6 | "I chose the limit from the data. In four clean weeks a store stayed between 74% and 131% of its normal day, so I set 60% to 140%. A file sent twice came in at 226%." |
+| **Anomaly** | A value far from the baseline. It is a reason to look, not a proof of a fault. | Milestone 2, notebook 6 | "A day at 226% of normal is an anomaly. It does not say what is wrong. The uniqueness check and the till total said it: the whole file was there twice." |
+| **False positive** | An alarm when nothing is wrong. Also called a false alarm. | Milestone 2, notebook 7 | "My volume check fired on a public holiday in all six stores. Six false positives in one night teach people to ignore the check, so I gave it a calendar." |
+| **False negative** | A fault with no alarm. | Milestone 2, notebook 7 | "Leaving holidays out of the volume check has a price: a real fault on a holiday is a false negative for that check. I wrote that down, and the till total still covers the day." |
+| **Seasonality** | A pattern that repeats with the calendar: Saturdays are busy, holidays are quiet. | Milestone 2, notebook 7 | "Sales had a weekly seasonality, so I compared a Friday with earlier Fridays. A simple average works for a weekly pattern. A holiday that moves each year needs a calendar, or a model." |
+
+## Milestones 3 to 5
 
 Not built yet. Their words are added when each milestone is built.

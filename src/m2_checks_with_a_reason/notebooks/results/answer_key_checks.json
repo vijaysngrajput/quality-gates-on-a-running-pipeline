@@ -1,0 +1,136 @@
+{
+  "believable_quantity": {
+    "bad_rows": 1,
+    "store_days": [
+      [
+        "S05",
+        "2026-08-27"
+      ]
+    ]
+  },
+  "every_sale_has_a_product": {
+    "bad_rows": 3,
+    "store_days": [
+      [
+        "S06",
+        "2026-08-29"
+      ]
+    ]
+  },
+  "every_store_reported": {
+    "bad_rows": 1,
+    "store_days": [
+      [
+        "S04",
+        "2026-08-25"
+      ]
+    ]
+  },
+  "inside_opening_hours": {
+    "bad_rows": 4,
+    "store_days": [
+      [
+        "S02",
+        "2026-08-31"
+      ]
+    ]
+  },
+  "line_adds_up": {
+    "bad_rows": 1,
+    "store_days": [
+      [
+        "S03",
+        "2026-08-24"
+      ]
+    ]
+  },
+  "normal_volume": {
+    "bad_rows": 1,
+    "store_days": [
+      [
+        "S02",
+        "2026-08-28"
+      ]
+    ]
+  },
+  "price_of_the_day": {
+    "bad_rows": 6,
+    "store_days": [
+      [
+        "S04",
+        "2026-08-28"
+      ]
+    ]
+  },
+  "refund_gives_money_back": {
+    "bad_rows": 1,
+    "store_days": [
+      [
+        "S03",
+        "2026-08-24"
+      ]
+    ]
+  },
+  "refund_not_larger_than_sale": {
+    "bad_rows": 0,
+    "store_days": []
+  },
+  "required_cells": {
+    "bad_rows": 0,
+    "store_days": []
+  },
+  "right_shape": {
+    "bad_rows": 0,
+    "store_days": []
+  },
+  "till_total": {
+    "bad_rows": 11,
+    "store_days": [
+      [
+        "S03",
+        "2026-08-24"
+      ],
+      [
+        "S01",
+        "2026-08-25"
+      ],
+      [
+        "S04",
+        "2026-08-25"
+      ],
+      [
+        "S05",
+        "2026-08-27"
+      ],
+      [
+        "S02",
+        "2026-08-28"
+      ],
+      [
+        "S06",
+        "2026-08-29"
+      ],
+      [
+        "S02",
+        "2026-08-30"
+      ],
+      [
+        "S02",
+        "2026-08-31"
+      ]
+    ]
+  },
+  "true_key_unique": {
+    "bad_rows": 171,
+    "store_days": [
+      [
+        "S01",
+        "2026-08-25"
+      ],
+      [
+        "S02",
+        "2026-08-28"
+      ]
+    ]
+  }
+}
