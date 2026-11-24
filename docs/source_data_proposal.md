@@ -22,6 +22,8 @@ Section 8 lists the decisions that were made. Section 9 lists where the project 
 
 ---
 
+A **till** is the machine at the counter where a customer pays. It is also called a cash register.
+
 ## 1. The calendar
 
 | Thing | Proposal |

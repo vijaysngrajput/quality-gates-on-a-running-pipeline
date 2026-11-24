@@ -39,6 +39,8 @@ The stores are shared by all milestones. They are in [`store_systems/`](../../..
 
 ## 2. The source: what arrives
 
+A **till** is the machine at the counter where a customer pays. It is also called a cash register. Each store has two.
+
 The stores write CSV files into a **landing folder**, one sub-folder per table.
 
 | Table | File name | How often | Rows in one file |

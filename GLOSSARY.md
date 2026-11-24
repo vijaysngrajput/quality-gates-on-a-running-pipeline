@@ -8,6 +8,8 @@ A word enters this list in the milestone that teaches it, not before. Each entry
 - the notebook where you meet it on Lotus's own rows
 - a line you can say in an interview, with the example from this project
 
+One shop word first, because the project uses it on every page. A **till** is the machine at the counter where a customer pays. It is also called a cash register. It is not a data word, so it has no row below.
+
 For the full theory of each word, read the chapters of the [D8Loop Data Pipeline knowledge base](https://www.d8loop.com/modules/knowledge-corner/data-pipeline), in its section **Production, Quality & Advanced**.
 
 ## Milestone 1: Green checks, wrong number
