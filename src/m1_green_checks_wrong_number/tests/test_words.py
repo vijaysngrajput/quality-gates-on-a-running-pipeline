@@ -20,7 +20,8 @@ def test_every_word_is_in_the_readme_with_the_same_meaning():
 
 
 def test_every_glossary_word_names_its_notebook_and_has_an_interview_line():
-    rows = [line for line in GLOSSARY.splitlines() if line.startswith("| **")]
+    section = GLOSSARY.split("## Milestone 1:")[1].split("\n## ")[0]
+    rows = [line for line in section.splitlines() if line.startswith("| **")]
     assert len(rows) == len(flow_data.WORDS) == 12
     for row in rows:
         cells = [c.strip() for c in row.strip("|").split("|")]
