@@ -1,0 +1,9 @@
+# Airflow reads every Python file under src/ to look for DAGs.
+# Only the dags/ folders hold DAGs. Tell it to skip the rest.
+*/lotus_pipeline/
+*/tests/
+*/notebooks/
+*/docs/
+*/checks/
+*/data/
+*/dbt_project/

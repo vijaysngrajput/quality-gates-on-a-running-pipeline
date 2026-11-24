@@ -1,0 +1,920 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lotus Retails: one receipt, from the till to the bonus</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f4ef; --surface: #fffdf9; --ink: #1d2327; --muted: #5c6670; --line: #d9d4c8;
+    --accent: #8a2f5a; --accent-ink: #ffffff; --accent-soft: #f3e1ea;
+    --neg: #a23b2a; --neg-soft: #f6e1dc; --warn: #8a5a00; --warn-soft: #f7ebcf;
+    --ok: #0f6b5c; --ok-soft: #dcefe9;
+    --tag-bg: #ecebe4;
+    --shadow: 0 1px 2px rgba(29, 35, 39, .06), 0 6px 18px rgba(29, 35, 39, .06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --bg: #14181a; --surface: #1c2226; --ink: #e8e6e1; --muted: #9aa4ab; --line: #2e373c;
+      --accent: #e39abd; --accent-ink: #2a0f1c; --accent-soft: #3a2230;
+      --neg: #e58a78; --neg-soft: #3a2420; --warn: #e2b85c; --warn-soft: #3a3019;
+      --ok: #5fc5b0; --ok-soft: #1d3a35;
+      --tag-bg: #262e33;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 18px rgba(0, 0, 0, .25);
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .page { max-width: 1200px; margin: 0 auto; padding: 36px 24px 56px; }
+  .eyebrow { margin: 0 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0 0 8px; font: 600 34px/1.15 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; text-wrap: balance; }
+  h2.section { margin: 44px 0 6px; font: 600 25px/1.2 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; text-wrap: balance; }
+  .lede { margin: 0 0 24px; max-width: 68ch; color: var(--muted); font-size: 16px; }
+  .sub { margin: 0 0 16px; max-width: 72ch; color: var(--muted); }
+  code, .mono { font: 12.5px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+  /* The road of the receipt: six places, left to right */
+  .road { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .stage { position: relative; padding: 9px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; transition: border-color .3s, background .3s, box-shadow .3s; }
+  .stage b { display: block; font-size: 13.5px; font-weight: 600; overflow-wrap: anywhere; }
+  .stage small { color: var(--muted); font-size: 12px; }
+  .stage.passed { border-color: var(--accent); }
+  .stage.here { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); box-shadow: var(--shadow); }
+  .stage.here small { color: inherit; opacity: .85; }
+  .stage.here.wrong { background: var(--neg); border-color: var(--neg); color: var(--surface); }
+  .stage:not(:last-child)::after { content: "›"; position: absolute; right: -8px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 15px; line-height: 1; }
+
+  .group-label { margin: 18px 0 8px; font-size: 13px; font-weight: 600; }
+  .chips-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opt {
+    display: flex; flex-direction: column; align-items: flex-start;
+    padding: 8px 14px; font: inherit; color: var(--ink); text-align: left;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px; cursor: pointer;
+    transition: border-color .2s, background .2s;
+  }
+  .opt:hover { border-color: var(--accent); }
+  .opt b { font-weight: 600; }
+  .opt small { color: var(--muted); font-size: 12px; }
+  .opt[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .opt[aria-pressed="true"] small { color: inherit; opacity: .85; }
+
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 18px 0 8px; }
+  .btns { display: flex; gap: 6px; }
+  .btn { padding: 7px 14px; font: inherit; font-weight: 500; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+  .btn:hover:not(:disabled) { border-color: var(--accent); }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .btn.primary { min-width: 76px; background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .progress-text { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .bar { height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; margin-bottom: 22px; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .5s ease; }
+  :is(.opt, .btn, .step, .tcard):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .layout { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 28px; align-items: start; }
+  .side { position: sticky; top: 16px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; }
+
+  /* The life of the receipt: a line of steps */
+  .life { position: relative; display: grid; gap: 0; padding-left: 34px; }
+  .life::before { content: ""; position: absolute; left: 12px; top: 14px; bottom: 14px; width: 2px; background: var(--line); }
+  .gap { margin: 6px 0; padding: 2px 0 2px 2px; color: var(--warn); font-size: 12.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .gap::before { content: "⋮ "; margin-left: -29px; padding-right: 17px; color: var(--muted); }
+  .row { position: relative; padding: 5px 0; }
+  .dot {
+    position: absolute; left: -29px; top: 19px; width: 16px; height: 16px; border-radius: 50%;
+    background: var(--surface); border: 2px solid var(--line); transition: background .3s, border-color .3s, box-shadow .3s;
+  }
+  .row.done .dot { background: var(--accent); border-color: var(--accent); }
+  .row.active .dot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+  .row.wrong.done .dot, .row.wrong.active .dot { background: var(--neg); border-color: var(--neg); }
+  .row.wrong.active .dot { box-shadow: 0 0 0 4px var(--neg-soft); }
+  .step {
+    display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; width: 100%;
+    padding: 10px 12px; font: inherit; color: var(--ink); text-align: left;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px; cursor: pointer;
+    transition: border-color .25s, background .25s, box-shadow .25s;
+  }
+  .step:hover { border-color: var(--accent); }
+  .row.active .step { background: var(--accent-soft); border-color: var(--accent); box-shadow: var(--shadow); }
+  .row.wrong.active .step { background: var(--neg-soft); border-color: var(--neg); }
+  .step .ttl { font-weight: 600; }
+  .step .when { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  .panel h2, .panel h3 { margin: 0 0 6px; font-size: 19px; line-height: 1.25; }
+  .kicker { margin: 0 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .panel p { margin: 0; }
+  .note { margin-top: 10px !important; padding: 8px 10px; border-radius: 8px; background: var(--warn-soft); color: var(--warn); font-size: 13.5px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 12px; }
+  .chip { padding: 1px 8px; border-radius: 999px; background: var(--tag-bg); font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .chips-label { margin-top: 12px !important; color: var(--muted); font-size: 12.5px; }
+
+  .rows-wrap { margin-top: 14px; overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+  table.rows { width: 100%; border-collapse: collapse; font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  table.rows th, table.rows td { padding: 6px 9px; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--line); }
+  table.rows th { color: var(--muted); font-weight: 600; background: var(--tag-bg); }
+  table.rows tr:last-child td { border-bottom: 0; }
+  table.rows td.mark { background: var(--neg-soft); color: var(--neg); font-weight: 700; }
+
+  .number { border-color: var(--ok); }
+  .number .kicker { color: var(--ok); }
+  .number.wrong { border-color: var(--neg); }
+  .number.wrong .kicker { color: var(--neg); }
+  .number p { font-size: 15px; font-weight: 600; }
+
+  /* Who reads which table */
+  .people { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 28px; align-items: start; margin-top: 18px; }
+  .tables { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+  .tcard { padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; transition: opacity .3s, border-color .3s, box-shadow .3s; }
+  .tcard h3 { margin: 0 0 6px; font: 600 13.5px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .tcard dl { margin: 0; display: grid; gap: 6px; font-size: 13px; }
+  .tcard dt { color: var(--muted); font-size: 11.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+  .tcard dd { margin: 0; }
+  .tcard.used { border-color: var(--accent); box-shadow: var(--shadow); }
+  .tcard.used h3 { color: var(--accent); }
+  .tcard.unused { opacity: .45; }
+  .tcard .badge { display: none; margin: 0 0 6px; font-size: 11.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); }
+  .tcard.used .badge { display: block; }
+  .harm { position: sticky; top: 16px; }
+  .harm .hurt { margin-top: 8px; font-weight: 600; }
+  .harm ul { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+  .harm li { padding: 9px 11px; border-radius: 8px; background: var(--neg-soft); color: var(--ink); font-size: 13.5px; border-left: 3px solid var(--neg); }
+
+  .lesson { margin: 40px 0 0; padding: 16px 20px; border-left: 4px solid var(--accent); background: var(--surface); border-radius: 0 12px 12px 0; }
+  .lesson small { display: block; margin-bottom: 6px; color: var(--muted); font-size: 13px; }
+  .lesson b { display: block; font: 600 20px/1.3 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+  .lesson span { display: block; margin-top: 8px; color: var(--muted); }
+  .foot { margin: 26px 0 0; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; max-width: 80ch; }
+
+  @media (max-width: 980px) {
+    .layout, .people { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+    .side, .harm { position: static; }
+    .side { order: -1; }
+    .harm { order: -1; }
+    .road { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .stage:nth-child(3)::after { display: none; }
+  }
+  @media (max-width: 700px) {
+    .page { padding: 24px 16px 40px; }
+    h1 { font-size: 27px; }
+    h2.section { font-size: 21px; }
+    .opt { flex: 1 1 150px; }
+    .road { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stage:nth-child(3)::after { display: block; }
+    .stage:nth-child(2n)::after { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <p class="eyebrow">Understand the business</p>
+    <h1>One receipt, from the till to the bonus</h1>
+    <p class="lede">Lotus Retails is a fictional chain of supermarkets: <span id="h-stores"></span> stores in <span id="h-towns"></span> towns. Customers buy at the tills in the store. Follow one receipt on its way to a manager's pay. Then see who else reads the data, and what a wrong value does to them.</p>
+  </header>
+
+  <section aria-label="The road of the receipt">
+    <p class="group-label" id="road-label">1. Follow one receipt</p>
+    <ol class="road" id="road" aria-labelledby="road-label"></ol>
+  </section>
+
+  <div class="toolbar">
+    <div class="btns">
+      <button class="btn" id="back" type="button">Back</button>
+      <button class="btn primary" id="play" type="button">Play</button>
+      <button class="btn" id="next" type="button">Next</button>
+      <button class="btn" id="restart" type="button">Restart</button>
+    </div>
+    <span class="progress-text" id="progress-text" aria-live="polite"></span>
+  </div>
+  <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+
+  <main class="layout">
+    <div class="life" id="life"></div>
+
+    <aside class="side">
+      <section class="panel" id="detail" aria-label="Current step" aria-live="polite">
+        <p class="kicker" id="d-kicker"></p>
+        <h2 id="d-title"></h2>
+        <p id="d-what"></p>
+        <div class="rows-wrap" id="d-rows-wrap" hidden tabindex="0" aria-label="The rows at this step">
+          <table class="rows" id="d-rows"></table>
+        </div>
+        <p class="note" id="d-note" hidden></p>
+        <p class="chips-label" id="d-tables-label" hidden>Tables at this step</p>
+        <div class="chips" id="d-tables"></div>
+      </section>
+      <section class="panel number" id="number" aria-label="The number so far">
+        <p class="kicker" id="n-kicker">The number</p>
+        <p id="n-text"></p>
+      </section>
+    </aside>
+  </main>
+
+  <section aria-label="Who reads which table">
+    <h2 class="section">Four groups read the data. Each is hurt in a different way.</h2>
+    <p class="sub">Lotus keeps seven tables. A table is a list of rows with the same columns. Pick a group. The tables they depend on light up, with a real example of a wrong value.</p>
+    <p class="group-label" id="group-label">2. Pick who is reading</p>
+    <div class="chips-row" id="groups" role="group" aria-labelledby="group-label"></div>
+
+    <div class="people">
+      <div class="tables" id="tables"></div>
+      <aside class="panel harm" id="harm" aria-label="What a wrong value does" aria-live="polite">
+        <p class="kicker" id="g-kicker"></p>
+        <h3 id="g-name"></h3>
+        <p id="g-decide"></p>
+        <p class="hurt" id="g-hurt"></p>
+        <p class="chips-label">When the data was wrong</p>
+        <ul id="g-examples"></ul>
+      </aside>
+    </div>
+  </section>
+
+  <p class="lesson"><small>Every Monday the head of retail operations signs off the bonus. She asks:</small>
+  <b>Can I pay the bonus from last week's net sales, store by store? And if I cannot trust a number, which one, and why?</b>
+  <span>Today nobody can answer the second sentence. That is what this project teaches you to build.</span></p>
+
+  <p class="foot">Use <kbd>←</kbd> and <kbd>→</kbd> to step. Everything here is fictional: Lotus Retails, its towns, its people, its products and its prices are invented for learning. The receipts, rows and amounts on this page are written by <code>store_systems/business_page.py</code> from the same generated data the project loads. The file sizes under each table are those of <span id="f-day"></span>.</p>
+</div>
+
+<script id="page-data" type="application/json">
+{
+ "stages": [
+  {
+   "id": "till",
+   "name": "Till",
+   "sub": "in the store"
+  },
+  {
+   "id": "file",
+   "name": "Store file",
+   "sub": "sent every night"
+  },
+  {
+   "id": "raw",
+   "name": "Raw tables",
+   "sub": "as received"
+  },
+  {
+   "id": "clean",
+   "name": "Clean tables",
+   "sub": "typed, joined"
+  },
+  {
+   "id": "output",
+   "name": "daily_store_sales",
+   "sub": "what people read"
+  },
+  {
+   "id": "bonus",
+   "name": "Bonus",
+   "sub": "signed on Monday"
+  }
+ ],
+ "steps": [
+  {
+   "stage": "till",
+   "title": "A customer pays at the till",
+   "when": "Sat 22 Aug, 16:30",
+   "gap": "",
+   "what": "At Lotus Calder Bridge, in Calder, a customer buys: 1 × Olive oil 500ml at $9.49, 1 × Sourdough loaf at $5.25. Till T2 prints receipt S03-T2-004457. The total is $14.74.",
+   "tables": [],
+   "show": null,
+   "note": "",
+   "number": "The till took $14.74.",
+   "wrong": false
+  },
+  {
+   "stage": "file",
+   "title": "The store sends its file",
+   "when": "Sat 22 Aug, after closing",
+   "gap": "",
+   "what": "Every night a program in the store's back office writes the day's receipts into a file and sends it. One row is one item line. So this receipt is 2 rows of the table sales_lines.",
+   "tables": [
+    "sales_lines"
+   ],
+   "show": {
+    "columns": [
+     "line_id",
+     "receipt_id",
+     "line_no",
+     "product_id",
+     "quantity",
+     "unit_price_cents",
+     "amount_cents",
+     "line_type"
+    ],
+    "rows": [
+     [
+      "S03-0822-000100",
+      "S03-T2-004457",
+      "1",
+      "P-024",
+      "1.000",
+      "949",
+      "949",
+      "sale"
+     ],
+     [
+      "S03-0822-000101",
+      "S03-T2-004457",
+      "2",
+      "P-008",
+      "1.000",
+      "525",
+      "525",
+      "sale"
+     ]
+    ],
+    "mark": null
+   },
+   "note": "Money is in whole cents: 949 is $9.49.",
+   "number": "2 rows, $14.74 in all.",
+   "wrong": false
+  },
+  {
+   "stage": "file",
+   "title": "The till counts its own day",
+   "when": "Sat 22 Aug, after closing",
+   "gap": "",
+   "what": "When till T2 is closed, it adds up its own day. This total never passes through the back-office program. It is a second count of the same money, in a second table: till_totals.",
+   "tables": [
+    "till_totals"
+   ],
+   "show": {
+    "columns": [
+     "business_date",
+     "store_id",
+     "till_id",
+     "receipts",
+     "gross_sales_cents",
+     "refunds_cents",
+     "net_total_cents"
+    ],
+    "rows": [
+     [
+      "2026-08-22",
+      "S03",
+      "T2",
+      "24",
+      "57685",
+      "0",
+      "57685"
+     ]
+    ],
+    "mark": null
+   },
+   "note": "Nobody reads this table yet. Remember it.",
+   "number": "Till T2 took $576.85 that day.",
+   "wrong": false
+  },
+  {
+   "stage": "raw",
+   "title": "The pipeline copies the file",
+   "when": "Sun 23 Aug, 02:00",
+   "gap": "",
+   "what": "A pipeline is a program that moves data in steps, every night. Its first step copies each file into a raw table, exactly as it arrived. Every value stays text. Nothing is judged.",
+   "tables": [
+    "sales_lines",
+    "till_totals",
+    "products",
+    "stores"
+   ],
+   "show": null,
+   "note": "",
+   "number": "The same rows, with the name of the file they came from.",
+   "wrong": false
+  },
+  {
+   "stage": "clean",
+   "title": "The pipeline cleans the rows",
+   "when": "Sun 23 Aug, 02:00",
+   "gap": "",
+   "what": "The second step gives every column its type: a number, a date, a time. It also joins each line to the tables products and stores, to add the product's name and the store's name.",
+   "tables": [
+    "sales_lines",
+    "products",
+    "stores"
+   ],
+   "show": {
+    "columns": [
+     "receipt_id",
+     "product_name",
+     "quantity",
+     "amount_cents",
+     "sales_date"
+    ],
+    "rows": [
+     [
+      "S03-T2-004457",
+      "Olive oil 500ml",
+      "1.000",
+      "949",
+      "2026-08-22"
+     ],
+     [
+      "S03-T2-004457",
+      "Sourdough loaf",
+      "1.000",
+      "525",
+      "2026-08-22"
+     ]
+    ],
+    "mark": null
+   },
+   "note": "",
+   "number": "Clean rows, ready to be added up.",
+   "wrong": false
+  },
+  {
+   "stage": "output",
+   "title": "One number for the store's day",
+   "when": "Sun 23 Aug, 02:00",
+   "gap": "",
+   "what": "The last step adds up every line of the day, store by store. The result is the table daily_store_sales: one row per store per day. Net sales means the money taken for sales, less the money given back.",
+   "tables": [
+    "sales_lines"
+   ],
+   "show": {
+    "columns": [
+     "sales_date",
+     "store_id",
+     "net_sales_cents"
+    ],
+    "rows": [
+     [
+      "2026-08-22",
+      "S03",
+      "96424"
+     ]
+    ],
+    "mark": null
+   },
+   "note": "",
+   "number": "S03 on Sat 22 Aug: $964.24. That is right.",
+   "wrong": false
+  },
+  {
+   "stage": "till",
+   "title": "The customer brings the oil back",
+   "when": "Mon 24 Aug, 11:05",
+   "gap": "2 days later",
+   "what": "The Olive oil 500ml goes back to the store. Till T1 gives the customer $9.49. This is a refund: money the store gives back. Receipt S03-T1-004493 points to the first receipt.",
+   "tables": [],
+   "show": null,
+   "note": "",
+   "number": "The till gave back $9.49.",
+   "wrong": false
+  },
+  {
+   "stage": "file",
+   "title": "The refund in the store's file",
+   "when": "Mon 24 Aug, after closing",
+   "gap": "",
+   "what": "The back-office program writes the refund as one row. A refund must take money away, so its amount must be below zero. Read the row.",
+   "tables": [
+    "sales_lines"
+   ],
+   "show": {
+    "columns": [
+     "line_id",
+     "receipt_id",
+     "line_no",
+     "product_id",
+     "quantity",
+     "unit_price_cents",
+     "amount_cents",
+     "line_type"
+    ],
+    "rows": [
+     [
+      "S03-0824-000008",
+      "S03-T1-004493",
+      "1",
+      "P-024",
+      "-1.000",
+      "949",
+      "949",
+      "refund"
+     ]
+    ],
+    "mark": [
+     0,
+     6
+    ]
+   },
+   "note": "The quantity is -1. The amount is +949. The minus sign of the money is lost.",
+   "number": "The file says +$9.49. The till gave back $9.49.",
+   "wrong": true
+  },
+  {
+   "stage": "file",
+   "title": "The tills still know the truth",
+   "when": "Mon 24 Aug, after closing",
+   "gap": "",
+   "what": "The two tills of S03 add up their own day, as every night. A till knows that money went out. Their totals are right.",
+   "tables": [
+    "till_totals"
+   ],
+   "show": {
+    "columns": [
+     "business_date",
+     "store_id",
+     "till_id",
+     "receipts",
+     "gross_sales_cents",
+     "refunds_cents",
+     "net_total_cents"
+    ],
+    "rows": [
+     [
+      "2026-08-24",
+      "S03",
+      "T1",
+      "18",
+      "42967",
+      "1008",
+      "41959"
+     ],
+     [
+      "2026-08-24",
+      "S03",
+      "T2",
+      "16",
+      "35761",
+      "0",
+      "35761"
+     ]
+    ],
+    "mark": null
+   },
+   "note": "",
+   "number": "The tills say $777.20 for the day.",
+   "wrong": false
+  },
+  {
+   "stage": "output",
+   "title": "A wrong number, and nothing fails",
+   "when": "Tue 25 Aug, 02:00",
+   "gap": "",
+   "what": "The pipeline copies, cleans and adds up, as every night. The row with the lost minus sign is a valid row: a number, a known product, a known store. So the refund is added, not taken away.",
+   "tables": [
+    "sales_lines"
+   ],
+   "show": {
+    "columns": [
+     "sales_date",
+     "store_id",
+     "net_sales_cents"
+    ],
+    "rows": [
+     [
+      "2026-08-24",
+      "S03",
+      "79618"
+     ]
+    ],
+    "mark": [
+     0,
+     2
+    ]
+   },
+   "note": "The table says $796.18. The tills say $777.20. The table is $18.98 too high. It added $9.49 where it should have taken $9.49 away.",
+   "number": "S03 on Mon 24 Aug: $796.18. The truth is $777.20.",
+   "wrong": true
+  },
+  {
+   "stage": "bonus",
+   "title": "The bonus is paid from that number",
+   "when": "Mon 31 Aug",
+   "gap": "7 days later",
+   "what": "Every Monday the head of retail operations signs the store managers' bonus. It is 1% of the store's net sales for the week, Mon 24 Aug to Sun 30 Aug. Tomas Reyes manages S03.",
+   "tables": [
+    "sales_lines"
+   ],
+   "show": {
+    "columns": [
+     "",
+     "week's net sales",
+     "bonus at 1%"
+    ],
+    "rows": [
+     [
+      "The truth",
+      "$5,087.62",
+      "$50.88"
+     ],
+     [
+      "With this one row",
+      "$5,106.60",
+      "$51.07"
+     ]
+    ],
+    "mark": null
+   },
+   "note": "One wrong row in one file reached a person's pay. No program stopped. No error was shown.",
+   "number": "The bonus of S03 is $0.19 too high.",
+   "wrong": true
+  }
+ ],
+ "groups": [
+  {
+   "id": "managers",
+   "name": "Store managers",
+   "decide": "They are paid from the data: a weekly bonus of 1% of their store's net sales.",
+   "hurt": "A wrong number is wrong pay.",
+   "tables": [
+    "sales_lines",
+    "products",
+    "stores"
+   ],
+   "reads": "daily_store_sales",
+   "examples": [
+    "Mon 24 Aug, store S03: a refund is stored as a positive amount. Net sales are $18.98 too high.",
+    "Thu 27 Aug, store S05: a weight is written in grams, not kilograms. One line of bananas says $1,522.20 where the customer paid $1.52. The manager's bonus is $15.21 too high."
+   ]
+  },
+  {
+   "id": "replenishment",
+   "name": "The replenishment team",
+   "decide": "They order tomorrow's stock from yesterday's sales and from what is counted on the shelf.",
+   "hurt": "Too high wastes food. Too low leaves empty shelves.",
+   "tables": [
+    "sales_lines",
+    "stock_counts",
+    "products",
+    "stores"
+   ],
+   "reads": "replenishment_list",
+   "examples": [
+    "Fri 28 Aug, store S05: nobody counts the Whole milk 2L. The store sold 9 and has 3 left. The right order is 15. With no count, the shelf is read as empty and the order is 18."
+   ]
+  },
+  {
+   "id": "finance",
+   "name": "Finance",
+   "decide": "They pay suppliers from the suppliers' price files, and they watch that the tills charge the price on the price list.",
+   "hurt": "A wrong price is wrong money leaving the company.",
+   "tables": [
+    "supplier_prices",
+    "products"
+   ],
+   "reads": "replenishment_list",
+   "examples": [
+    "Fri 28 Aug, supplier SUP-C: the file gives the cost in cents, not dollars. 15 products are 100 times too dear. Olive oil 500ml costs $6.55, and the file says $655.00.",
+    "Fri 28 Aug, store S04: the price of Butter 250g went up that day. The tills still charge the old price. 12 packs are sold, and the store is $6.00 short."
+   ]
+  },
+  {
+   "id": "marketing",
+   "name": "Marketing",
+   "decide": "They email loyalty members: customers who signed up in the Lotus app.",
+   "hurt": "One person stored twice gets two emails. A wrong address reaches a stranger.",
+   "tables": [
+    "members"
+   ],
+   "reads": "the clean members table",
+   "examples": [
+    "Wed 26 Aug: one person signs up a second time. Member M-0117 is priya.nair@example.com. Member M-0304 is Priya.Nair@Example.com. A computer sees two different emails. It is one person."
+   ]
+  }
+ ],
+ "tables": [
+  {
+   "id": "sales_lines",
+   "one_row": "One item line on one receipt",
+   "made": "Each till writes it. Each store sends a file every night",
+   "why": "Money. Refunds. Goods sold by weight. A store's file can be late, missing or sent twice",
+   "size": "610 rows from 6 stores"
+  },
+  {
+   "id": "till_totals",
+   "one_row": "One till's own total for one day",
+   "made": "The till adds it up when it is closed",
+   "why": "A second count of the same money. It exists to be compared with sales_lines",
+   "size": "12 rows: 2 tills in each of 6 stores"
+  },
+  {
+   "id": "products",
+   "one_row": "One product at one price, with the dates that price is valid",
+   "made": "Typed by the buying team",
+   "why": "It changes. A price has a start and an end. A product can be retired",
+   "size": "41 rows"
+  },
+  {
+   "id": "stores",
+   "one_row": "One store, with its opening hours",
+   "made": "Typed once, rarely changed",
+   "why": "Tiny. Wrong here is wrong everywhere",
+   "size": "6 rows"
+  },
+  {
+   "id": "stock_counts",
+   "one_row": "One product in one store on one day",
+   "made": "Counted by hand or by scanner at closing time",
+   "why": "A count of one moment. A missing day is a gap, not a zero",
+   "size": "234 rows from 6 stores"
+  },
+  {
+   "id": "supplier_prices",
+   "one_row": "One product's cost from one supplier",
+   "made": "A file the supplier sends once a week",
+   "why": "Lotus does not control it. Columns move, units change, files repeat",
+   "size": "12 rows from supplier SUP-A"
+  },
+  {
+   "id": "members",
+   "one_row": "One loyalty member",
+   "made": "Typed by the customer in an app",
+   "why": "People. The same person twice, half-filled rows, personal data",
+   "size": "302 rows"
+  }
+ ],
+ "size_day": "Mon 24 Aug",
+ "stores": 6,
+ "towns": 3,
+ "sign_off": "Mon 31 Aug"
+}
+</script>
+<script>
+(function () {
+  'use strict';
+  var DATA = JSON.parse(document.getElementById('page-data').textContent);
+  var STEP_MS = 6000;
+  var $ = function (id) { return document.getElementById(id); };
+  var state = { step: 0, group: 0, playing: false };
+  var timer = null, rows = [], stages = [], cards = {};
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function stageIndex(id) {
+    for (var i = 0; i < DATA.stages.length; i++) if (DATA.stages[i].id === id) return i;
+    return 0;
+  }
+
+  $('h-stores').textContent = DATA.stores;
+  $('h-towns').textContent = DATA.towns;
+  $('f-day').textContent = DATA.size_day;
+
+  DATA.stages.forEach(function (s) {
+    var li = el('li', 'stage');
+    li.appendChild(el('b', null, s.name));
+    li.appendChild(el('small', null, s.sub));
+    $('road').appendChild(li);
+    stages.push(li);
+  });
+
+  DATA.steps.forEach(function (s, i) {
+    if (s.gap) $('life').appendChild(el('div', 'gap', s.gap));
+    var row = el('div', 'row' + (s.wrong ? ' wrong' : ''));
+    row.appendChild(el('span', 'dot'));
+    var btn = el('button', 'step');
+    btn.type = 'button';
+    btn.appendChild(el('span', 'ttl', s.title));
+    btn.appendChild(el('span', 'when', s.when));
+    btn.addEventListener('click', function () { pause(); go(i); });
+    row.appendChild(btn);
+    $('life').appendChild(row);
+    rows.push(row);
+  });
+
+  DATA.groups.forEach(function (g, i) {
+    var b = el('button', 'opt');
+    b.type = 'button';
+    b.appendChild(el('b', null, g.name));
+    b.appendChild(el('small', null, g.hurt));
+    b.addEventListener('click', function () { state.group = i; renderGroup(); });
+    $('groups').appendChild(b);
+  });
+
+  DATA.tables.forEach(function (t) {
+    var card = el('article', 'tcard');
+    card.appendChild(el('p', 'badge', 'They depend on this'));
+    card.appendChild(el('h3', null, t.id));
+    var dl = el('dl');
+    [['One row is', t.one_row], ['How it is made', t.made], ['Why its checks differ', t.why], ['One night', t.size]].forEach(function (pair) {
+      var d = el('div');
+      d.appendChild(el('dt', null, pair[0]));
+      d.appendChild(el('dd', null, pair[1]));
+      dl.appendChild(d);
+    });
+    card.appendChild(dl);
+    $('tables').appendChild(card);
+    cards[t.id] = card;
+  });
+
+  function renderRows(show) {
+    var table = $('d-rows');
+    table.textContent = '';
+    $('d-rows-wrap').hidden = !show;
+    if (!show) return;
+    var head = el('tr');
+    show.columns.forEach(function (c) { var th = el('th', null, c); th.scope = 'col'; head.appendChild(th); });
+    var thead = el('thead');
+    thead.appendChild(head);
+    table.appendChild(thead);
+    var body = el('tbody');
+    show.rows.forEach(function (r, ri) {
+      var tr = el('tr');
+      r.forEach(function (cell, ci) {
+        var marked = show.mark && show.mark[0] === ri && show.mark[1] === ci;
+        tr.appendChild(el('td', marked ? 'mark' : null, cell));
+      });
+      body.appendChild(tr);
+    });
+    table.appendChild(body);
+  }
+
+  function render() {
+    var step = DATA.steps[state.step], at = stageIndex(step.stage), last = DATA.steps.length - 1;
+    rows.forEach(function (row, i) {
+      row.classList.toggle('active', i === state.step);
+      row.classList.toggle('done', i < state.step);
+      row.firstChild.nextSibling.setAttribute('aria-current', i === state.step ? 'step' : 'false');
+    });
+    stages.forEach(function (li, i) {
+      li.classList.toggle('here', i === at);
+      li.classList.toggle('passed', i < at);
+      li.classList.toggle('wrong', i === at && step.wrong);
+    });
+    $('d-kicker').textContent = DATA.stages[at].name + ' · ' + step.when;
+    $('d-title').textContent = step.title;
+    $('d-what').textContent = step.what;
+    renderRows(step.show);
+    $('d-note').hidden = !step.note;
+    $('d-note').textContent = step.note;
+    $('d-tables').textContent = '';
+    $('d-tables-label').hidden = !step.tables.length;
+    step.tables.forEach(function (t) { $('d-tables').appendChild(el('span', 'chip', t)); });
+    $('n-text').textContent = step.number;
+    $('number').classList.toggle('wrong', step.wrong);
+    $('n-kicker').textContent = step.wrong ? 'The number is wrong' : 'The number';
+
+    $('progress-text').textContent = 'Step ' + (state.step + 1) + ' of ' + DATA.steps.length;
+    $('bar').style.width = ((state.step + 1) / DATA.steps.length * 100) + '%';
+    $('back').disabled = state.step <= 0;
+    $('next').disabled = state.step === last;
+    $('play').textContent = state.playing ? 'Pause' : (state.step === last ? 'Replay' : 'Play');
+  }
+
+  function renderGroup() {
+    var g = DATA.groups[state.group];
+    Array.prototype.forEach.call($('groups').children, function (b, i) { b.setAttribute('aria-pressed', String(i === state.group)); });
+    DATA.tables.forEach(function (t) {
+      var used = g.tables.indexOf(t.id) !== -1;
+      cards[t.id].classList.toggle('used', used);
+      cards[t.id].classList.toggle('unused', !used);
+    });
+    $('g-kicker').textContent = 'Reads ' + g.reads;
+    $('g-name').textContent = g.name;
+    $('g-decide').textContent = g.decide;
+    $('g-hurt').textContent = g.hurt;
+    $('g-examples').textContent = '';
+    g.examples.forEach(function (text) { $('g-examples').appendChild(el('li', null, text)); });
+  }
+
+  function go(index) { state.step = index; render(); schedule(); }
+  function move(delta) {
+    var at = state.step + delta;
+    if (at < 0 || at >= DATA.steps.length) return false;
+    go(at);
+    return true;
+  }
+  function schedule() {
+    clearTimeout(timer);
+    if (!state.playing) return;
+    timer = setTimeout(function () { if (!move(1)) { state.playing = false; render(); } }, STEP_MS);
+  }
+  function pause() { state.playing = false; clearTimeout(timer); }
+
+  $('back').addEventListener('click', function () { pause(); move(-1); render(); });
+  $('next').addEventListener('click', function () { pause(); move(1); render(); });
+  $('restart').addEventListener('click', function () { pause(); go(0); });
+  $('play').addEventListener('click', function () {
+    if (state.playing) { pause(); render(); return; }
+    state.playing = true;
+    if (state.step === DATA.steps.length - 1) go(0); else { render(); schedule(); }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'ArrowRight') { pause(); move(1); render(); }
+    if (e.key === 'ArrowLeft') { pause(); move(-1); render(); }
+  });
+
+  // A link can open one moment: lotus_retails.html#step=8&group=finance
+  location.hash.slice(1).split('&').forEach(function (part) {
+    var pair = part.split('=');
+    if (pair[0] === 'step' && DATA.steps[pair[1] - 1]) state.step = pair[1] - 1;
+    if (pair[0] === 'group') DATA.groups.forEach(function (g, i) { if (g.id === pair[1]) state.group = i; });
+  });
+  render();
+  renderGroup();
+})();
+</script>
+</body>
+</html>

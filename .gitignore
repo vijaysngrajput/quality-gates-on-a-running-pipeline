@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Secrets and local configuration
+.env
+.env.*
+
+# Editors and operating systems
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Warehouses built by running the pipeline
+*.duckdb
+*.duckdb.wal
+src/*/data/warehouse/
+
+# A learner's own lab results (the answer key is kept)
+src/*/notebooks/results/*
+!src/*/notebooks/results/answer_key*.json
+
+# Files the stores "sent", and anything else made by running the project
+data/
+src/*/data/

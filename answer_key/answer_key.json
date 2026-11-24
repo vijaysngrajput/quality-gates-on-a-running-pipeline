@@ -1,0 +1,1671 @@
+{
+ "daily_store_sales": [
+  {
+   "sales_date": "2026-07-27",
+   "store_id": "S01",
+   "receipts": 37,
+   "lines": 133,
+   "net_sales_cents": 91664
+  },
+  {
+   "sales_date": "2026-07-27",
+   "store_id": "S02",
+   "receipts": 36,
+   "lines": 122,
+   "net_sales_cents": 84067
+  },
+  {
+   "sales_date": "2026-07-27",
+   "store_id": "S03",
+   "receipts": 32,
+   "lines": 113,
+   "net_sales_cents": 80858
+  },
+  {
+   "sales_date": "2026-07-27",
+   "store_id": "S04",
+   "receipts": 32,
+   "lines": 124,
+   "net_sales_cents": 85998
+  },
+  {
+   "sales_date": "2026-07-27",
+   "store_id": "S05",
+   "receipts": 21,
+   "lines": 68,
+   "net_sales_cents": 48981
+  },
+  {
+   "sales_date": "2026-07-27",
+   "store_id": "S06",
+   "receipts": 28,
+   "lines": 101,
+   "net_sales_cents": 64171
+  },
+  {
+   "sales_date": "2026-07-28",
+   "store_id": "S01",
+   "receipts": 42,
+   "lines": 137,
+   "net_sales_cents": 98551
+  },
+  {
+   "sales_date": "2026-07-28",
+   "store_id": "S02",
+   "receipts": 37,
+   "lines": 121,
+   "net_sales_cents": 73643
+  },
+  {
+   "sales_date": "2026-07-28",
+   "store_id": "S03",
+   "receipts": 32,
+   "lines": 99,
+   "net_sales_cents": 61825
+  },
+  {
+   "sales_date": "2026-07-28",
+   "store_id": "S04",
+   "receipts": 30,
+   "lines": 107,
+   "net_sales_cents": 62171
+  },
+  {
+   "sales_date": "2026-07-28",
+   "store_id": "S05",
+   "receipts": 25,
+   "lines": 90,
+   "net_sales_cents": 58174
+  },
+  {
+   "sales_date": "2026-07-28",
+   "store_id": "S06",
+   "receipts": 27,
+   "lines": 97,
+   "net_sales_cents": 66104
+  },
+  {
+   "sales_date": "2026-07-29",
+   "store_id": "S01",
+   "receipts": 38,
+   "lines": 139,
+   "net_sales_cents": 93229
+  },
+  {
+   "sales_date": "2026-07-29",
+   "store_id": "S02",
+   "receipts": 36,
+   "lines": 134,
+   "net_sales_cents": 96293
+  },
+  {
+   "sales_date": "2026-07-29",
+   "store_id": "S03",
+   "receipts": 33,
+   "lines": 108,
+   "net_sales_cents": 86375
+  },
+  {
+   "sales_date": "2026-07-29",
+   "store_id": "S04",
+   "receipts": 30,
+   "lines": 100,
+   "net_sales_cents": 67083
+  },
+  {
+   "sales_date": "2026-07-29",
+   "store_id": "S05",
+   "receipts": 25,
+   "lines": 73,
+   "net_sales_cents": 51195
+  },
+  {
+   "sales_date": "2026-07-29",
+   "store_id": "S06",
+   "receipts": 30,
+   "lines": 92,
+   "net_sales_cents": 60887
+  },
+  {
+   "sales_date": "2026-07-30",
+   "store_id": "S01",
+   "receipts": 47,
+   "lines": 171,
+   "net_sales_cents": 110256
+  },
+  {
+   "sales_date": "2026-07-30",
+   "store_id": "S02",
+   "receipts": 39,
+   "lines": 138,
+   "net_sales_cents": 87464
+  },
+  {
+   "sales_date": "2026-07-30",
+   "store_id": "S03",
+   "receipts": 31,
+   "lines": 95,
+   "net_sales_cents": 66574
+  },
+  {
+   "sales_date": "2026-07-30",
+   "store_id": "S04",
+   "receipts": 35,
+   "lines": 121,
+   "net_sales_cents": 77973
+  },
+  {
+   "sales_date": "2026-07-30",
+   "store_id": "S05",
+   "receipts": 25,
+   "lines": 78,
+   "net_sales_cents": 44032
+  },
+  {
+   "sales_date": "2026-07-30",
+   "store_id": "S06",
+   "receipts": 29,
+   "lines": 78,
+   "net_sales_cents": 47802
+  },
+  {
+   "sales_date": "2026-07-31",
+   "store_id": "S01",
+   "receipts": 51,
+   "lines": 187,
+   "net_sales_cents": 119471
+  },
+  {
+   "sales_date": "2026-07-31",
+   "store_id": "S02",
+   "receipts": 47,
+   "lines": 159,
+   "net_sales_cents": 102471
+  },
+  {
+   "sales_date": "2026-07-31",
+   "store_id": "S03",
+   "receipts": 37,
+   "lines": 123,
+   "net_sales_cents": 80446
+  },
+  {
+   "sales_date": "2026-07-31",
+   "store_id": "S04",
+   "receipts": 38,
+   "lines": 127,
+   "net_sales_cents": 74846
+  },
+  {
+   "sales_date": "2026-07-31",
+   "store_id": "S05",
+   "receipts": 32,
+   "lines": 103,
+   "net_sales_cents": 75582
+  },
+  {
+   "sales_date": "2026-07-31",
+   "store_id": "S06",
+   "receipts": 32,
+   "lines": 104,
+   "net_sales_cents": 67668
+  },
+  {
+   "sales_date": "2026-08-01",
+   "store_id": "S01",
+   "receipts": 61,
+   "lines": 196,
+   "net_sales_cents": 129810
+  },
+  {
+   "sales_date": "2026-08-01",
+   "store_id": "S02",
+   "receipts": 45,
+   "lines": 145,
+   "net_sales_cents": 95615
+  },
+  {
+   "sales_date": "2026-08-01",
+   "store_id": "S03",
+   "receipts": 40,
+   "lines": 129,
+   "net_sales_cents": 82330
+  },
+  {
+   "sales_date": "2026-08-01",
+   "store_id": "S04",
+   "receipts": 46,
+   "lines": 163,
+   "net_sales_cents": 111120
+  },
+  {
+   "sales_date": "2026-08-01",
+   "store_id": "S05",
+   "receipts": 34,
+   "lines": 110,
+   "net_sales_cents": 76355
+  },
+  {
+   "sales_date": "2026-08-01",
+   "store_id": "S06",
+   "receipts": 39,
+   "lines": 142,
+   "net_sales_cents": 106271
+  },
+  {
+   "sales_date": "2026-08-02",
+   "store_id": "S01",
+   "receipts": 49,
+   "lines": 175,
+   "net_sales_cents": 111318
+  },
+  {
+   "sales_date": "2026-08-02",
+   "store_id": "S02",
+   "receipts": 36,
+   "lines": 138,
+   "net_sales_cents": 87310
+  },
+  {
+   "sales_date": "2026-08-02",
+   "store_id": "S03",
+   "receipts": 35,
+   "lines": 122,
+   "net_sales_cents": 88037
+  },
+  {
+   "sales_date": "2026-08-02",
+   "store_id": "S04",
+   "receipts": 39,
+   "lines": 130,
+   "net_sales_cents": 88742
+  },
+  {
+   "sales_date": "2026-08-02",
+   "store_id": "S05",
+   "receipts": 27,
+   "lines": 90,
+   "net_sales_cents": 61258
+  },
+  {
+   "sales_date": "2026-08-02",
+   "store_id": "S06",
+   "receipts": 33,
+   "lines": 106,
+   "net_sales_cents": 67870
+  },
+  {
+   "sales_date": "2026-08-03",
+   "store_id": "S01",
+   "receipts": 40,
+   "lines": 121,
+   "net_sales_cents": 76695
+  },
+  {
+   "sales_date": "2026-08-03",
+   "store_id": "S02",
+   "receipts": 33,
+   "lines": 108,
+   "net_sales_cents": 71134
+  },
+  {
+   "sales_date": "2026-08-03",
+   "store_id": "S03",
+   "receipts": 29,
+   "lines": 102,
+   "net_sales_cents": 71074
+  },
+  {
+   "sales_date": "2026-08-03",
+   "store_id": "S04",
+   "receipts": 30,
+   "lines": 86,
+   "net_sales_cents": 50823
+  },
+  {
+   "sales_date": "2026-08-03",
+   "store_id": "S05",
+   "receipts": 26,
+   "lines": 80,
+   "net_sales_cents": 45351
+  },
+  {
+   "sales_date": "2026-08-03",
+   "store_id": "S06",
+   "receipts": 26,
+   "lines": 90,
+   "net_sales_cents": 64337
+  },
+  {
+   "sales_date": "2026-08-04",
+   "store_id": "S01",
+   "receipts": 39,
+   "lines": 142,
+   "net_sales_cents": 88840
+  },
+  {
+   "sales_date": "2026-08-04",
+   "store_id": "S02",
+   "receipts": 31,
+   "lines": 103,
+   "net_sales_cents": 58042
+  },
+  {
+   "sales_date": "2026-08-04",
+   "store_id": "S03",
+   "receipts": 32,
+   "lines": 88,
+   "net_sales_cents": 53555
+  },
+  {
+   "sales_date": "2026-08-04",
+   "store_id": "S04",
+   "receipts": 30,
+   "lines": 94,
+   "net_sales_cents": 53881
+  },
+  {
+   "sales_date": "2026-08-04",
+   "store_id": "S05",
+   "receipts": 26,
+   "lines": 75,
+   "net_sales_cents": 44735
+  },
+  {
+   "sales_date": "2026-08-04",
+   "store_id": "S06",
+   "receipts": 28,
+   "lines": 87,
+   "net_sales_cents": 54651
+  },
+  {
+   "sales_date": "2026-08-05",
+   "store_id": "S01",
+   "receipts": 39,
+   "lines": 142,
+   "net_sales_cents": 84746
+  },
+  {
+   "sales_date": "2026-08-05",
+   "store_id": "S02",
+   "receipts": 39,
+   "lines": 138,
+   "net_sales_cents": 100776
+  },
+  {
+   "sales_date": "2026-08-05",
+   "store_id": "S03",
+   "receipts": 31,
+   "lines": 106,
+   "net_sales_cents": 76222
+  },
+  {
+   "sales_date": "2026-08-05",
+   "store_id": "S04",
+   "receipts": 31,
+   "lines": 99,
+   "net_sales_cents": 66633
+  },
+  {
+   "sales_date": "2026-08-05",
+   "store_id": "S05",
+   "receipts": 24,
+   "lines": 82,
+   "net_sales_cents": 58804
+  },
+  {
+   "sales_date": "2026-08-05",
+   "store_id": "S06",
+   "receipts": 27,
+   "lines": 92,
+   "net_sales_cents": 56744
+  },
+  {
+   "sales_date": "2026-08-06",
+   "store_id": "S01",
+   "receipts": 46,
+   "lines": 159,
+   "net_sales_cents": 109587
+  },
+  {
+   "sales_date": "2026-08-06",
+   "store_id": "S02",
+   "receipts": 41,
+   "lines": 120,
+   "net_sales_cents": 67706
+  },
+  {
+   "sales_date": "2026-08-06",
+   "store_id": "S03",
+   "receipts": 32,
+   "lines": 99,
+   "net_sales_cents": 71983
+  },
+  {
+   "sales_date": "2026-08-06",
+   "store_id": "S04",
+   "receipts": 32,
+   "lines": 122,
+   "net_sales_cents": 75664
+  },
+  {
+   "sales_date": "2026-08-06",
+   "store_id": "S05",
+   "receipts": 25,
+   "lines": 88,
+   "net_sales_cents": 56427
+  },
+  {
+   "sales_date": "2026-08-06",
+   "store_id": "S06",
+   "receipts": 32,
+   "lines": 102,
+   "net_sales_cents": 73295
+  },
+  {
+   "sales_date": "2026-08-07",
+   "store_id": "S01",
+   "receipts": 50,
+   "lines": 165,
+   "net_sales_cents": 106351
+  },
+  {
+   "sales_date": "2026-08-07",
+   "store_id": "S02",
+   "receipts": 46,
+   "lines": 165,
+   "net_sales_cents": 113649
+  },
+  {
+   "sales_date": "2026-08-07",
+   "store_id": "S03",
+   "receipts": 41,
+   "lines": 130,
+   "net_sales_cents": 84316
+  },
+  {
+   "sales_date": "2026-08-07",
+   "store_id": "S04",
+   "receipts": 36,
+   "lines": 138,
+   "net_sales_cents": 94338
+  },
+  {
+   "sales_date": "2026-08-07",
+   "store_id": "S05",
+   "receipts": 28,
+   "lines": 106,
+   "net_sales_cents": 75933
+  },
+  {
+   "sales_date": "2026-08-07",
+   "store_id": "S06",
+   "receipts": 38,
+   "lines": 134,
+   "net_sales_cents": 84058
+  },
+  {
+   "sales_date": "2026-08-08",
+   "store_id": "S01",
+   "receipts": 60,
+   "lines": 213,
+   "net_sales_cents": 140508
+  },
+  {
+   "sales_date": "2026-08-08",
+   "store_id": "S02",
+   "receipts": 47,
+   "lines": 169,
+   "net_sales_cents": 105550
+  },
+  {
+   "sales_date": "2026-08-08",
+   "store_id": "S03",
+   "receipts": 43,
+   "lines": 138,
+   "net_sales_cents": 89537
+  },
+  {
+   "sales_date": "2026-08-08",
+   "store_id": "S04",
+   "receipts": 46,
+   "lines": 165,
+   "net_sales_cents": 103653
+  },
+  {
+   "sales_date": "2026-08-08",
+   "store_id": "S05",
+   "receipts": 32,
+   "lines": 127,
+   "net_sales_cents": 80971
+  },
+  {
+   "sales_date": "2026-08-08",
+   "store_id": "S06",
+   "receipts": 41,
+   "lines": 126,
+   "net_sales_cents": 86323
+  },
+  {
+   "sales_date": "2026-08-09",
+   "store_id": "S01",
+   "receipts": 48,
+   "lines": 158,
+   "net_sales_cents": 106164
+  },
+  {
+   "sales_date": "2026-08-09",
+   "store_id": "S02",
+   "receipts": 39,
+   "lines": 116,
+   "net_sales_cents": 78260
+  },
+  {
+   "sales_date": "2026-08-09",
+   "store_id": "S03",
+   "receipts": 35,
+   "lines": 120,
+   "net_sales_cents": 82094
+  },
+  {
+   "sales_date": "2026-08-09",
+   "store_id": "S04",
+   "receipts": 35,
+   "lines": 118,
+   "net_sales_cents": 65674
+  },
+  {
+   "sales_date": "2026-08-09",
+   "store_id": "S05",
+   "receipts": 29,
+   "lines": 97,
+   "net_sales_cents": 69903
+  },
+  {
+   "sales_date": "2026-08-09",
+   "store_id": "S06",
+   "receipts": 32,
+   "lines": 117,
+   "net_sales_cents": 76276
+  },
+  {
+   "sales_date": "2026-08-10",
+   "store_id": "S01",
+   "receipts": 38,
+   "lines": 125,
+   "net_sales_cents": 74773
+  },
+  {
+   "sales_date": "2026-08-10",
+   "store_id": "S02",
+   "receipts": 36,
+   "lines": 117,
+   "net_sales_cents": 69440
+  },
+  {
+   "sales_date": "2026-08-10",
+   "store_id": "S03",
+   "receipts": 30,
+   "lines": 108,
+   "net_sales_cents": 70284
+  },
+  {
+   "sales_date": "2026-08-10",
+   "store_id": "S04",
+   "receipts": 28,
+   "lines": 91,
+   "net_sales_cents": 58142
+  },
+  {
+   "sales_date": "2026-08-10",
+   "store_id": "S05",
+   "receipts": 22,
+   "lines": 80,
+   "net_sales_cents": 63805
+  },
+  {
+   "sales_date": "2026-08-10",
+   "store_id": "S06",
+   "receipts": 30,
+   "lines": 108,
+   "net_sales_cents": 77482
+  },
+  {
+   "sales_date": "2026-08-11",
+   "store_id": "S01",
+   "receipts": 40,
+   "lines": 141,
+   "net_sales_cents": 89307
+  },
+  {
+   "sales_date": "2026-08-11",
+   "store_id": "S02",
+   "receipts": 35,
+   "lines": 116,
+   "net_sales_cents": 73631
+  },
+  {
+   "sales_date": "2026-08-11",
+   "store_id": "S03",
+   "receipts": 31,
+   "lines": 101,
+   "net_sales_cents": 59975
+  },
+  {
+   "sales_date": "2026-08-11",
+   "store_id": "S04",
+   "receipts": 30,
+   "lines": 76,
+   "net_sales_cents": 52664
+  },
+  {
+   "sales_date": "2026-08-11",
+   "store_id": "S05",
+   "receipts": 23,
+   "lines": 72,
+   "net_sales_cents": 44954
+  },
+  {
+   "sales_date": "2026-08-11",
+   "store_id": "S06",
+   "receipts": 25,
+   "lines": 79,
+   "net_sales_cents": 48365
+  },
+  {
+   "sales_date": "2026-08-12",
+   "store_id": "S01",
+   "receipts": 45,
+   "lines": 148,
+   "net_sales_cents": 92406
+  },
+  {
+   "sales_date": "2026-08-12",
+   "store_id": "S02",
+   "receipts": 32,
+   "lines": 109,
+   "net_sales_cents": 61823
+  },
+  {
+   "sales_date": "2026-08-12",
+   "store_id": "S03",
+   "receipts": 32,
+   "lines": 113,
+   "net_sales_cents": 79265
+  },
+  {
+   "sales_date": "2026-08-12",
+   "store_id": "S04",
+   "receipts": 34,
+   "lines": 119,
+   "net_sales_cents": 74958
+  },
+  {
+   "sales_date": "2026-08-12",
+   "store_id": "S05",
+   "receipts": 26,
+   "lines": 83,
+   "net_sales_cents": 52605
+  },
+  {
+   "sales_date": "2026-08-12",
+   "store_id": "S06",
+   "receipts": 30,
+   "lines": 92,
+   "net_sales_cents": 62988
+  },
+  {
+   "sales_date": "2026-08-13",
+   "store_id": "S01",
+   "receipts": 38,
+   "lines": 133,
+   "net_sales_cents": 77388
+  },
+  {
+   "sales_date": "2026-08-13",
+   "store_id": "S02",
+   "receipts": 41,
+   "lines": 116,
+   "net_sales_cents": 66923
+  },
+  {
+   "sales_date": "2026-08-13",
+   "store_id": "S03",
+   "receipts": 32,
+   "lines": 105,
+   "net_sales_cents": 70668
+  },
+  {
+   "sales_date": "2026-08-13",
+   "store_id": "S04",
+   "receipts": 31,
+   "lines": 93,
+   "net_sales_cents": 55711
+  },
+  {
+   "sales_date": "2026-08-13",
+   "store_id": "S05",
+   "receipts": 28,
+   "lines": 82,
+   "net_sales_cents": 64767
+  },
+  {
+   "sales_date": "2026-08-13",
+   "store_id": "S06",
+   "receipts": 28,
+   "lines": 90,
+   "net_sales_cents": 59051
+  },
+  {
+   "sales_date": "2026-08-14",
+   "store_id": "S01",
+   "receipts": 45,
+   "lines": 151,
+   "net_sales_cents": 103097
+  },
+  {
+   "sales_date": "2026-08-14",
+   "store_id": "S02",
+   "receipts": 43,
+   "lines": 141,
+   "net_sales_cents": 95154
+  },
+  {
+   "sales_date": "2026-08-14",
+   "store_id": "S03",
+   "receipts": 35,
+   "lines": 119,
+   "net_sales_cents": 81681
+  },
+  {
+   "sales_date": "2026-08-14",
+   "store_id": "S04",
+   "receipts": 36,
+   "lines": 110,
+   "net_sales_cents": 77312
+  },
+  {
+   "sales_date": "2026-08-14",
+   "store_id": "S05",
+   "receipts": 33,
+   "lines": 94,
+   "net_sales_cents": 61581
+  },
+  {
+   "sales_date": "2026-08-14",
+   "store_id": "S06",
+   "receipts": 37,
+   "lines": 121,
+   "net_sales_cents": 87742
+  },
+  {
+   "sales_date": "2026-08-15",
+   "store_id": "S01",
+   "receipts": 55,
+   "lines": 189,
+   "net_sales_cents": 112110
+  },
+  {
+   "sales_date": "2026-08-15",
+   "store_id": "S02",
+   "receipts": 49,
+   "lines": 186,
+   "net_sales_cents": 122040
+  },
+  {
+   "sales_date": "2026-08-15",
+   "store_id": "S03",
+   "receipts": 45,
+   "lines": 154,
+   "net_sales_cents": 101699
+  },
+  {
+   "sales_date": "2026-08-15",
+   "store_id": "S04",
+   "receipts": 47,
+   "lines": 161,
+   "net_sales_cents": 106394
+  },
+  {
+   "sales_date": "2026-08-15",
+   "store_id": "S05",
+   "receipts": 35,
+   "lines": 114,
+   "net_sales_cents": 83816
+  },
+  {
+   "sales_date": "2026-08-15",
+   "store_id": "S06",
+   "receipts": 38,
+   "lines": 124,
+   "net_sales_cents": 76699
+  },
+  {
+   "sales_date": "2026-08-16",
+   "store_id": "S01",
+   "receipts": 49,
+   "lines": 177,
+   "net_sales_cents": 135621
+  },
+  {
+   "sales_date": "2026-08-16",
+   "store_id": "S02",
+   "receipts": 37,
+   "lines": 110,
+   "net_sales_cents": 71394
+  },
+  {
+   "sales_date": "2026-08-16",
+   "store_id": "S03",
+   "receipts": 36,
+   "lines": 98,
+   "net_sales_cents": 67415
+  },
+  {
+   "sales_date": "2026-08-16",
+   "store_id": "S04",
+   "receipts": 35,
+   "lines": 141,
+   "net_sales_cents": 91093
+  },
+  {
+   "sales_date": "2026-08-16",
+   "store_id": "S05",
+   "receipts": 27,
+   "lines": 83,
+   "net_sales_cents": 51732
+  },
+  {
+   "sales_date": "2026-08-16",
+   "store_id": "S06",
+   "receipts": 33,
+   "lines": 109,
+   "net_sales_cents": 74797
+  },
+  {
+   "sales_date": "2026-08-17",
+   "store_id": "S01",
+   "receipts": 39,
+   "lines": 130,
+   "net_sales_cents": 77337
+  },
+  {
+   "sales_date": "2026-08-17",
+   "store_id": "S02",
+   "receipts": 32,
+   "lines": 99,
+   "net_sales_cents": 60176
+  },
+  {
+   "sales_date": "2026-08-17",
+   "store_id": "S03",
+   "receipts": 30,
+   "lines": 117,
+   "net_sales_cents": 80005
+  },
+  {
+   "sales_date": "2026-08-17",
+   "store_id": "S04",
+   "receipts": 33,
+   "lines": 112,
+   "net_sales_cents": 83972
+  },
+  {
+   "sales_date": "2026-08-17",
+   "store_id": "S05",
+   "receipts": 22,
+   "lines": 70,
+   "net_sales_cents": 42207
+  },
+  {
+   "sales_date": "2026-08-17",
+   "store_id": "S06",
+   "receipts": 30,
+   "lines": 81,
+   "net_sales_cents": 45254
+  },
+  {
+   "sales_date": "2026-08-18",
+   "store_id": "S01",
+   "receipts": 38,
+   "lines": 130,
+   "net_sales_cents": 82374
+  },
+  {
+   "sales_date": "2026-08-18",
+   "store_id": "S02",
+   "receipts": 37,
+   "lines": 119,
+   "net_sales_cents": 84394
+  },
+  {
+   "sales_date": "2026-08-18",
+   "store_id": "S03",
+   "receipts": 28,
+   "lines": 96,
+   "net_sales_cents": 72518
+  },
+  {
+   "sales_date": "2026-08-18",
+   "store_id": "S04",
+   "receipts": 31,
+   "lines": 107,
+   "net_sales_cents": 77926
+  },
+  {
+   "sales_date": "2026-08-18",
+   "store_id": "S05",
+   "receipts": 23,
+   "lines": 73,
+   "net_sales_cents": 52985
+  },
+  {
+   "sales_date": "2026-08-18",
+   "store_id": "S06",
+   "receipts": 27,
+   "lines": 76,
+   "net_sales_cents": 43251
+  },
+  {
+   "sales_date": "2026-08-19",
+   "store_id": "S01",
+   "receipts": 39,
+   "lines": 127,
+   "net_sales_cents": 91210
+  },
+  {
+   "sales_date": "2026-08-19",
+   "store_id": "S02",
+   "receipts": 35,
+   "lines": 118,
+   "net_sales_cents": 73883
+  },
+  {
+   "sales_date": "2026-08-19",
+   "store_id": "S03",
+   "receipts": 36,
+   "lines": 113,
+   "net_sales_cents": 74071
+  },
+  {
+   "sales_date": "2026-08-19",
+   "store_id": "S04",
+   "receipts": 31,
+   "lines": 105,
+   "net_sales_cents": 85416
+  },
+  {
+   "sales_date": "2026-08-19",
+   "store_id": "S05",
+   "receipts": 22,
+   "lines": 74,
+   "net_sales_cents": 44113
+  },
+  {
+   "sales_date": "2026-08-19",
+   "store_id": "S06",
+   "receipts": 29,
+   "lines": 90,
+   "net_sales_cents": 61251
+  },
+  {
+   "sales_date": "2026-08-20",
+   "store_id": "S01",
+   "receipts": 43,
+   "lines": 127,
+   "net_sales_cents": 84506
+  },
+  {
+   "sales_date": "2026-08-20",
+   "store_id": "S02",
+   "receipts": 41,
+   "lines": 125,
+   "net_sales_cents": 75916
+  },
+  {
+   "sales_date": "2026-08-20",
+   "store_id": "S03",
+   "receipts": 36,
+   "lines": 121,
+   "net_sales_cents": 71282
+  },
+  {
+   "sales_date": "2026-08-20",
+   "store_id": "S04",
+   "receipts": 33,
+   "lines": 101,
+   "net_sales_cents": 57571
+  },
+  {
+   "sales_date": "2026-08-20",
+   "store_id": "S05",
+   "receipts": 27,
+   "lines": 84,
+   "net_sales_cents": 57865
+  },
+  {
+   "sales_date": "2026-08-20",
+   "store_id": "S06",
+   "receipts": 34,
+   "lines": 118,
+   "net_sales_cents": 77859
+  },
+  {
+   "sales_date": "2026-08-21",
+   "store_id": "S01",
+   "receipts": 53,
+   "lines": 191,
+   "net_sales_cents": 125117
+  },
+  {
+   "sales_date": "2026-08-21",
+   "store_id": "S02",
+   "receipts": 42,
+   "lines": 126,
+   "net_sales_cents": 79312
+  },
+  {
+   "sales_date": "2026-08-21",
+   "store_id": "S03",
+   "receipts": 42,
+   "lines": 147,
+   "net_sales_cents": 100812
+  },
+  {
+   "sales_date": "2026-08-21",
+   "store_id": "S04",
+   "receipts": 38,
+   "lines": 134,
+   "net_sales_cents": 86118
+  },
+  {
+   "sales_date": "2026-08-21",
+   "store_id": "S05",
+   "receipts": 29,
+   "lines": 86,
+   "net_sales_cents": 53557
+  },
+  {
+   "sales_date": "2026-08-21",
+   "store_id": "S06",
+   "receipts": 34,
+   "lines": 104,
+   "net_sales_cents": 67807
+  },
+  {
+   "sales_date": "2026-08-22",
+   "store_id": "S01",
+   "receipts": 61,
+   "lines": 186,
+   "net_sales_cents": 128083
+  },
+  {
+   "sales_date": "2026-08-22",
+   "store_id": "S02",
+   "receipts": 50,
+   "lines": 153,
+   "net_sales_cents": 102803
+  },
+  {
+   "sales_date": "2026-08-22",
+   "store_id": "S03",
+   "receipts": 44,
+   "lines": 145,
+   "net_sales_cents": 96424
+  },
+  {
+   "sales_date": "2026-08-22",
+   "store_id": "S04",
+   "receipts": 43,
+   "lines": 162,
+   "net_sales_cents": 106869
+  },
+  {
+   "sales_date": "2026-08-22",
+   "store_id": "S05",
+   "receipts": 35,
+   "lines": 114,
+   "net_sales_cents": 72525
+  },
+  {
+   "sales_date": "2026-08-22",
+   "store_id": "S06",
+   "receipts": 39,
+   "lines": 140,
+   "net_sales_cents": 86501
+  },
+  {
+   "sales_date": "2026-08-23",
+   "store_id": "S01",
+   "receipts": 41,
+   "lines": 126,
+   "net_sales_cents": 85084
+  },
+  {
+   "sales_date": "2026-08-23",
+   "store_id": "S02",
+   "receipts": 40,
+   "lines": 121,
+   "net_sales_cents": 77162
+  },
+  {
+   "sales_date": "2026-08-23",
+   "store_id": "S03",
+   "receipts": 34,
+   "lines": 118,
+   "net_sales_cents": 73567
+  },
+  {
+   "sales_date": "2026-08-23",
+   "store_id": "S04",
+   "receipts": 37,
+   "lines": 111,
+   "net_sales_cents": 71653
+  },
+  {
+   "sales_date": "2026-08-23",
+   "store_id": "S05",
+   "receipts": 28,
+   "lines": 105,
+   "net_sales_cents": 72826
+  },
+  {
+   "sales_date": "2026-08-23",
+   "store_id": "S06",
+   "receipts": 35,
+   "lines": 96,
+   "net_sales_cents": 68121
+  },
+  {
+   "sales_date": "2026-08-24",
+   "store_id": "S01",
+   "receipts": 40,
+   "lines": 117,
+   "net_sales_cents": 79524
+  },
+  {
+   "sales_date": "2026-08-24",
+   "store_id": "S02",
+   "receipts": 36,
+   "lines": 125,
+   "net_sales_cents": 90128
+  },
+  {
+   "sales_date": "2026-08-24",
+   "store_id": "S03",
+   "receipts": 34,
+   "lines": 113,
+   "net_sales_cents": 77720
+  },
+  {
+   "sales_date": "2026-08-24",
+   "store_id": "S04",
+   "receipts": 31,
+   "lines": 89,
+   "net_sales_cents": 57977
+  },
+  {
+   "sales_date": "2026-08-24",
+   "store_id": "S05",
+   "receipts": 22,
+   "lines": 68,
+   "net_sales_cents": 47418
+  },
+  {
+   "sales_date": "2026-08-24",
+   "store_id": "S06",
+   "receipts": 29,
+   "lines": 98,
+   "net_sales_cents": 59519
+  },
+  {
+   "sales_date": "2026-08-25",
+   "store_id": "S01",
+   "receipts": 38,
+   "lines": 128,
+   "net_sales_cents": 81977
+  },
+  {
+   "sales_date": "2026-08-25",
+   "store_id": "S02",
+   "receipts": 35,
+   "lines": 119,
+   "net_sales_cents": 72811
+  },
+  {
+   "sales_date": "2026-08-25",
+   "store_id": "S03",
+   "receipts": 31,
+   "lines": 95,
+   "net_sales_cents": 69305
+  },
+  {
+   "sales_date": "2026-08-25",
+   "store_id": "S04",
+   "receipts": 33,
+   "lines": 110,
+   "net_sales_cents": 58742
+  },
+  {
+   "sales_date": "2026-08-25",
+   "store_id": "S05",
+   "receipts": 24,
+   "lines": 61,
+   "net_sales_cents": 44683
+  },
+  {
+   "sales_date": "2026-08-25",
+   "store_id": "S06",
+   "receipts": 26,
+   "lines": 84,
+   "net_sales_cents": 56001
+  },
+  {
+   "sales_date": "2026-08-26",
+   "store_id": "S01",
+   "receipts": 15,
+   "lines": 52,
+   "net_sales_cents": 33259
+  },
+  {
+   "sales_date": "2026-08-26",
+   "store_id": "S02",
+   "receipts": 14,
+   "lines": 36,
+   "net_sales_cents": 27398
+  },
+  {
+   "sales_date": "2026-08-26",
+   "store_id": "S03",
+   "receipts": 15,
+   "lines": 42,
+   "net_sales_cents": 27455
+  },
+  {
+   "sales_date": "2026-08-26",
+   "store_id": "S04",
+   "receipts": 14,
+   "lines": 41,
+   "net_sales_cents": 29508
+  },
+  {
+   "sales_date": "2026-08-26",
+   "store_id": "S05",
+   "receipts": 9,
+   "lines": 30,
+   "net_sales_cents": 18176
+  },
+  {
+   "sales_date": "2026-08-26",
+   "store_id": "S06",
+   "receipts": 13,
+   "lines": 32,
+   "net_sales_cents": 21184
+  },
+  {
+   "sales_date": "2026-08-27",
+   "store_id": "S02",
+   "receipts": 35,
+   "lines": 110,
+   "net_sales_cents": 68233
+  },
+  {
+   "sales_date": "2026-08-27",
+   "store_id": "S03",
+   "receipts": 37,
+   "lines": 121,
+   "net_sales_cents": 86350
+  },
+  {
+   "sales_date": "2026-08-27",
+   "store_id": "S04",
+   "receipts": 32,
+   "lines": 124,
+   "net_sales_cents": 81836
+  },
+  {
+   "sales_date": "2026-08-27",
+   "store_id": "S05",
+   "receipts": 29,
+   "lines": 84,
+   "net_sales_cents": 58084
+  },
+  {
+   "sales_date": "2026-08-27",
+   "store_id": "S06",
+   "receipts": 33,
+   "lines": 108,
+   "net_sales_cents": 61644
+  },
+  {
+   "sales_date": "2026-08-28",
+   "store_id": "S01",
+   "receipts": 48,
+   "lines": 153,
+   "net_sales_cents": 98900
+  },
+  {
+   "sales_date": "2026-08-28",
+   "store_id": "S02",
+   "receipts": 47,
+   "lines": 167,
+   "net_sales_cents": 103428
+  },
+  {
+   "sales_date": "2026-08-28",
+   "store_id": "S03",
+   "receipts": 35,
+   "lines": 118,
+   "net_sales_cents": 77588
+  },
+  {
+   "sales_date": "2026-08-28",
+   "store_id": "S04",
+   "receipts": 46,
+   "lines": 135,
+   "net_sales_cents": 84460
+  },
+  {
+   "sales_date": "2026-08-28",
+   "store_id": "S05",
+   "receipts": 31,
+   "lines": 107,
+   "net_sales_cents": 69802
+  },
+  {
+   "sales_date": "2026-08-28",
+   "store_id": "S06",
+   "receipts": 34,
+   "lines": 124,
+   "net_sales_cents": 71913
+  },
+  {
+   "sales_date": "2026-08-29",
+   "store_id": "S01",
+   "receipts": 54,
+   "lines": 170,
+   "net_sales_cents": 110587
+  },
+  {
+   "sales_date": "2026-08-29",
+   "store_id": "S02",
+   "receipts": 52,
+   "lines": 179,
+   "net_sales_cents": 122335
+  },
+  {
+   "sales_date": "2026-08-29",
+   "store_id": "S03",
+   "receipts": 44,
+   "lines": 142,
+   "net_sales_cents": 87535
+  },
+  {
+   "sales_date": "2026-08-29",
+   "store_id": "S04",
+   "receipts": 49,
+   "lines": 172,
+   "net_sales_cents": 122636
+  },
+  {
+   "sales_date": "2026-08-29",
+   "store_id": "S05",
+   "receipts": 31,
+   "lines": 108,
+   "net_sales_cents": 61423
+  },
+  {
+   "sales_date": "2026-08-29",
+   "store_id": "S06",
+   "receipts": 46,
+   "lines": 144,
+   "net_sales_cents": 99623
+  },
+  {
+   "sales_date": "2026-08-30",
+   "store_id": "S01",
+   "receipts": 48,
+   "lines": 177,
+   "net_sales_cents": 111078
+  },
+  {
+   "sales_date": "2026-08-30",
+   "store_id": "S02",
+   "receipts": 43,
+   "lines": 153,
+   "net_sales_cents": 90530
+  },
+  {
+   "sales_date": "2026-08-30",
+   "store_id": "S03",
+   "receipts": 33,
+   "lines": 113,
+   "net_sales_cents": 82809
+  },
+  {
+   "sales_date": "2026-08-30",
+   "store_id": "S04",
+   "receipts": 35,
+   "lines": 123,
+   "net_sales_cents": 82140
+  },
+  {
+   "sales_date": "2026-08-30",
+   "store_id": "S05",
+   "receipts": 25,
+   "lines": 82,
+   "net_sales_cents": 59719
+  },
+  {
+   "sales_date": "2026-08-30",
+   "store_id": "S06",
+   "receipts": 30,
+   "lines": 100,
+   "net_sales_cents": 72005
+  }
+ ],
+ "planted_receipts": {
+  "c1_sale": {
+   "receipt_id": "S03-T2-004457",
+   "store_id": "S03",
+   "sold_at": "2026-08-22 16:30:00",
+   "total_cents": 1474
+  },
+  "c1_refund": {
+   "receipt_id": "S03-T1-004493",
+   "store_id": "S03",
+   "sold_at": "2026-08-24 11:05:00",
+   "total_cents": -949
+  },
+  "c2": {
+   "receipt_id": "S01-T2-004649",
+   "store_id": "S01",
+   "sold_at": "2026-08-25 14:12:00",
+   "total_cents": 1807
+  },
+  "c3": {
+   "receipt_id": "S05-T1-004447",
+   "store_id": "S05",
+   "sold_at": "2026-08-27 10:20:00",
+   "total_cents": 441
+  },
+  "c4_1": {
+   "receipt_id": "S04-T1-004536",
+   "store_id": "S04",
+   "sold_at": "2026-08-28 08:40:00",
+   "total_cents": 947
+  },
+  "c4_2": {
+   "receipt_id": "S04-T2-004557",
+   "store_id": "S04",
+   "sold_at": "2026-08-28 10:15:00",
+   "total_cents": 897
+  },
+  "c4_3": {
+   "receipt_id": "S04-T1-004542",
+   "store_id": "S04",
+   "sold_at": "2026-08-28 12:50:00",
+   "total_cents": 1217
+  },
+  "c4_4": {
+   "receipt_id": "S04-T2-004566",
+   "store_id": "S04",
+   "sold_at": "2026-08-28 15:05:00",
+   "total_cents": 1097
+  },
+  "c4_5": {
+   "receipt_id": "S04-T1-004547",
+   "store_id": "S04",
+   "sold_at": "2026-08-28 17:35:00",
+   "total_cents": 987
+  },
+  "c4_6": {
+   "receipt_id": "S04-T2-004575",
+   "store_id": "S04",
+   "sold_at": "2026-08-28 19:20:00",
+   "total_cents": 977
+  },
+  "c5": {
+   "receipt_id": "S02-T2-004632",
+   "store_id": "S02",
+   "sold_at": "2026-08-30 21:40:00",
+   "total_cents": 2395
+  },
+  "c6_1": {
+   "receipt_id": "S06-T1-004523",
+   "store_id": "S06",
+   "sold_at": "2026-08-29 10:15:00",
+   "total_cents": 848
+  },
+  "c6_2": {
+   "receipt_id": "S06-T2-004524",
+   "store_id": "S06",
+   "sold_at": "2026-08-29 13:40:00",
+   "total_cents": 828
+  },
+  "c6_3": {
+   "receipt_id": "S06-T1-004539",
+   "store_id": "S06",
+   "sold_at": "2026-08-29 18:05:00",
+   "total_cents": 977
+  },
+  "c12_1": {
+   "receipt_id": "S05-T1-004456",
+   "store_id": "S05",
+   "sold_at": "2026-08-28 09:10:00",
+   "total_cents": 1116
+  },
+  "c12_2": {
+   "receipt_id": "S05-T2-004398",
+   "store_id": "S05",
+   "sold_at": "2026-08-28 13:25:00",
+   "total_cents": 1386
+  },
+  "c12_3": {
+   "receipt_id": "S05-T1-004467",
+   "store_id": "S05",
+   "sold_at": "2026-08-28 17:45:00",
+   "total_cents": 1127
+  },
+  "big_sale": {
+   "receipt_id": "S02-T1-004679",
+   "store_id": "S02",
+   "sold_at": "2026-08-29 09:30:00",
+   "total_cents": 23600
+  }
+ },
+ "bonus_week": {
+  "week_start": "2026-08-24",
+  "week_end": "2026-08-30",
+  "stores": {
+   "S01": {
+    "store_name": "Lotus Ashby High Street",
+    "net_sales_cents": 515325,
+    "bonus_cents": 5153
+   },
+   "S02": {
+    "store_name": "Lotus Ashby Market Square",
+    "net_sales_cents": 574863,
+    "bonus_cents": 5749
+   },
+   "S03": {
+    "store_name": "Lotus Calder Bridge",
+    "net_sales_cents": 508762,
+    "bonus_cents": 5088
+   },
+   "S04": {
+    "store_name": "Lotus Calder Station",
+    "net_sales_cents": 517299,
+    "bonus_cents": 5173
+   },
+   "S05": {
+    "store_name": "Lotus Fenwick Green",
+    "net_sales_cents": 359305,
+    "bonus_cents": 3593
+   },
+   "S06": {
+    "store_name": "Lotus Fenwick Harbour",
+    "net_sales_cents": 441889,
+    "bonus_cents": 4419
+   }
+  },
+  "net_sales_cents_up_to": {
+   "2026-08-24": {
+    "S01": 79524,
+    "S02": 90128,
+    "S03": 77720,
+    "S04": 57977,
+    "S05": 47418,
+    "S06": 59519
+   },
+   "2026-08-25": {
+    "S01": 161501,
+    "S02": 162939,
+    "S03": 147025,
+    "S04": 116719,
+    "S05": 92101,
+    "S06": 115520
+   },
+   "2026-08-26": {
+    "S01": 194760,
+    "S02": 190337,
+    "S03": 174480,
+    "S04": 146227,
+    "S05": 110277,
+    "S06": 136704
+   },
+   "2026-08-27": {
+    "S01": 194760,
+    "S02": 258570,
+    "S03": 260830,
+    "S04": 228063,
+    "S05": 168361,
+    "S06": 198348
+   },
+   "2026-08-28": {
+    "S01": 293660,
+    "S02": 361998,
+    "S03": 338418,
+    "S04": 312523,
+    "S05": 238163,
+    "S06": 270261
+   },
+   "2026-08-29": {
+    "S01": 404247,
+    "S02": 484333,
+    "S03": 425953,
+    "S04": 435159,
+    "S05": 299586,
+    "S06": 369884
+   },
+   "2026-08-30": {
+    "S01": 515325,
+    "S02": 574863,
+    "S03": 508762,
+    "S04": 517299,
+    "S05": 359305,
+    "S06": 441889
+   }
+  }
+ }
+}

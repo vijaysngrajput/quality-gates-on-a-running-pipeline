@@ -1,0 +1,59 @@
+# Everything in this project that runs in Docker.
+#
+#   docker compose up -d --build     start the warehouse and Airflow (the first time builds an image)
+#   docker compose up -d warehouse   start the warehouse only
+#   docker compose ps                what is running
+#   docker compose down              stop everything (the data is kept)
+#   docker compose down -v           stop everything and delete the data
+#
+# The warehouse listens on port 5450 of your computer, so it does not clash with a Postgres
+# you already run. Airflow's page is at http://localhost:8080 . No password is needed.
+# Is port 8080 taken? Start with another one:  LOTUS_AIRFLOW_PORT=8081 docker compose up -d
+
+services:
+  # The warehouse: Postgres. Each milestone gets its own database inside it.
+  warehouse:
+    image: postgres:16
+    container_name: lotus-warehouse
+    environment:
+      POSTGRES_USER: lotus
+      POSTGRES_PASSWORD: lotus
+      POSTGRES_DB: lotus
+    ports:
+      - "${LOTUS_PG_PORT:-5450}:5432"
+    volumes:
+      - lotus_warehouse:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lotus -d lotus"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  # Airflow: scheduler, DAG processor and web page in one container. For learning only.
+  airflow:
+    image: lotus-airflow:3.4.0
+    container_name: lotus-airflow
+    build:
+      context: docker/airflow
+    command: standalone
+    environment:
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/lotus/src           # every milestone's dags/ folder
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "true"   # no login on your own laptop
+      LOTUS_WAREHOUSE: postgres
+      LOTUS_PG_HOST: warehouse
+      LOTUS_PG_PORT: "5432"
+      LOTUS_LANDING: /var/lotus/landing                     # where the stores' files arrive
+      PYTHONDONTWRITEBYTECODE: "1"
+    volumes:
+      - .:/opt/lotus                      # this project, so Airflow runs the code you read
+      - lotus_landing:/var/lotus/landing
+    ports:
+      - "${LOTUS_AIRFLOW_PORT:-8080}:8080"
+    depends_on:
+      warehouse:
+        condition: service_healthy
+
+volumes:
+  lotus_warehouse:
+  lotus_landing:

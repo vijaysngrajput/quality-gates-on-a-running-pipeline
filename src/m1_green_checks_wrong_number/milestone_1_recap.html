@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Milestone 1 recap: Green checks, wrong number</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f4ef; --surface: #fffdf9; --ink: #1d2327; --muted: #5c6670; --line: #d9d4c8;
+    --accent: #0f6b5c; --accent-ink: #ffffff; --accent-soft: #dcefe9;
+    --neg: #a23b2a; --neg-soft: #f6e1dc; --pos: #1f6f43; --pos-soft: #dff0e5;
+    --warn: #8a5a00; --warn-soft: #f7ebcf; --tag-bg: #ecebe4;
+    --shadow: 0 1px 2px rgba(29, 35, 39, .06), 0 6px 18px rgba(29, 35, 39, .06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --bg: #14181a; --surface: #1c2226; --ink: #e8e6e1; --muted: #9aa4ab; --line: #2e373c;
+      --accent: #5fc5b0; --accent-ink: #0d1f1c; --accent-soft: #1d3a35;
+      --neg: #e58a78; --neg-soft: #3a2420; --pos: #7fd0a0; --pos-soft: #1d3527;
+      --warn: #e2b85c; --warn-soft: #3a3019; --tag-bg: #262e33;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 18px rgba(0, 0, 0, .25);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15.5px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .page { max-width: 980px; margin: 0 auto; padding: 36px 24px 64px; }
+  .eyebrow { margin: 0 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0 0 8px; font: 600 38px/1.12 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; text-wrap: balance; }
+  h2 { margin: 0 0 6px; font: 600 26px/1.2 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; text-wrap: balance; }
+  h3 { margin: 0 0 4px; font-size: 16px; }
+  p { margin: 0 0 12px; }
+  .lede { max-width: 62ch; color: var(--muted); font-size: 17px; }
+  .num { font-variant-numeric: tabular-nums; }
+  a { color: var(--accent); }
+  code { font: 13.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+  /* Jump links */
+  .nav { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 6px; margin: 22px -8px 0; padding: 10px 8px; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .nav a { padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font-size: 13.5px; font-weight: 500; text-decoration: none; }
+  .nav a:hover, .nav a.on { border-color: var(--accent); }
+  .nav a.on { background: var(--accent); color: var(--accent-ink); }
+  a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  section { padding: 44px 0 6px; scroll-margin-top: 56px; }
+  .kicker { margin: 0 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+  /* Things slide up as they come into view. They are never hidden, so the page reads without JavaScript. */
+  .js .rise { opacity: .25; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+  .js .rise.in { opacity: 1; transform: none; }
+
+  .tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
+  .tile { padding: 14px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; text-align: center; }
+  .tile b { display: block; font: 600 30px/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-variant-numeric: tabular-nums; }
+  .tile span { color: var(--muted); font-size: 13px; line-height: 1.3; display: block; }
+  .tile.bad b { color: var(--neg); }
+
+  blockquote { margin: 14px 0 18px; padding: 14px 18px; border-left: 4px solid var(--accent); background: var(--surface); border-radius: 0 12px 12px 0; font: 500 18px/1.45 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+  .card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  .card .a { display: block; margin: 4px 0 2px; font-size: 23px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .card small { color: var(--muted); }
+
+  /* The bonus report, as a table */
+  .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 8px 14px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  tr:last-child td { border-bottom: 0; }
+  td.r, th.r { text-align: right; }
+  tr.bad td { background: var(--neg-soft); }
+  tr.bad td.flag { color: var(--neg); font-weight: 600; }
+  .green { color: var(--pos); font-weight: 600; }
+
+  /* The pipeline, drawn small */
+  .pipe { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px; margin: 16px 0 12px; }
+  .box { position: relative; padding: 12px; background: var(--surface); border: 2px solid var(--line); border-radius: 12px; transition: border-color .4s, box-shadow .4s; }
+  .box + .box::before { content: "\2192"; position: absolute; left: -17px; top: 16px; color: var(--muted); }
+  .box.lit { border-color: var(--accent); box-shadow: var(--shadow); }
+  .box .role { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .box b { display: block; line-height: 1.25; }
+  .box > span:not(.role) { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; }
+  .box .n { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .btn { padding: 7px 14px; font: inherit; font-weight: 500; color: var(--bg); background: var(--ink); border: 1px solid var(--ink); border-radius: 8px; cursor: pointer; }
+  .hand { margin-top: 10px; padding: 9px 12px; border: 2px dashed var(--line); border-radius: 12px; color: var(--muted); font-size: 13.5px; }
+  .tasks { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 4px; margin: 0 0 12px; font-size: 13.5px; color: var(--muted); }
+  .tasks code { padding: 2px 10px; border: 2px solid var(--pos); border-radius: 999px; background: var(--pos-soft); color: var(--ink); font-weight: 600; font-size: 12.5px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  ul.plain { margin: 6px 0 0; padding-left: 18px; }
+
+  .versus { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .versus .bad { border-color: var(--neg); background: var(--neg-soft); }
+  .versus .good { border-color: var(--pos); background: var(--pos-soft); }
+  .versus .bad h3 { color: var(--neg); }
+  .versus .good h3 { color: var(--pos); }
+  .line {
+    margin: 12px 0 0; padding: 10px 14px; overflow-x: auto; background: var(--surface); border: 1px solid var(--neg); border-radius: 10px;
+    font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  ol.learned { margin: 12px 0 0; padding: 0; list-style: none; counter-reset: n; display: grid; gap: 10px; }
+  ol.learned li { counter-increment: n; position: relative; padding: 12px 16px 12px 56px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  ol.learned li::before { content: counter(n); position: absolute; left: 14px; top: 12px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  ol.learned b { display: block; }
+  ol.learned span { color: var(--muted); }
+
+  .words { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+  .word { padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  .word b { color: var(--accent); }
+  .word span { display: block; font-size: 14px; }
+
+  /* The week: what the report says against the answer key */
+  .chart { display: grid; gap: 8px; margin: 16px 0 6px; padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  .chart-row { display: grid; grid-template-columns: 44px minmax(0, 1fr) 190px; gap: 12px; align-items: center; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .track { position: relative; height: 22px; border-radius: 6px; background: var(--tag-bg); }
+  .track i { display: block; height: 100%; width: 0; border-radius: 6px; background: var(--neg); transition: width 1s ease; }
+  .chart-row .what { color: var(--neg); font-weight: 600; }
+  .limit { position: absolute; top: -5px; bottom: -5px; width: 3px; border-radius: 2px; background: var(--ink); }
+  .chart .legend { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+  details.quiz { margin-top: 10px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  details.quiz summary { cursor: pointer; font-weight: 600; }
+  details.quiz p { margin: 8px 0 0; color: var(--muted); }
+  details.quiz[open] { border-color: var(--accent); }
+
+  .wrong { margin-top: 14px; padding: 16px 20px; border: 1px solid var(--neg); border-radius: 12px; background: var(--neg-soft); }
+  .wrong b { display: block; color: var(--neg); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .wrong span { font: 600 20px/1.35 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+
+  pre { margin: 8px 0 0; padding: 12px 14px; overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .next { margin-top: 14px; padding: 18px 20px; background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; }
+  .foot { margin: 40px 0 0; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 760px) {
+    .page { padding: 24px 16px 48px; }
+    h1 { font-size: 29px; } h2 { font-size: 22px; }
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .versus, .words, .two { grid-template-columns: minmax(0, 1fr); }
+    .pipe { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .box + .box::before { content: "\2193"; left: 16px; top: -22px; }
+    .chart-row { grid-template-columns: 40px minmax(0, 1fr); }
+    .chart-row .what { grid-column: 2; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .js .rise { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <p class="eyebrow">Milestone 1 of 5 · recap</p>
+    <h1>Green checks, wrong number</h1>
+    <p class="lede">You were given a pipeline that runs every night on Airflow. Its five checks were green. You added one store's day up by hand, and the number was wrong. Here is what you did, what you learned, and what is still wrong.</p>
+    <div class="tiles">
+      <div class="tile rise"><b class="num" data-k="numbers.notebooks" data-count></b><span>lab notebooks</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.tests" data-count></b><span>tests</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.checks" data-count></b><span>standard checks, all green</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.planted_cases" data-count></b><span>planted cases that pass them</span></div>
+      <div class="tile rise bad"><b class="num" data-k="numbers.stores_wrong" data-count></b><span>stores with a wrong number</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.words" data-count></b><span>new words</span></div>
+    </div>
+  </header>
+
+  <nav class="nav" aria-label="Sections">
+    <a href="#asked">1. Asked</a>
+    <a href="#given">2. Given and built</a>
+    <a href="#trap">3. The wrong number</a>
+    <a href="#week">4. The week</a>
+    <a href="#learned">5. Learned</a>
+    <a href="#words">6. Words</a>
+    <a href="#quiz">7. Quiz</a>
+    <a href="#wrong">8. Still wrong</a>
+    <a href="#setup">Set up</a>
+  </nav>
+
+  <section id="asked">
+    <p class="kicker">1 · What was asked</p>
+    <h2>One question, every Monday</h2>
+    <p><b>Why this milestone exists.</b> Lotus Retails pays each store manager a bonus: 1% of the store's net sales for the week. The head of retail operations signs it off on Monday. She asks:</p>
+    <blockquote class="rise" data-k="question"></blockquote>
+    <p>The second sentence is the project. This is what the pipeline answered after the first night of the bonus week, <span data-k="monday.day"></span>:</p>
+    <div class="table-wrap rise">
+      <table>
+        <thead><tr><th>Store</th><th class="r">The report says</th><th class="r">The answer key says</th><th>The five checks</th></tr></thead>
+        <tbody id="monday-rows"></tbody>
+      </table>
+    </div>
+    <p style="margin-top:12px">Every row says "5 of 5 passed". One row is wrong. Nothing on the report says which.</p>
+  </section>
+
+  <section id="given">
+    <p class="kicker">2 · What you were given, and what you built</p>
+    <h2>A pipeline that runs, and looks fine</h2>
+    <p>The pipeline is given to you ready-made. Airflow starts it every night at 02:00. Airflow holds no business logic: each task starts a command you can also type yourself.</p>
+    <p class="tasks" id="tasks">Airflow DAG <b data-k="dag.id"></b>: </p>
+    <div class="pipe" id="pipe">
+      <div class="box"><span class="role">Source</span><b>Store files</b><span><span class="n" data-k="monday.files"></span> files in the first run</span></div>
+      <div class="box"><span class="role">As received</span><b>Raw tables</b><span><span class="n" data-k="monday.rows"></span> rows in <span data-k="numbers.tables"></span> tables</span></div>
+      <div class="box"><span class="role">Typed, joined</span><b>Clean tables</b><span><span class="n" data-k="monday.clean_lines"></span> sales lines</span></div>
+      <div class="box"><span class="role">Five standard checks</span><b>Checks</b><span><span class="n"><span data-k="numbers.checks"></span> of <span data-k="numbers.checks"></span></span> green</span></div>
+      <div class="box"><span class="role">What people read</span><b>Outputs</b><span><span class="n" data-k="numbers.outputs"></span> tables. The bonus is paid from one</span></div>
+    </div>
+    <button class="btn" id="run" type="button">Run Monday's night</button>
+    <p class="hand"><b>Gates: <span data-k="numbers.gates"></span>.</b> Nothing can stop a bad row. <b>Rows set aside: <span data-k="numbers.rows_set_aside"></span>.</b> There is no quarantine yet.</p>
+    <div class="two" style="margin-top:14px">
+      <div class="card rise"><h3>Given, ready-made</h3>
+        <ul class="plain"><li>The stores' systems, which send files every night</li><li>The pipeline: load, clean, check, publish</li><li>One Airflow DAG with <span data-k="numbers.tasks"></span> tasks</li><li><span data-k="numbers.checks"></span> standard checks</li><li>An answer key, worked out with no pipeline code</li></ul></div>
+      <div class="card rise"><h3>Built by you</h3>
+        <ul class="plain"><li>One store's net sales, added up by hand</li><li>The cause of the difference: one refund line</li><li>A list of who uses each table, ranked by harm</li><li>The first check card, for <code>sales_lines</code>: questions 1 to 5</li><li>A profile of <code>sales_lines</code>, and a list of worries</li></ul></div>
+    </div>
+    <p style="margin-top:14px"><b>The outcome.</b> You can show a wrong number that five green checks let through, and say who it hurts. Open the <a href="milestone_1_flow.html">flow page</a> to watch that row walk through every stage.</p>
+  </section>
+
+  <section id="trap">
+    <p class="kicker">3 · The wrong number</p>
+    <h2>The same store, the same day, two answers</h2>
+    <p>You took the file store <span data-k="monday.store"></span> sent for <span data-k="monday.day"></span>, and added it up by hand: every sale, less every refund.</p>
+    <div class="versus">
+      <div class="card bad rise"><h3>The pipeline</h3><span class="a" data-k="monday.report"></span><small>5 of 5 checks passed. Bonus for <span data-k="monday.manager"></span>: <span data-k="monday.bonus_report"></span></small></div>
+      <div class="card good rise"><h3>By hand</h3><span class="a" data-k="monday.by_hand"></span><small>Equal to the answer key. Bonus: <span data-k="monday.bonus_right"></span></small></div>
+    </div>
+    <p style="margin-top:14px">The difference is <b data-k="monday.difference"></b>. That is two times <span data-k="monday.refund"></span>. A customer brought one thing back, and the export program lost the minus sign:</p>
+    <div class="line rise">line_id <span data-k="monday.refund_line"></span> · line_type refund · quantity -1 · amount <b>+<span data-k="monday.refund"></span></b></div>
+    <p style="margin-top:12px">The pipeline added the refund where it should have taken it away. No check failed, because no check asks whether a refund is negative.</p>
+  </section>
+
+  <section id="week">
+    <p class="kicker">4 · The whole week</p>
+    <h2><span data-k="week.checks_green"></span> of <span data-k="week.checks_run"></span> checks green. <span data-k="week.stores_wrong"></span> of 6 stores wrong.</h2>
+    <p>The same pipeline ran for all <span data-k="week.nights"></span> nights of the bonus week. Every night, every check passed. This is what the report would pay on, against the answer key:</p>
+    <div class="chart" id="chart" aria-label="Each store's net sales for the week: the report against the answer key"></div>
+  </section>
+
+  <section id="learned">
+    <p class="kicker">5 · What you learned</p>
+    <h2>Five things</h2>
+    <ol class="learned">
+      <li class="rise"><b>Green checks do not mean right data.</b><span>A check answers only the question it asks. Five green checks let a wrong number reach every store.</span></li>
+      <li class="rise"><b>A check needs a reason.</b><span>Say who uses the table, and what goes wrong for them when it is wrong. A check with no such answer is deleted.</span></li>
+      <li class="rise"><b>Rank the tables by harm before you write any check.</b><span>The table that pays people comes first. Not every worry deserves a check.</span></li>
+      <li class="rise"><b>Say what one row means, then read the table, before you check it.</b><span>Rows per store per day, the smallest and largest values, the empty cells. Each surprise is a candidate check.</span></li>
+      <li class="rise"><b>Work the number out by hand.</b><span>Without an answer key you cannot tell a right number from a wrong one.</span></li>
+    </ol>
+  </section>
+
+  <section id="words">
+    <p class="kicker">6 · New words</p>
+    <h2>Words you can now explain</h2>
+    <div class="words" id="word-list"></div>
+    <p style="margin-top:12px">Each word has an interview line in the project's <a href="../../GLOSSARY.md">glossary</a>.</p>
+  </section>
+
+  <section id="quiz">
+    <p class="kicker">7 · Three questions</p>
+    <h2>What would you say?</h2>
+    <p>Answer in your head first. Then open the answer.</p>
+    <div id="quiz-list"></div>
+  </section>
+
+  <section id="wrong">
+    <p class="kicker">8 · What is still wrong</p>
+    <h2>One error found, by luck</h2>
+    <p>You found the refund because you happened to add up that store on that day. There are <span data-k="numbers.planted_cases"></span> planted cases in the week, and the five checks pass on every one of them.</p>
+    <div class="wrong rise"><b>Still wrong</b><span data-k="still_wrong"></span></div>
+    <div class="next rise"><b>Next: milestone 2, checks with a reason.</b> You write the checks for <code>sales_lines</code> by hand, through three lenses: the data itself, the rules of the business, and the pipeline's own health.</div>
+  </section>
+
+  <section id="setup">
+    <p class="kicker">Set up</p>
+    <h2>What this milestone needs</h2>
+    <p>Git, Python 3.12 or later, <a href="https://docs.astral.sh/uv/">uv</a>, and Docker. No API key, no cloud account, no AI. Everything is free and runs on your computer. The milestone's README installs Docker with you, step by step, on macOS, Windows and Linux.</p>
+    <h3 style="margin-top:14px">From the project folder</h3>
+    <pre>uv sync                          # makes the virtual environment
+docker compose up -d --build     # starts the warehouse and Airflow</pre>
+    <p style="margin-top:10px">Airflow's page is at <code>http://localhost:8080</code>. To run one night yourself, as a plain program:</p>
+    <pre>uv run python -m store_systems deliver --through 2026-08-24
+cd src/m1_green_checks_wrong_number
+uv run python -m lotus_pipeline run --day 2026-08-24   # prints the bonus report
+uv run pytest                                          # runs this milestone's tests</pre>
+    <p style="margin-top:10px">When you are done: <code>docker compose down</code>.</p>
+  </section>
+
+  <p class="foot">Every number on this page is written by <code>lotus_pipeline/flow_data.py</code> from a real run of this milestone's code, and a test checks that they still match. All data is fictional. Lotus Retails does not exist.</p>
+</div>
+
+<script id="page-data" type="application/json">
+{
+ "question": "Can I pay the bonus from last week's net sales, store by store? And if I cannot trust a number, which one, and why?",
+ "monday": {
+  "day": "Mon 08-24",
+  "files": 622,
+  "rows": "37,710",
+  "clean_lines": "20,482",
+  "store": "S03",
+  "manager": "Tomas Reyes",
+  "report": "$796.18",
+  "by_hand": "$777.20",
+  "difference": "$18.98",
+  "refund": "$9.49",
+  "refund_line": "S03-0824-000008",
+  "bonus_report": "$7.96",
+  "bonus_right": "$7.77",
+  "stores": [
+   {
+    "store": "S01",
+    "store_name": "Lotus Ashby High Street",
+    "report": "$795.24",
+    "answer_key": "$795.24",
+    "wrong": false
+   },
+   {
+    "store": "S02",
+    "store_name": "Lotus Ashby Market Square",
+    "report": "$901.28",
+    "answer_key": "$901.28",
+    "wrong": false
+   },
+   {
+    "store": "S03",
+    "store_name": "Lotus Calder Bridge",
+    "report": "$796.18",
+    "answer_key": "$777.20",
+    "wrong": true
+   },
+   {
+    "store": "S04",
+    "store_name": "Lotus Calder Station",
+    "report": "$579.77",
+    "answer_key": "$579.77",
+    "wrong": false
+   },
+   {
+    "store": "S05",
+    "store_name": "Lotus Fenwick Green",
+    "report": "$474.18",
+    "answer_key": "$474.18",
+    "wrong": false
+   },
+   {
+    "store": "S06",
+    "store_name": "Lotus Fenwick Harbour",
+    "report": "$595.19",
+    "answer_key": "$595.19",
+    "wrong": false
+   }
+  ]
+ },
+ "week": {
+  "stores": [
+   {
+    "store": "S01",
+    "store_name": "Lotus Ashby High Street",
+    "manager": "Marta Lindqvist",
+    "report": "$5,171.32",
+    "answer_key": "$5,153.25",
+    "error": "+$18.07",
+    "bonus_error": "+$0.18",
+    "report_cents": 517132,
+    "answer_key_cents": 515325,
+    "wrong": true
+   },
+   {
+    "store": "S02",
+    "store_name": "Lotus Ashby Market Square",
+    "manager": "Dana Okafor",
+    "report": "$6,758.96",
+    "answer_key": "$5,748.63",
+    "error": "+$1,010.33",
+    "bonus_error": "+$10.10",
+    "report_cents": 675896,
+    "answer_key_cents": 574863,
+    "wrong": true
+   },
+   {
+    "store": "S03",
+    "store_name": "Lotus Calder Bridge",
+    "manager": "Tomas Reyes",
+    "report": "$5,106.60",
+    "answer_key": "$5,087.62",
+    "error": "+$18.98",
+    "bonus_error": "+$0.19",
+    "report_cents": 510660,
+    "answer_key_cents": 508762,
+    "wrong": true
+   },
+   {
+    "store": "S04",
+    "store_name": "Lotus Calder Station",
+    "manager": "Ines Marchetti",
+    "report": "$4,585.57",
+    "answer_key": "$5,172.99",
+    "error": "-$587.42",
+    "bonus_error": "-$5.87",
+    "report_cents": 458557,
+    "answer_key_cents": 517299,
+    "wrong": true
+   },
+   {
+    "store": "S05",
+    "store_name": "Lotus Fenwick Green",
+    "manager": "Samir Haddad",
+    "report": "$5,113.73",
+    "answer_key": "$3,593.05",
+    "error": "+$1,520.68",
+    "bonus_error": "+$15.21",
+    "report_cents": 511373,
+    "answer_key_cents": 359305,
+    "wrong": true
+   },
+   {
+    "store": "S06",
+    "store_name": "Lotus Fenwick Harbour",
+    "manager": "Aiko Tanaka",
+    "report": "$4,400.92",
+    "answer_key": "$4,418.89",
+    "error": "-$17.97",
+    "bonus_error": "-$0.18",
+    "report_cents": 440092,
+    "answer_key_cents": 441889,
+    "wrong": true
+   }
+  ],
+  "stores_wrong": 6,
+  "checks_green": 35,
+  "checks_run": 35,
+  "nights": 7
+ },
+ "quiz": [
+  {
+   "question": "It is Mon 08-24 night. All five checks pass. The head of retail operations asks: so the numbers are right? What do you say?",
+   "answer": "No. Green checks only answer the five questions they ask. None of them asks whether a refund is negative. Store S03 is $18.98 too high tonight, with five green checks."
+  },
+  {
+   "question": "A teammate wants a not-null check on member_id in sales_lines, because empty cells are bad. What do you ask first?",
+   "answer": "Who uses member_id, and what goes wrong for them when it is empty? A customer may pay without a loyalty card. On Mon 08-24, 377 of 610 lines have no member, and all of them are right. A check with no answer to that question is deleted."
+  },
+  {
+   "question": "Store S04 sends no sales file on Tue 08-25 night. Which of the five standard checks fails?",
+   "answer": "None. The other stores sent their lines, so the table is not empty. S04 has no rows, and a row that is not there cannot fail a check. A whole day of $587.42 is missing, and the run is green."
+  }
+ ],
+ "words": [
+  {
+   "term": "Data quality",
+   "meaning": "Data quality means the data is good enough to trust."
+  },
+  {
+   "term": "Check",
+   "meaning": "A check is a query that looks for bad rows. No rows means the data passes."
+  },
+  {
+   "term": "DAG",
+   "meaning": "The list of a pipeline's tasks and the order they run in. Airflow draws it as boxes and arrows."
+  },
+  {
+   "term": "Task",
+   "meaning": "One step of the pipeline that Airflow starts, such as `load`."
+  },
+  {
+   "term": "Dependency",
+   "meaning": "An arrow between two tasks. The second waits for the first, and does not run if the first fails."
+  },
+  {
+   "term": "Silent failure",
+   "meaning": "Wrong data with no error. Every task succeeds, and a wrong number reaches the reader."
+  },
+  {
+   "term": "Consumer",
+   "meaning": "Anything that reads a table: a person, a report or another table."
+  },
+  {
+   "term": "Impact",
+   "meaning": "Everything a wrong table touches: the tables built from it and the people who read them. Also called blast radius."
+  },
+  {
+   "term": "Critical table",
+   "meaning": "A table where a wrong value costs someone money or a decision. It gets the most checks."
+  },
+  {
+   "term": "Grain",
+   "meaning": "What one row of a table means."
+  },
+  {
+   "term": "Profiling",
+   "meaning": "Reading a table before you check it: count the rows, find the smallest and largest values, count the empty cells."
+  },
+  {
+   "term": "The six dimensions",
+   "meaning": "Six questions for any table: is it complete, unique, valid, accurate, consistent and fresh?"
+  }
+ ],
+ "still_wrong": "We found one error by luck, and we have a list of worries. We have no checks that would have caught it.",
+ "numbers": {
+  "notebooks": 8,
+  "tests": 100,
+  "tables": 7,
+  "outputs": 2,
+  "checks": 5,
+  "tasks": 5,
+  "planted_cases": 13,
+  "stores_wrong": 6,
+  "gates": 0,
+  "rows_set_aside": 0,
+  "words": 12
+ },
+ "dag": {
+  "id": "lotus_nightly_m1",
+  "tasks": [
+   "stores_send_files",
+   "load",
+   "clean",
+   "check",
+   "publish"
+  ]
+ }
+}
+</script>
+<script>
+(function () {
+  'use strict';
+  var DATA = JSON.parse(document.getElementById('page-data').textContent);
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function get(path) { return path.split('.').reduce(function (o, k) { return o == null ? o : o[k]; }, DATA); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+  // Fill every number from the data.
+  document.querySelectorAll('[data-k]').forEach(function (node) { node.textContent = get(node.dataset.k); });
+
+  // The tasks of the DAG.
+  DATA.dag.tasks.forEach(function (name, i) {
+    if (i) document.getElementById('tasks').appendChild(document.createTextNode(' → '));
+    document.getElementById('tasks').appendChild(el('code', null, name));
+  });
+
+  // Monday's report, store by store.
+  DATA.monday.stores.forEach(function (s) {
+    var row = el('tr', s.wrong ? 'bad' : null);
+    row.appendChild(el('td', null, s.store + '  ' + s.store_name));
+    row.appendChild(el('td', 'r flag', s.report));
+    row.appendChild(el('td', 'r', s.answer_key));
+    row.appendChild(el('td', 'green', '5 of 5 passed'));
+    document.getElementById('monday-rows').appendChild(row);
+  });
+
+  // The week: one bar per store. The dark line is the answer key.
+  var chart = document.getElementById('chart');
+  var most = Math.max.apply(null, DATA.week.stores.map(function (s) { return Math.max(s.report_cents, s.answer_key_cents); }));
+  DATA.week.stores.forEach(function (s) {
+    var row = el('div', 'chart-row');
+    row.appendChild(el('span', null, s.store));
+    var track = el('div', 'track'), fill = el('i'), mark = el('span', 'limit');
+    fill.dataset.width = (s.report_cents / most * 96) + '%';
+    mark.style.left = (s.answer_key_cents / most * 96) + '%';
+    track.appendChild(fill); track.appendChild(mark);
+    row.appendChild(track);
+    row.appendChild(el('span', 'what', s.report + '  (' + s.error + ')'));
+    chart.appendChild(row);
+  });
+  chart.appendChild(el('p', 'legend', 'The bar is what the report says. The dark line is the answer key. The number in brackets is the error in net sales.'));
+
+  DATA.words.forEach(function (w) {
+    var card = el('div', 'word rise');
+    card.appendChild(el('b', null, w.term));
+    card.appendChild(el('span', null, w.meaning.replace(/`/g, '')));
+    document.getElementById('word-list').appendChild(card);
+  });
+
+  DATA.quiz.forEach(function (q, i) {
+    var box = el('details', 'quiz rise');
+    box.appendChild(el('summary', null, (i + 1) + '. ' + q.question));
+    box.appendChild(el('p', null, q.answer));
+    document.getElementById('quiz-list').appendChild(box);
+  });
+
+  function grow(root) {
+    root.querySelectorAll('.track i').forEach(function (i) { i.style.width = i.dataset.width; });
+  }
+  function countUp(node) {
+    var target = Number(get(node.dataset.k));
+    if (reduce || !isFinite(target)) return;
+    var start = performance.now();
+    (function tick(now) {
+      var t = Math.min(1, (now - start) / 900);
+      node.textContent = Math.round(target * (1 - Math.pow(1 - t, 3)));
+      if (t < 1) requestAnimationFrame(tick);
+    })(start);
+  }
+
+  // Reveal things as they scroll into view.
+  document.documentElement.classList.add('js');
+  var waiting = Array.prototype.slice.call(document.querySelectorAll('.rise, #chart'));
+  function reveal() {
+    var line = window.innerHeight * 0.92;
+    waiting = waiting.filter(function (node) {
+      if (node.getBoundingClientRect().top > line) return true;
+      node.classList.add('in');
+      grow(node);
+      node.querySelectorAll('[data-count]').forEach(countUp);
+      return false;
+    });
+  }
+  window.addEventListener('scroll', reveal, { passive: true });
+  window.addEventListener('resize', reveal);
+  reveal();
+
+  // The small pipeline lights up stage by stage.
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('#pipe .box'));
+  function runPipe() {
+    boxes.forEach(function (b) { b.classList.remove('lit'); });
+    boxes.forEach(function (box, i) {
+      setTimeout(function () { box.classList.add('lit'); }, reduce ? 0 : 150 + i * 650);
+    });
+  }
+  document.getElementById('run').addEventListener('click', runPipe);
+  new IntersectionObserver(function (entries, observer) {
+    if (entries[0].isIntersecting) { runPipe(); observer.disconnect(); }
+  }, { threshold: 0.5 }).observe(document.getElementById('pipe'));
+
+  // Mark the section you are reading in the jump links.
+  var links = document.querySelectorAll('.nav a');
+  var spy = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + entry.target.id); });
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  document.querySelectorAll('section[id]').forEach(function (s) { spy.observe(s); });
+})();
+</script>
+</body>
+</html>

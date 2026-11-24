@@ -1,0 +1,261 @@
+{
+ "cases": [
+  {
+   "case": 1,
+   "name": "A refund stored as a positive amount",
+   "lens": "business",
+   "table": "sales_lines",
+   "day": "2026-08-24",
+   "store": "S03",
+   "supplier": null,
+   "passes_the_five_standard_checks": true,
+   "who": "Store managers",
+   "harm": "Net sales are too high for one store, so its manager is overpaid.",
+   "caught_by": [
+    "Refund rule",
+    "Till total"
+   ],
+   "born_in": "export program",
+   "week_error_cents": 1898
+  },
+  {
+   "case": 2,
+   "name": "One receipt in the file twice, with different line ids",
+   "lens": "data",
+   "table": "sales_lines",
+   "day": "2026-08-25",
+   "store": "S01",
+   "supplier": null,
+   "passes_the_five_standard_checks": true,
+   "who": "Store managers",
+   "harm": "The key is still unique. One receipt is counted twice.",
+   "caught_by": [
+    "Unique on the right columns",
+    "Till total"
+   ],
+   "born_in": "export program",
+   "week_error_cents": 1807
+  },
+  {
+   "case": 3,
+   "name": "A weight entered in grams, not kilograms",
+   "lens": "business",
+   "table": "sales_lines",
+   "day": "2026-08-27",
+   "store": "S05",
+   "supplier": null,
+   "passes_the_five_standard_checks": true,
+   "who": "Store managers",
+   "harm": "One line of bananas costs more than the store's whole day.",
+   "caught_by": [
+    "Believable range per product"
+   ],
+   "born_in": "export program",
+   "week_error_cents": 152068,
+   "true_line_cents": 152,
+   "file_line_cents": 152220
+  },
+  {
+   "case": 4,
+   "name": "A price that was changed yesterday, charged at the old price",
+   "lens": "business",
+   "table": "sales_lines",
+   "day": "2026-08-28",
+   "store": "S04",
+   "supplier": null,
+   "passes_the_five_standard_checks": true,
+   "who": "Finance",
+   "harm": "Each line is valid. The store took less money than the price list says.",
+   "caught_by": [
+    "Price valid on that date"
+   ],
+   "born_in": "till",
+   "week_error_cents": 0,
+   "packs": 12,
+   "store_short_cents": 600
+  },
+  {
+   "case": 5,
+   "name": "A sale at 03:10 in a store that closes at 22:00",
+   "lens": "business",
+   "table": "sales_lines",
+   "day": "2026-08-30",
+   "store": "S02",
+   "supplier": null,
+   "passes_the_five_standard_checks": true,
+   "who": "Store managers",
+   "harm": "The sale lands on Monday, in the next bonus week.",
+   "caught_by": [
+    "Store hours"
+   ],
+   "born_in": "till",
+   "week_error_cents": -2395
+  },
+  {
+   "case": 6,
+   "name": "A sale for a product that is not in products",
+   "lens": "data",
+   "table": "sales_lines",
+   "day": "2026-08-29",
+   "store": "S06",
+   "supplier": null,
+   "passes_the_five_standard_checks": true,
+   "who": "Store managers",
+   "harm": "The join drops the lines silently, and sales are too low.",
+   "caught_by": [
+    "Every sale has a product"
+   ],
+   "born_in": "buying team",
+   "week_error_cents": -1797
+  },
+  {
+   "case": 7,
+   "name": "One store sends no file",
+   "lens": "operational",
+   "table": "sales_lines",
+   "day": "2026-08-25",
+   "store": "S04",
+   "supplier": null,
+   "passes_the_five_standard_checks": true,
+   "who": "Store managers",
+   "harm": "Every check passes: there are no rows to fail. A whole day is missing.",
+   "caught_by": [
+    "Volume against a normal day",
+    "Every store reported"
+   ],
+   "born_in": "store back office",
+   "week_error_cents": -58742
+  },
+  {
+   "case": 8,
+   "name": "One store's file arrives a day late",
+   "lens": "operational",
+   "table": "sales_lines",
+   "day": "2026-08-27",
+   "store": "S06",
+   "supplier": null,
+   "passes_the_five_standard_checks": true,
+   "who": "The replenishment team",
+   "harm": "Yesterday's number is low, and changes tomorrow.",
+   "caught_by": [
+    "Freshness",
+    "Run history"
+   ],
+   "born_in": "store back office",
+   "week_error_cents": 0,
+   "error_for_one_night_cents": -61644
+  },
+  {
+   "case": 9,
+   "name": "One store's whole file sent twice",
+   "lens": "operational",
+   "table": "sales_lines",
+   "day": "2026-08-28",
+   "store": "S02",
+   "supplier": null,
+   "passes_the_five_standard_checks": true,
+   "who": "Store managers",
+   "harm": "Sales for that store double for the day.",
+   "caught_by": [
+    "Volume against a normal day",
+    "Till total"
+   ],
+   "born_in": "export program",
+   "week_error_cents": 103428
+  },
+  {
+   "case": 10,
+   "name": "The supplier renames a column",
+   "lens": "data",
+   "table": "supplier_prices",
+   "day": "2026-08-25",
+   "store": null,
+   "supplier": "SUP-B",
+   "passes_the_five_standard_checks": true,
+   "who": "Finance",
+   "harm": "The load runs. The cost column is empty, so the order has no cost.",
+   "caught_by": [
+    "Expected columns"
+   ],
+   "born_in": "supplier",
+   "products_without_cost": 12
+  },
+  {
+   "case": 11,
+   "name": "The supplier sends cost in cents",
+   "lens": "business",
+   "table": "supplier_prices",
+   "day": "2026-08-28",
+   "store": null,
+   "supplier": "SUP-C",
+   "passes_the_five_standard_checks": true,
+   "who": "Finance",
+   "harm": "Every cost is 100 times too high, and still a valid number.",
+   "caught_by": [
+    "Change against the last file"
+   ],
+   "born_in": "supplier",
+   "products_100_times_too_dear": 15
+  },
+  {
+   "case": 12,
+   "name": "A stock count is missing for one day",
+   "lens": "data",
+   "table": "stock_counts",
+   "day": "2026-08-28",
+   "store": "S05",
+   "supplier": null,
+   "passes_the_five_standard_checks": true,
+   "who": "The replenishment team",
+   "harm": "The gap is read as zero stock, and the store over-orders.",
+   "caught_by": [
+    "A snapshot has a row for every day"
+   ],
+   "born_in": "store",
+   "sold": 9.0,
+   "true_stock": 3.0,
+   "true_order": 15.0,
+   "order_with_no_count": 18.0,
+   "over_order": 3.0
+  },
+  {
+   "case": 13,
+   "name": "The same member twice, with different letter case in the email",
+   "lens": "data",
+   "table": "members",
+   "day": "2026-08-26",
+   "store": null,
+   "supplier": null,
+   "passes_the_five_standard_checks": true,
+   "who": "Marketing",
+   "harm": "Two emails to one person, and two sets of points.",
+   "caught_by": [
+    "Uniqueness after cleaning"
+   ],
+   "born_in": "loyalty app",
+   "first": "M-0117",
+   "second": "M-0304"
+  }
+ ],
+ "not_wrong": [
+  {
+   "name": "A public holiday with low sales",
+   "day": "2026-08-26",
+   "store": "all",
+   "why": "Founders' Day. The stores open from 10:00 to 16:00"
+  },
+  {
+   "name": "A store closed for one day",
+   "day": "2026-08-27",
+   "store": "S01",
+   "why": "A planned refit. No files, and that is correct"
+  },
+  {
+   "name": "A real sale of 400 items",
+   "day": "2026-08-29",
+   "store": "S02",
+   "why": "A caf\u00e9 buys 400 bottles of still water at $0.59",
+   "receipt": "big_sale"
+  }
+ ]
+}

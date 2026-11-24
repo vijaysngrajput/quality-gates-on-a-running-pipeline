@@ -1,0 +1,333 @@
+{
+ "questions": [
+  "What does one row mean?",
+  "Who uses this table, and what do they decide with it?",
+  "How is the data made? So what can go wrong?",
+  "Which of those would hurt most?",
+  "What must be prepared before it can be checked?",
+  "The check",
+  "What happens when it fails?",
+  "The proof"
+ ],
+ "cards": [
+  {
+   "table": "sales_lines",
+   "one_row": "One item line on one receipt",
+   "made": "Each till writes it. Each store sends a file every night",
+   "why": "Money. Refunds. Goods sold by weight. A store's file can be late, missing or sent twice",
+   "card_in": 1,
+   "has_card": true,
+   "file": "checks/sales_lines.md",
+   "state": "**State after milestone 1:** questions 1 to 5 are answered. Questions 6 to 8 need the checks, and those are written in milestone 2.",
+   "answered": 5,
+   "questions": [
+    {
+     "number": 1,
+     "question": "What does one row mean?",
+     "title": "What does one row mean?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "One item line on one receipt. A receipt with three products has three rows."
+      },
+      {
+       "type": "p",
+       "text": "The true key of a row is `receipt_id` + `line_no`. The column `line_id` is not a true key: the export program makes a new one every time it writes a file."
+      }
+     ]
+    },
+    {
+     "number": 2,
+     "question": "Who uses this table, and what do they decide with it?",
+     "title": "Who uses this table, and what do they decide with it?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Who",
+        "What they decide",
+        "What goes wrong for them when the data is bad"
+       ],
+       "rows": [
+        [
+         "Store managers, through `daily_store_sales`",
+         "Nothing. They are **paid** from it: 1% of the week's net sales",
+         "Wrong pay. On 2026-08-24 store `S03` was $18.98 too high"
+        ],
+        [
+         "Head of retail operations",
+         "She signs off the bonus every Monday",
+         "She signs a wrong number, and cannot say which one"
+        ],
+        [
+         "The replenishment team, through `replenishment_list`",
+         "How much of each product to order for tomorrow",
+         "Too high wastes food. Too low leaves empty shelves"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "Two outputs and three groups of people read this table. It is the most critical table Lotus has."
+      }
+     ]
+    },
+    {
+     "number": 3,
+     "question": "How is the data made? So what can go wrong?",
+     "title": "How is the data made? So what can go wrong?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Step",
+        "Made by",
+        "What can go wrong"
+       ],
+       "rows": [
+        [
+         "A cashier scans a product",
+         "A person and a till",
+         "A wrong quantity. A weight in the wrong unit"
+        ],
+        [
+         "The till stamps the time",
+         "The till's clock",
+         "A wrong clock, so a wrong day"
+        ],
+        [
+         "The till takes the price",
+         "The price list in the till",
+         "Yesterday's price"
+        ],
+        [
+         "A customer brings something back",
+         "A person and a till",
+         "A refund with the wrong sign"
+        ],
+        [
+         "The export program writes the night's file",
+         "A program in the store's back office",
+         "A line twice. A receipt twice. A whole file twice"
+        ],
+        [
+         "The store sends the file",
+         "A back-office computer",
+         "No file. A late file"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 4,
+     "question": "Which of those would hurt most?",
+     "title": "Which of those would hurt most?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Ranked by the money a person loses, and by how long it stays hidden."
+      },
+      {
+       "type": "table",
+       "head": [
+        "Rank",
+        "Worry",
+        "Why it is here"
+       ],
+       "rows": [
+        [
+         "1",
+         "A store's whole day is missing or doubled",
+         "The largest error in pay: a full day of sales"
+        ],
+        [
+         "2",
+         "Money with the wrong sign or the wrong size",
+         "One line can be larger than a day. Seen in notebook 3"
+        ],
+        [
+         "3",
+         "The same sale counted twice",
+         "Small each time, and it never shows as an error"
+        ],
+        [
+         "4",
+         "A sale on the wrong day",
+         "It can fall out of the bonus week"
+        ],
+        [
+         "5",
+         "A line the join drops",
+         "Sales are too low, and no row is left to look at"
+        ],
+        [
+         "6",
+         "An empty `member_id`",
+         "It hurts nobody. A customer may pay without a loyalty card. **No check**"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "Not every worry gets a check. Number 6 has no answer to question 2, so it gets none."
+      }
+     ]
+    },
+    {
+     "number": 5,
+     "question": "What must be prepared before it can be checked?",
+     "title": "What must be prepared before it can be checked?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Worry",
+        "What must be prepared first"
+       ],
+       "rows": [
+        [
+         "A whole day missing or doubled",
+         "Count the rows per store per day, and compare with a normal day for that store"
+        ],
+        [
+         "Wrong sign or wrong size",
+         "Add the lines up per till per day, and hold the total against `till_totals`"
+        ],
+        [
+         "The same sale twice",
+         "Group by `receipt_id` + `line_no`, not by `line_id`"
+        ],
+        [
+         "A sale on the wrong day",
+         "Join to `stores` for the opening hours"
+        ],
+        [
+         "A line the join drops",
+         "Compare the raw rows with the clean rows"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "Four of the five need a join, a total or a comparison first. None of them is a one-line check."
+      }
+     ]
+    },
+    {
+     "number": 6,
+     "question": "The check",
+     "title": "The check",
+     "answered": false,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Not yet. Milestone 2 writes the rule, the limit, the lens and how serious a failure is."
+      }
+     ]
+    },
+    {
+     "number": 7,
+     "question": "What happens when it fails?",
+     "title": "What happens when it fails?",
+     "answered": false,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Not yet. Milestone 4 decides: stop, set the rows aside, or warn. And who is told."
+      }
+     ]
+    },
+    {
+     "number": 8,
+     "question": "The proof",
+     "title": "The proof",
+     "answered": false,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Not yet. Milestone 2 plants each fault and shows the check catching it, and one fault it does not catch."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "table": "till_totals",
+   "one_row": "One till's own total for one day",
+   "made": "The till adds it up when it is closed",
+   "why": "A second, independent count of the same money. It exists to be compared with sales_lines",
+   "card_in": 3,
+   "has_card": false,
+   "file": null,
+   "state": "",
+   "answered": 0,
+   "questions": []
+  },
+  {
+   "table": "products",
+   "one_row": "One product, with its price and the dates that price is valid",
+   "made": "Typed by the buying team",
+   "why": "It changes. A price has a start and an end. A product can be retired",
+   "card_in": 3,
+   "has_card": false,
+   "file": null,
+   "state": "",
+   "answered": 0,
+   "questions": []
+  },
+  {
+   "table": "stores",
+   "one_row": "One store, with its opening hours",
+   "made": "Typed once, rarely changed",
+   "why": "Tiny. Wrong here is wrong everywhere",
+   "card_in": 3,
+   "has_card": false,
+   "file": null,
+   "state": "",
+   "answered": 0,
+   "questions": []
+  },
+  {
+   "table": "stock_counts",
+   "one_row": "One product in one store on one day",
+   "made": "Counted by hand or by scanner",
+   "why": "A count of one moment. A missing day is a gap, not a zero",
+   "card_in": 3,
+   "has_card": false,
+   "file": null,
+   "state": "",
+   "answered": 0,
+   "questions": []
+  },
+  {
+   "table": "supplier_prices",
+   "one_row": "One product's cost from one supplier",
+   "made": "A CSV file the supplier sends",
+   "why": "Lotus does not control it. Columns move, units change, files repeat",
+   "card_in": 3,
+   "has_card": false,
+   "file": null,
+   "state": "",
+   "answered": 0,
+   "questions": []
+  },
+  {
+   "table": "members",
+   "one_row": "One loyalty member",
+   "made": "Typed by the customer in an app",
+   "why": "People. The same person twice, half-filled rows, personal data",
+   "card_in": 3,
+   "has_card": false,
+   "file": null,
+   "state": "",
+   "answered": 0,
+   "questions": []
+  }
+ ]
+}
