@@ -82,8 +82,9 @@ def main(argv: list[str] | None = None) -> int:
         files.write_state(landing, state)
         print("Deliver the day again to get the corrected files.")
     elif args.command == "reset":
-        if landing.exists():
-            shutil.rmtree(landing)
+        # Empty the folder, and keep the folder itself: under Docker it is a mounted volume.
+        for inside in landing.iterdir() if landing.exists() else []:
+            shutil.rmtree(inside) if inside.is_dir() else inside.unlink()
         print(f"The landing folder is empty: {landing}")
     elif args.command == "status":
         state = files.read_state(landing)

@@ -1,0 +1,79 @@
+# UNIT TESTS for the prepared models.
+#
+# A data test asks: is tonight's DATA right? It runs on the real rows, every night.
+# A unit test asks: is my SQL right? It runs on a few rows typed by hand, with the answer
+# typed beside them. It does not read tonight's rows. The tables must exist, because dbt
+# looks up the type of each column. So run the pipeline once before the first unit test.
+#
+#   uv run python -m lotus_pipeline dbt test --select test_type:unit
+version: 2
+
+models:
+  - name: till_reconciliation
+    description: Two counts of the same money, side by side. One row per till per day.
+  - name: store_day_status
+    description: Can this store's day be paid from? One row per open store per day.
+  - name: expected_store_days
+    description: Every loaded day, for every store that was open that day.
+  - name: expected_columns
+    description: The columns each kind of file must have.
+
+unit_tests:
+  - name: a_till_with_no_lines_counts_as_zero
+    description: A store that sent no sales file must show as a difference, not as nothing.
+    model: till_reconciliation
+    given:
+      - input: source('clean', 'till_totals')
+        rows:
+          - {store_id: S01, till_id: T1, business_date: 2026-08-24, net_total_cents: 500}
+          - {store_id: S01, till_id: T2, business_date: 2026-08-24, net_total_cents: 300}
+      - input: source('clean', 'sales_lines')
+        rows:
+          - {store_id: S01, till_id: T1, sales_date: 2026-08-24, amount_cents: 700}
+          - {store_id: S01, till_id: T1, sales_date: 2026-08-24, amount_cents: -200}
+    expect:
+      rows:
+        - {store_id: S01, till_id: T1, sales_date: 2026-08-24, till_cents: 500, lines_cents: 500, difference_cents: 0}
+        - {store_id: S01, till_id: T2, sales_date: 2026-08-24, till_cents: 300, lines_cents: 0, difference_cents: -300}
+
+  - name: the_five_answers_of_store_day_status
+    description: One store for each answer the model can give.
+    model: store_day_status
+    given:
+      - input: ref('expected_store_days')
+        rows:
+          - {store_id: S01, day: 2026-08-24}
+          - {store_id: S02, day: 2026-08-24}
+          - {store_id: S03, day: 2026-08-24}
+          - {store_id: S04, day: 2026-08-24}
+          - {store_id: S05, day: 2026-08-24}
+          - {store_id: S06, day: 2026-08-24}
+      - input: ref('till_reconciliation')
+        rows:
+          - {store_id: S01, sales_date: 2026-08-24, till_cents: 1000}
+          - {store_id: S02, sales_date: 2026-08-24, till_cents: 1000}
+          - {store_id: S03, sales_date: 2026-08-24, till_cents: 1000}
+          - {store_id: S04, sales_date: 2026-08-24, till_cents: 1000}
+          - {store_id: S05, sales_date: 2026-08-24, till_cents: 1000}
+      - input: source('clean', 'sales_lines')
+        rows:
+          - {store_id: S01, sales_date: 2026-08-24, amount_cents: 1000}
+          - {store_id: S02, sales_date: 2026-08-24, amount_cents: 900}
+          - {store_id: S05, sales_date: 2026-08-24, amount_cents: 950}
+          - {store_id: S06, sales_date: 2026-08-24, amount_cents: 800}
+      - input: source('quarantine', 'sales_lines')
+        rows:
+          - {store_id: S02, file_day: 2026-08-24, line_id: L9, amount_cents: 100, reason: a refund gives money back}
+      - input: source('quarantine', 'raw_sales_lines')
+        rows: []
+      - input: source('ops', 'refused_files')
+        rows:
+          - {file_name: sales_lines_S03_2026-08-24.csv, table_name: sales_lines, reason: an expected column is missing}
+    expect:
+      rows:
+        - {store_id: S01, status: ok, problem: null, rows_set_aside: 0}
+        - {store_id: S02, status: do not pay yet, problem: rows_set_aside, rows_set_aside: 1}
+        - {store_id: S03, status: do not pay yet, problem: file_refused, rows_set_aside: 0}
+        - {store_id: S04, status: do not pay yet, problem: no_sales_file, rows_set_aside: 0}
+        - {store_id: S05, status: do not pay yet, problem: unexplained, rows_set_aside: 0}
+        - {store_id: S06, status: do not pay yet, problem: no_till_total, rows_set_aside: 0}

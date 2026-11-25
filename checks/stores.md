@@ -1,6 +1,6 @@
 # Check card: `stores`
 
-**State after milestone 3:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.
+**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.
 
 A till is the machine at the counter where a customer pays. It is also called a cash register.
 
@@ -49,7 +49,7 @@ On `sales_lines` a row count told you nothing: "not empty" passed with one store
 
 ## 6. The check
 
-Four checks. The SQL is in `lotus_pipeline/other_checks.py`.
+Four checks. Since milestone 4 each check is a dbt test, in `dbt_project/tests/`.
 
 | # | Check | The limit | Lens | Question | How serious |
 |---|---|---|---|---|---|
@@ -60,7 +60,16 @@ Four checks. The SQL is in `lotus_pipeline/other_checks.py`.
 
 ## 7. What happens when it fails?
 
-Not yet. Today a failed check changes nothing: the checks are run by hand, with `python -m lotus_pipeline inspect`. Milestone 4 decides for each one: stop, set the rows aside, or warn. And who is told.
+Each check is now a dbt test, and a gate in the pipeline acts on it. The test's own file says what a failure does: `dbt_project/tests/<gate>/<check>.sql`.
+
+| # | Check | Gate | When it fails |
+|---|---|---|---|
+| 22 | There are six stores, each once | `gate_clean` | **Block.** The gate fails, the tasks after it do not run, and the outputs keep their last good numbers |
+| 23 | A store row makes sense | `gate_clean` | **Block.** The gate fails, the tasks after it do not run, and the outputs keep their last good numbers |
+| 24 | Every file is from a store we know | `gate_clean` | **Block.** The gate fails, the tasks after it do not run, and the outputs keep their last good numbers |
+| 25 | The stores table is the same as yesterday | `gate_clean` | **Warn.** The run continues, and the warning is recorded |
+
+**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert.
 
 ## 8. The proof
 

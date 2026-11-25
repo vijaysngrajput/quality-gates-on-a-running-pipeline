@@ -157,7 +157,7 @@ def test_a_fault_you_switch_on_and_a_fix(tmp_path, monkeypatch):
     fixed = [r for r in sales(tmp_path, "S03", "2026-08-24") if r["receipt_id"] == refund]
     assert fixed[0]["amount_cents"] == "-949"
     assert main(["status"]) == 0 and main(["reset"]) == 0
-    assert not tmp_path.exists()
+    assert list(tmp_path.iterdir()) == []  # the folder is empty, and still there
 
 
 def test_the_key_files_are_up_to_date():
@@ -169,3 +169,20 @@ def test_the_key_files_are_up_to_date():
 
 def test_every_case_has_its_details():
     assert [c["case"] for c in planted.CASES] == list(range(1, 14)) == sorted(key_files.DETAILS)
+
+
+def test_fixing_case_6_means_the_buying_team_types_the_product(tmp_path, monkeypatch):
+    monkeypatch.setenv("LOTUS_LANDING", str(tmp_path))
+    assert main(["deliver", "--day", "2026-08-29"]) == 0
+    assert "P-041" not in {
+        r["product_id"] for r in rows(tmp_path, "products", "products_2026-08-29.csv")
+    }
+    assert main(["fix", "--case", "6"]) == 0 and main(["deliver", "--day", "2026-08-29"]) == 0
+    soup = [
+        r
+        for r in rows(tmp_path, "products", "products_2026-08-29.csv")
+        if r["product_id"] == "P-041"
+    ]
+    assert [(r["unit_price_cents"], r["valid_from"], r["status"]) for r in soup] == [
+        ("599", "2026-08-29", "active")
+    ]

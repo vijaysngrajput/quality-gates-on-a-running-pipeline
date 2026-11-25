@@ -26,6 +26,7 @@ from store_systems.catalog import (
     RETIRED,
     STORES,
     SUPPLIERS,
+    UNLISTED_PRODUCT,
     all_days,
     is_open,
     on_sale,
@@ -191,9 +192,19 @@ def till_rows(world: World, store_id: str, day: date) -> list[dict]:
     return rows
 
 
-def product_rows(day: date) -> list[dict]:
-    """The price list as the buying team has typed it by the end of `day`."""
+def product_rows(day: date, state: dict | None = None) -> list[dict]:
+    """The price list as the buying team has typed it by the end of `day`.
+
+    When case 6 is fixed, the buying team has typed the product the tills already sell.
+    """
     rows = []
+    if state and 6 in state["fixed"]:
+        product_id, name, price = UNLISTED_PRODUCT
+        rows.append(
+            {"product_id": product_id, "product_name": name, "category": "Pantry", "unit": "each",
+             "unit_price_cents": price, "valid_from": planted.case(6)["day"].isoformat(),
+             "valid_to": "", "status": "active"}
+        )  # fmt: skip
     for product_id, (name, category, unit, price, _supplier) in PRODUCTS.items():
         row = {
             "product_id": product_id,
@@ -365,7 +376,9 @@ def deliver(day: date, landing_folder: Path, world: World | None = None) -> list
     landing = _Landing(landing_folder)
     evening = datetime.combine(day, time(23, 0))
 
-    landing.write("products", f"products_{day}.csv", PRODUCT_COLUMNS, product_rows(day), evening)
+    landing.write(
+        "products", f"products_{day}.csv", PRODUCT_COLUMNS, product_rows(day, state), evening
+    )
     landing.write("stores", f"stores_{day}.csv", STORE_COLUMNS, store_rows(), evening)
     landing.write("members", f"members_{day}.csv", MEMBER_COLUMNS, member_rows(world, day), evening)
 

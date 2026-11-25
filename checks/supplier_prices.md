@@ -1,6 +1,6 @@
 # Check card: `supplier_prices`
 
-**State after milestone 3:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.
+**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.
 
 ## 1. What does one row mean?
 
@@ -46,7 +46,7 @@ Two of these look at the file **before** it becomes a table. That is new. And th
 
 ## 6. The check
 
-Five checks. The SQL is in `lotus_pipeline/other_checks.py`.
+Five checks. Since milestone 4 each check is a dbt test, in `dbt_project/tests/`.
 
 | # | Check | The limit | Lens | Question | How serious |
 |---|---|---|---|---|---|
@@ -60,7 +60,17 @@ Check 29 looks at every file of every table, not only the suppliers'. It is on t
 
 ## 7. What happens when it fails?
 
-Not yet. Today a failed check changes nothing: the checks are run by hand, with `python -m lotus_pipeline inspect`. Milestone 4 decides for each one: stop, set the rows aside, or warn. And who is told.
+Each check is now a dbt test, and a gate in the pipeline acts on it. The test's own file says what a failure does: `dbt_project/tests/<gate>/<check>.sql`.
+
+| # | Check | Gate | When it fails |
+|---|---|---|---|
+| 29 | A file has the columns we expect | `gate_landing` | **Refuse the file.** None of its rows go on. The last good file stays in use |
+| 30 | Every supplier row has a cost | `gate_clean` | **Quarantine.** The bad rows are set aside with this reason. The good rows carry on |
+| 31 | A cost is near the cost in the last file | `gate_clean` | **Quarantine.** The bad rows are set aside with this reason. The good rows carry on |
+| 32 | A product costs less than it sells for | `gate_clean` | **Quarantine.** The bad rows are set aside with this reason. The good rows carry on |
+| 33 | A supplier row fits its product | `gate_clean` | **Quarantine.** The bad rows are set aside with this reason. The good rows carry on |
+
+**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert.
 
 ## 8. The proof
 

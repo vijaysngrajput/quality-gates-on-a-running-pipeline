@@ -1,0 +1,48 @@
+# A data contract for the suppliers' price file.
+#
+# A data contract is a written agreement between the producer of data and its consumers.
+# It has four parts: an owner, the columns with their types, the rules for the values,
+# and a change policy. Lotus does not control this file. This page is what Lotus and
+# the suppliers agreed.
+#
+# Check a file against it:   uv run python -m lotus_pipeline contract
+name: supplier_prices
+version: 1.0.0
+
+owner:
+  producer: Each supplier that sells to Lotus Retails (SUP-A, SUP-B, SUP-C)
+  consumer: Lotus Retails finance, who pay suppliers from these costs
+  contact: buying@lotus-retails.example
+
+delivery:
+  file_name: supplier_prices_<supplier_id>_<date>.csv
+  how_often: One file a week from each supplier
+
+columns:
+  - name: supplier_id
+    type: text
+    meaning: Who sent the file
+    allowed: [SUP-A, SUP-B, SUP-C]
+  - name: product_id
+    type: text
+    meaning: Lotus's own id of the product
+    shape: P-000
+  - name: unit_cost
+    type: decimal
+    meaning: The cost of one piece or one kilogram, in US dollars. Not in cents
+    decimals: 2
+    min: 0.01
+    max: 50.00
+  - name: unit
+    type: text
+    meaning: What one unit is
+    allowed: [each, kg]
+  - name: price_date
+    type: date
+    meaning: The day the cost starts. It is the date in the file name
+
+change_policy:
+  additive: A supplier may add a column at any time. Lotus ignores it and reports it
+  breaking: >-
+    Renaming or removing a column, or changing its type or its meaning, is a breaking
+    change. It needs 30 days' notice and a new version of this contract

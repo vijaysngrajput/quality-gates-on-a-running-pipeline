@@ -1,6 +1,6 @@
 # Check card: `till_totals`
 
-**State after milestone 3:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.
+**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.
 
 A till is the machine at the counter where a customer pays. It is also called a cash register.
 
@@ -48,7 +48,7 @@ It never passes through the export program that writes `sales_lines`. That is wh
 
 ## 6. The check
 
-Three checks. The SQL is in `lotus_pipeline/till_checks.py`.
+Three checks. Since milestone 4 each check is a dbt test, in `dbt_project/`.
 
 | # | Check | The limit | Lens | Question | How serious |
 |---|---|---|---|---|---|
@@ -58,7 +58,15 @@ Three checks. The SQL is in `lotus_pipeline/till_checks.py`.
 
 ## 7. What happens when it fails?
 
-Not yet. Milestone 4 decides.
+Each check is now a dbt test, and a gate in the pipeline acts on it. The test's own file says what a failure does: `dbt_project/tests/<gate>/<check>.sql`.
+
+| # | Check | Gate | When it fails |
+|---|---|---|---|
+| 14 | A till has one total for a day | `gate_clean` | **Block.** The gate fails, the tasks after it do not run, and the outputs keep their last good numbers |
+| 15 | A till's total adds up | `gate_clean` | **Block.** The gate fails, the tasks after it do not run, and the outputs keep their last good numbers |
+| 16 | Every till of an open store sent its total | `gate_clean` | **Warn.** The run continues, and the warning is recorded |
+
+**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert.
 
 ## 8. The proof
 

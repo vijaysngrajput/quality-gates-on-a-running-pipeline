@@ -1,6 +1,6 @@
 # Check card: `sales_lines`
 
-**State after milestone 3:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.
+**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.
 
 A check card is filled in **before** any check is written. It is one short page. It says why a check exists.
 
@@ -62,7 +62,7 @@ Four of the five need a join, a total or a comparison first. None of them is a o
 
 ## 6. The check
 
-Thirteen checks. Each is a query that returns the bad rows. The SQL is in `lotus_pipeline/sales_checks.py`.
+Thirteen checks. Each is a query that returns the bad rows. Since milestone 4 each check is a dbt test, in `dbt_project/tests/`.
 
 "How serious" is a first opinion. Milestone 4 turns it into what the pipeline does.
 
@@ -86,7 +86,25 @@ Worry 6 of question 4, an empty `member_id`, still has no check. It has no answe
 
 ## 7. What happens when it fails?
 
-Not yet. Today a failed check changes nothing: the checks are run by hand, with `python -m lotus_pipeline inspect`. Milestone 4 decides for each one: stop, set the rows aside, or warn. And who is told.
+Each check is now a dbt test, and a gate in the pipeline acts on it. The test's own file says what a failure does: `dbt_project/tests/<gate>/<check>.sql`.
+
+| # | Check | Gate | When it fails |
+|---|---|---|---|
+| 1 | A cell that must be filled is filled | `gate_clean` | **Quarantine.** The bad rows are set aside with this reason. The good rows carry on |
+| 2 | One item line is stored once | `gate_clean` | **Quarantine** the extra copies. The first copy carries on, so the day is right again |
+| 3 | A receipt id has the right shape | `gate_clean` | **Quarantine.** The bad rows are set aside with this reason. The good rows carry on |
+| 4 | A line adds up | `gate_clean` | **Quarantine.** The bad rows are set aside with this reason. The good rows carry on |
+| 5 | Every sale is for a product that exists | `gate_clean` | **Quarantine.** The bad rows are set aside with this reason. The good rows carry on |
+| 6 | A refund gives money back | `gate_clean` | **Quarantine.** The bad rows are set aside with this reason. The good rows carry on |
+| 7 | A refund is not larger than the sale | `gate_clean` | **Quarantine.** The bad rows are set aside with this reason. The good rows carry on |
+| 8 | The price charged is the price valid that day | `gate_clean` | **Warn.** The run continues, and the warning is recorded |
+| 9 | Nothing is sold while the store is closed | `gate_clean` | **Quarantine.** The bad rows are set aside with this reason. The good rows carry on |
+| 10 | A weight is a believable weight | `gate_clean` | **Quarantine.** The bad rows are set aside with this reason. The good rows carry on |
+| 11 | The receipts add up to the till's own total | `gate_publish` | **Block**, when a difference has no explanation. When a missing file or a row set aside explains it: the store's day is marked "do not pay yet", with the reason |
+| 12 | Every open store reported | `gate_publish` | **Warn**, and a partial load. The other stores are published. This store's day is marked "do not pay yet: no sales file arrived" |
+| 13 | A store's day is near its normal day | `gate_clean` | **Warn.** The run continues, and the warning is recorded |
+
+**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert.
 
 ## 8. The proof
 

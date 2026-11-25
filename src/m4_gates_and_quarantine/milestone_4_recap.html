@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Milestone 4 recap: Gates and quarantine</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f4ef; --surface: #fffdf9; --ink: #1d2327; --muted: #5c6670; --line: #d9d4c8;
+    --accent: #0f6b5c; --accent-ink: #ffffff; --accent-soft: #dcefe9;
+    --neg: #a23b2a; --neg-soft: #f6e1dc; --pos: #1f6f43; --pos-soft: #dff0e5;
+    --warn: #8a5a00; --warn-soft: #f7ebcf; --tag-bg: #ecebe4;
+    --shadow: 0 1px 2px rgba(29, 35, 39, .06), 0 6px 18px rgba(29, 35, 39, .06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --bg: #14181a; --surface: #1c2226; --ink: #e8e6e1; --muted: #9aa4ab; --line: #2e373c;
+      --accent: #5fc5b0; --accent-ink: #0d1f1c; --accent-soft: #1d3a35;
+      --neg: #e58a78; --neg-soft: #3a2420; --pos: #7fd0a0; --pos-soft: #1d3527;
+      --warn: #e2b85c; --warn-soft: #3a3019; --tag-bg: #262e33;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 18px rgba(0, 0, 0, .25);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15.5px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .page { max-width: 980px; margin: 0 auto; padding: 36px 24px 64px; }
+  .eyebrow { margin: 0 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0 0 8px; font: 600 38px/1.12 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; text-wrap: balance; }
+  h2 { margin: 0 0 6px; font: 600 26px/1.2 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; text-wrap: balance; }
+  h3 { margin: 0 0 4px; font-size: 16px; }
+  p { margin: 0 0 12px; }
+  .lede { max-width: 62ch; color: var(--muted); font-size: 17px; }
+  .num { font-variant-numeric: tabular-nums; }
+  a { color: var(--accent); }
+  code { font: 13.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+  /* Jump links */
+  .nav { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 6px; margin: 22px -8px 0; padding: 10px 8px; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .nav a { padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font-size: 13.5px; font-weight: 500; text-decoration: none; }
+  .nav a:hover, .nav a.on { border-color: var(--accent); }
+  .nav a.on { background: var(--accent); color: var(--accent-ink); }
+  a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  section { padding: 44px 0 6px; scroll-margin-top: 56px; }
+  .kicker { margin: 0 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+  /* Things slide up as they come into view. They are never hidden, so the page reads without JavaScript. */
+  .js .rise { opacity: .25; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+  .js .rise.in { opacity: 1; transform: none; }
+
+  .tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
+  .tile { padding: 14px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; text-align: center; }
+  .tile b { display: block; font: 600 30px/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-variant-numeric: tabular-nums; }
+  .tile span { color: var(--muted); font-size: 13px; line-height: 1.3; display: block; }
+  .tile.bad b { color: var(--neg); }
+
+  blockquote { margin: 14px 0 18px; padding: 14px 18px; border-left: 4px solid var(--accent); background: var(--surface); border-radius: 0 12px 12px 0; font: 500 18px/1.45 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+  .card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  .card .a { display: block; margin: 4px 0 2px; font-size: 23px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .card small { color: var(--muted); }
+
+  /* The bonus report, as a table */
+  .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 8px 14px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  tr:last-child td { border-bottom: 0; }
+  td.r, th.r { text-align: right; }
+  tr.bad td { background: var(--neg-soft); }
+  tr.bad td.flag { color: var(--neg); font-weight: 600; }
+  .green { color: var(--pos); font-weight: 600; }
+
+  /* The pipeline, drawn small */
+  .pipe { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px; margin: 16px 0 12px; }
+  .box { position: relative; padding: 12px; background: var(--surface); border: 2px solid var(--line); border-radius: 12px; transition: border-color .4s, box-shadow .4s; }
+  .box + .box::before { content: "\2192"; position: absolute; left: -17px; top: 16px; color: var(--muted); }
+  .box.lit { border-color: var(--accent); box-shadow: var(--shadow); }
+  .box .role { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .box b { display: block; line-height: 1.25; }
+  .box > span:not(.role) { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; }
+  .box .n { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .btn { padding: 7px 14px; font: inherit; font-weight: 500; color: var(--bg); background: var(--ink); border: 1px solid var(--ink); border-radius: 8px; cursor: pointer; }
+  .hand { margin-top: 10px; padding: 9px 12px; border: 2px dashed var(--line); border-radius: 12px; color: var(--muted); font-size: 13.5px; }
+  .tasks { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 4px; margin: 0 0 12px; font-size: 13.5px; color: var(--muted); }
+  .tasks code { padding: 2px 10px; border: 2px solid var(--pos); border-radius: 999px; background: var(--pos-soft); color: var(--ink); font-weight: 600; font-size: 12.5px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  ul.plain { margin: 6px 0 0; padding-left: 18px; }
+
+  .versus { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .versus .bad { border-color: var(--neg); background: var(--neg-soft); }
+  .versus .good { border-color: var(--pos); background: var(--pos-soft); }
+  .versus .bad h3 { color: var(--neg); }
+  .versus .good h3 { color: var(--pos); }
+  .line {
+    margin: 12px 0 0; padding: 10px 14px; overflow-x: auto; background: var(--surface); border: 1px solid var(--neg); border-radius: 10px;
+    font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  ol.learned { margin: 12px 0 0; padding: 0; list-style: none; counter-reset: n; display: grid; gap: 10px; }
+  ol.learned li { counter-increment: n; position: relative; padding: 12px 16px 12px 56px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  ol.learned li::before { content: counter(n); position: absolute; left: 14px; top: 12px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  ol.learned b { display: block; }
+  ol.learned span { color: var(--muted); }
+
+  .words { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+  .word { padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  .word b { color: var(--accent); }
+  .word span { display: block; font-size: 14px; }
+
+  /* The week: what the report says against the answer key */
+  .chart { display: grid; gap: 8px; margin: 16px 0 6px; padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  .chart-row { display: grid; grid-template-columns: 44px minmax(0, 1fr) 190px; gap: 12px; align-items: center; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .track { position: relative; height: 22px; border-radius: 6px; background: var(--tag-bg); }
+  .track i { display: block; height: 100%; width: 0; border-radius: 6px; background: var(--neg); transition: width 1s ease; }
+  .chart-row .what { color: var(--neg); font-weight: 600; }
+  .limit { position: absolute; top: -5px; bottom: -5px; width: 3px; border-radius: 2px; background: var(--ink); }
+  .chart .legend { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+  details.quiz { margin-top: 10px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  details.quiz summary { cursor: pointer; font-weight: 600; }
+  details.quiz p { margin: 8px 0 0; color: var(--muted); }
+  details.quiz[open] { border-color: var(--accent); }
+
+  .wrong { margin-top: 14px; padding: 16px 20px; border: 1px solid var(--neg); border-radius: 12px; background: var(--neg-soft); }
+  .wrong b { display: block; color: var(--neg); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .wrong span { font: 600 20px/1.35 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+
+  pre { margin: 8px 0 0; padding: 12px 14px; overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .next { margin-top: 14px; padding: 18px 20px; background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; }
+  .foot { margin: 40px 0 0; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 760px) {
+    .page { padding: 24px 16px 48px; }
+    h1 { font-size: 29px; } h2 { font-size: 22px; }
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .versus, .words, .two { grid-template-columns: minmax(0, 1fr); }
+    .pipe { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .box + .box::before { content: "\2193"; left: 16px; top: -22px; }
+    .chart-row { grid-template-columns: 40px minmax(0, 1fr); }
+    .chart-row .what { grid-column: 2; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .js .rise { opacity: 1; transform: none; }
+  }
+
+  /* New in milestone 2 */
+  td.wrap, th.wrap { white-space: normal; }
+  td.name { min-width: 230px; }
+  .tile span i { font-style: normal; }
+  td small { display: block; color: var(--muted); font-size: 12.5px; white-space: normal; }
+  .lens-tag { display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--tag-bg); color: var(--muted); font-size: 11.5px; font-weight: 600; }
+  tr.caught td.flag { color: var(--neg); font-weight: 600; }
+  .lens-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 14px 0; }
+  .lens-row .card b.n { display: block; font: 600 26px/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+  .beside { margin-top: 12px; padding: 12px 14px; border: 2px solid var(--accent); border-radius: 12px; background: var(--surface); }
+  .beside .tag { display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 11.5px; font-weight: 600; }
+  .beside b { display: block; margin-top: 4px; }
+  .beside span.what { display: block; color: var(--muted); font-size: 13.5px; }
+  @media (max-width: 760px) { .lens-row { grid-template-columns: minmax(0, 1fr); } }
+  /* New in milestone 3 */
+  td.c, th.c { text-align: center; }
+  td.has { font-weight: 700; color: var(--accent); }
+  td.none { color: var(--line); }
+  th.newcol { color: var(--accent); }
+  tr.one td:first-child { font-weight: 600; }
+  .door { color: var(--pos); font-weight: 600; }
+  td.caughtby { min-width: 250px; }
+  td.wrap.door, td.wrap { min-width: 120px; }
+  /* Milestone 4: the bonus report with its Pay? column */
+  td.pay-yes { color: var(--pos); font-weight: 700; }
+  td.pay-no { color: var(--neg); font-weight: 700; white-space: nowrap; }
+  tr.reason td { padding-top: 0; border-top: 0; color: var(--muted); font-size: 13.5px; white-space: normal; }
+  .tasks code.gate { border-color: var(--accent); background: var(--accent-soft); }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <p class="eyebrow">Milestone 4 of 5 · recap</p>
+    <h1>Gates and quarantine</h1>
+    <p class="lede">Lotus Retails is a chain of supermarkets. Customers pay at a <strong>till</strong>: the machine at the counter, also called a cash register. For three milestones your checks found every fault, and the pipeline published the wrong numbers anyway. In this one every check became a test in dbt, three gates went into the pipeline, and a failed check finally did something.</p>
+    <div class="tiles">
+      <div class="tile rise"><b class="num" data-k="numbers.notebooks" data-count></b><span>lab notebooks</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.tests" data-count></b><span>tests of the code</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.dbt_tests" data-count></b><span>dbt tests at <i data-k="numbers.gates"></i> gates</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.rows_set_aside" data-count></b><span>rows set aside by Sunday night</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.can_be_paid" data-count></b><span>of <i data-k="numbers.stores"></i> stores can be paid</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.words" data-count></b><span>new words</span></div>
+    </div>
+  </header>
+
+  <nav class="nav" aria-label="Sections">
+    <a href="#asked">1. Asked</a>
+    <a href="#built">2. Built</a>
+    <a href="#week">3. The week</a>
+    <a href="#cases">4. Each fault</a>
+    <a href="#learned">5. Learned</a>
+    <a href="#words">6. Words</a>
+    <a href="#quiz">7. Quiz</a>
+    <a href="#wrong">8. Still wrong</a>
+    <a href="#setup">Set up</a>
+  </nav>
+
+  <section id="asked">
+    <p class="kicker">1 · What was asked</p>
+    <h2>For the first time, the report answers both sentences</h2>
+    <p><b>Why this milestone exists.</b> Every Monday the head of retail operations asks:</p>
+    <blockquote class="rise" data-k="question"></blockquote>
+    <p>Until now the report could only say a number. This is the report after the run for <span data-k="report.through"></span>, the last night of the bonus week. It says who can be paid, and for each store that cannot, the row that says why.</p>
+    <div class="table-wrap rise">
+      <table>
+        <thead><tr><th>Store</th><th>Manager</th><th class="r">Net sales</th><th class="r">Bonus (1%)</th><th>Pay?</th></tr></thead>
+        <tbody id="report-rows"></tbody>
+      </table>
+    </div>
+    <p style="margin-top:12px"><b><span data-k="numbers.can_be_paid"></span> of <span data-k="numbers.stores"></span> stores can be paid.</b> That is not a good week. It is an honest one: milestone 1 published six wrong numbers, with five green checks.</p>
+  </section>
+
+  <section id="built">
+    <p class="kicker">2 · What you built</p>
+    <h2>Three gates, and somewhere for a bad row to go</h2>
+    <p>dbt holds each rule. Airflow runs the rule and acts on the result. The DAG now has <span data-k="numbers.tasks"></span> tasks, and three of them are gates.</p>
+    <p class="tasks" id="tasks">Airflow DAG <b data-k="dag.id"></b>: </p>
+    <div class="table-wrap rise" style="margin-top:12px">
+      <table>
+        <thead><tr><th>Gate</th><th class="wrap">Where it stands</th><th class="wrap">What it can do</th><th class="r">Tests</th></tr></thead>
+        <tbody id="gate-rows"></tbody>
+      </table>
+    </div>
+    <div class="beside rise"><span class="tag">new in this milestone</span><b>A dbt project with <span data-k="numbers.dbt_tests"></span> tests</b><span class="what"><span data-k="dbt.files"></span> are singular tests, one file each. The rest are generic tests, switched on with one line. <span data-k="dbt.models"></span> small models prepare data to be checked, and <span data-k="dbt.unit_tests"></span> unit tests check the SQL of those models on rows typed by hand.</span></div>
+    <div class="two" style="margin-top:14px">
+      <div class="card rise"><h3>Given, ready-made</h3>
+        <ul class="plain"><li>The stores' systems, and the answer key</li><li>The load, clean and publish steps</li><li>Your checks and the supplier's contract, from milestones 2 and 3</li></ul></div>
+      <div class="card rise"><h3>Built by you</h3>
+        <ul class="plain"><li>Every check as a dbt test, with what a failure does: block, set aside, refuse the file, or warn</li><li>Three gate tasks in the DAG</li><li>Quarantine tables, and a dead-letter table for refused files</li><li>Write, audit, publish: outputs are built in staging and checked there first</li><li>A report with a Pay? column</li></ul></div>
+    </div>
+    <p style="margin-top:14px"><b>The outcome.</b> A bad row no longer reaches a manager's pay. Open the <a href="milestone_4_flow.html">flow page</a>, pick a fault, and watch it get stopped.</p>
+  </section>
+
+  <section id="week">
+    <p class="kicker">3 · The week, night by night</p>
+    <h2>The same seven nights, with gates</h2>
+    <p>Before any of this, the gates ran on the four clean weeks: <span data-k="clean_weeks_failed"></span> failed tests, nothing set aside, six stores of six paid. Then the bonus week.</p>
+    <div class="table-wrap rise">
+      <table>
+        <thead><tr><th>Night</th><th class="r wrap">Stores that can be paid</th><th class="r wrap">Rows set aside</th><th class="r wrap">Files refused</th><th class="r">Warnings</th><th class="r wrap">Tests passed</th></tr></thead>
+        <tbody id="week-rows"></tbody>
+      </table>
+    </div>
+    <p style="margin-top:12px">Rows set aside by Sunday night: <span id="aside-list"></span>. Files refused: <span id="refused"></span>.</p>
+    <p>No gate touched the public holiday, the closed store or the real sale of 400 bottles: <span data-k="numbers.false_alarms"></span> false alarms.</p>
+  </section>
+
+  <section id="cases">
+    <p class="kicker">4 · What happened to each planted fault</p>
+    <h2><span data-k="numbers.planted_cases_handled"></span> of <span data-k="numbers.planted_cases"></span> planted cases met a gate</h2>
+    <p>Each one passed all five standard checks in milestone 1. Case 8, the late file, is counted too: its store was marked on the night, and was fine a night later.</p>
+    <div class="table-wrap rise">
+      <table>
+        <thead><tr><th>Case</th><th class="wrap">Where</th><th class="wrap">Caught by</th><th class="wrap">What happened</th></tr></thead>
+        <tbody id="case-rows"></tbody>
+      </table>
+    </div>
+    <h3 style="margin-top:18px">No planted case blocks, so two faults were planted in the lab</h3>
+    <p>Block is kept for a fault that makes every number wrong. Each of these was planted on a private copy of four clean weeks, and the night was run again.</p>
+    <div class="table-wrap rise">
+      <table>
+        <thead><tr><th class="wrap">Fault planted in the lab</th><th class="wrap">Caught by</th><th class="wrap">What happened</th></tr></thead>
+        <tbody id="lab-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="learned">
+    <p class="kicker">5 · What you learned</p>
+    <h2>Five things</h2>
+    <ol class="learned">
+      <li class="rise"><b>dbt holds the rule. Airflow runs it and acts on the result.</b><span>The rule is a query in a file. The gate is a task that other tasks wait for.</span></li>
+      <li class="rise"><b>A failed check must do something.</b><span>Stop the run, set the rows aside, or warn. Choose for each check, and write the choice next to the rule.</span></li>
+      <li class="rise"><b>Where a gate stands decides what it can protect.</b><span>Only the first gate can still see a file's own columns. Only the last can see whether the whole day adds up.</span></li>
+      <li class="rise"><b>Set bad rows aside with a reason, and let the good rows go on.</b><span>Then make the output say what it is missing. A number that hides a gap is still a wrong number.</span></li>
+      <li class="rise"><b>Test the tests.</b><span>Plant the fault and watch its gate catch it. Then run clean data and watch every gate stay quiet.</span></li>
+    </ol>
+  </section>
+
+  <section id="words">
+    <p class="kicker">6 · New words</p>
+    <h2>Words you can now explain</h2>
+    <div class="words" id="word-list"></div>
+    <p style="margin-top:12px">Each word has an interview line in the project's <a href="../../GLOSSARY.md">glossary</a>.</p>
+  </section>
+
+  <section id="quiz">
+    <p class="kicker">7 · Three questions</p>
+    <h2>What would you say?</h2>
+    <p>Answer in your head first. Then open the answer.</p>
+    <div id="quiz-list"></div>
+  </section>
+
+  <section id="wrong">
+    <p class="kicker">8 · What is still wrong</p>
+    <h2>The gates work, in silence</h2>
+    <p>Everything on this page happened at 02:00. A row was set aside, a file was refused, a store was marked. Each of those is a row in a table and a line in a log. Nobody was told. The head of retail operations finds out on Monday, when she opens the report.</p>
+    <div class="wrong rise"><b>Still wrong</b><span data-k="still_wrong"></span></div>
+    <div class="next rise"><b>Next: milestone 5, know, alert, recover.</b> The pipeline keeps a history of its runs, tells the person who can act, and you repair one night with a backfill until the numbers equal the answer key.</div>
+  </section>
+
+  <section id="setup">
+    <p class="kicker">Set up</p>
+    <h2>What this milestone needs</h2>
+    <p>dbt is new. It is installed into the project's virtual environment by <code>uv sync</code>, and into the Airflow image by a rebuild. Git, Python 3.12 or later, <a href="https://docs.astral.sh/uv/">uv</a> and Docker, as in milestone 1. No API key, no cloud account, no AI.</p>
+    <h3 style="margin-top:14px">From the project folder</h3>
+    <pre>uv sync                        # adds dbt to the virtual environment
+docker compose up -d --build   # the warehouse, and Airflow with dbt inside</pre>
+    <p style="margin-top:10px">To run one night through the gates as a plain program:</p>
+    <pre>uv run python -m store_systems deliver --through 2026-08-24
+cd src/m4_gates_and_quarantine
+uv run python -m lotus_pipeline run --day 2026-08-24              # all eight steps
+uv run python -m lotus_pipeline gate-clean --day 2026-08-24       # one gate
+uv run python -m lotus_pipeline dbt test --select test_type:unit  # the unit tests
+uv run pytest                                                     # this milestone's tests</pre>
+    <p style="margin-top:10px">When you are done: <code>docker compose down</code>.</p>
+  </section>
+
+  <p class="foot">Every number on this page is written by <code>lotus_pipeline/flow_data.py</code> from a real run of this milestone's code, and a test checks that they still match. No name, email or phone number of a member is shown. All data is fictional. Lotus Retails does not exist.</p>
+</div>
+
+<script id="page-data" type="application/json">
+{
+ "question": "Can I pay the bonus from last week's net sales, store by store? And if I cannot trust a number, which one, and why?",
+ "still_wrong": "A gate fails at 02:00, and nobody knows until a store manager complains.",
+ "report": {
+  "through": "Sun 08-30",
+  "stores": [
+   {
+    "store": "S01 Lotus Ashby High Street",
+    "manager": "Marta Lindqvist",
+    "net_sales": "$5,153.25",
+    "bonus": "$51.53",
+    "pay": true,
+    "why_not": []
+   },
+   {
+    "store": "S02 Lotus Ashby Market Square",
+    "manager": "Dana Okafor",
+    "net_sales": "$5,724.68",
+    "bonus": "–",
+    "pay": false,
+    "why_not": [
+     "Sun 08-30: 4 rows set aside ($23.95): Nothing is sold while the store is closed"
+    ]
+   },
+   {
+    "store": "S03 Lotus Calder Bridge",
+    "manager": "Tomas Reyes",
+    "net_sales": "$5,097.11",
+    "bonus": "–",
+    "pay": false,
+    "why_not": [
+     "Mon 08-24: 1 row set aside ($9.49): A line adds up; A refund gives money back"
+    ]
+   },
+   {
+    "store": "S04 Lotus Calder Station",
+    "manager": "Ines Marchetti",
+    "net_sales": "$4,585.57",
+    "bonus": "–",
+    "pay": false,
+    "why_not": [
+     "Tue 08-25: no sales file arrived. The tills counted $587.42"
+    ]
+   },
+   {
+    "store": "S05 Lotus Fenwick Green",
+    "manager": "Samir Haddad",
+    "net_sales": "$3,591.53",
+    "bonus": "–",
+    "pay": false,
+    "why_not": [
+     "Thu 08-27: 1 row set aside ($1,522.20): A weight is a believable weight"
+    ]
+   },
+   {
+    "store": "S06 Lotus Fenwick Harbour",
+    "manager": "Aiko Tanaka",
+    "net_sales": "$4,400.92",
+    "bonus": "–",
+    "pay": false,
+    "why_not": [
+     "Sat 08-29: 3 rows set aside ($17.97): Every sale is for a product that exists"
+    ]
+   }
+  ]
+ },
+ "week": [
+  {
+   "day": "Mon 08-24",
+   "can_be_paid": 5,
+   "stores": 6,
+   "rows_set_aside": 1,
+   "files_refused": 0,
+   "warnings": 1,
+   "tests": 47,
+   "passed": 44
+  },
+  {
+   "day": "Tue 08-25",
+   "can_be_paid": 4,
+   "stores": 6,
+   "rows_set_aside": 5,
+   "files_refused": 1,
+   "warnings": 2,
+   "tests": 47,
+   "passed": 40
+  },
+  {
+   "day": "Wed 08-26",
+   "can_be_paid": 4,
+   "stores": 6,
+   "rows_set_aside": 6,
+   "files_refused": 1,
+   "warnings": 2,
+   "tests": 47,
+   "passed": 39
+  },
+  {
+   "day": "Thu 08-27",
+   "can_be_paid": 2,
+   "stores": 6,
+   "rows_set_aside": 7,
+   "files_refused": 1,
+   "warnings": 2,
+   "tests": 47,
+   "passed": 38
+  },
+  {
+   "day": "Fri 08-28",
+   "can_be_paid": 3,
+   "stores": 6,
+   "rows_set_aside": 174,
+   "files_refused": 2,
+   "warnings": 6,
+   "tests": 47,
+   "passed": 34
+  },
+  {
+   "day": "Sat 08-29",
+   "can_be_paid": 2,
+   "stores": 6,
+   "rows_set_aside": 177,
+   "files_refused": 2,
+   "warnings": 5,
+   "tests": 47,
+   "passed": 34
+  },
+  {
+   "day": "Sun 08-30",
+   "can_be_paid": 1,
+   "stores": 6,
+   "rows_set_aside": 181,
+   "files_refused": 2,
+   "warnings": 5,
+   "tests": 47,
+   "passed": 33
+  }
+ ],
+ "gates": [
+  {
+   "task": "gate_landing",
+   "when": "when the files land",
+   "can": "It can refuse a whole file",
+   "tests": 3
+  },
+  {
+   "task": "gate_clean",
+   "when": "after cleaning",
+   "can": "It sets bad rows aside, and blocks on a broken reference table",
+   "tests": 39
+  },
+  {
+   "task": "gate_publish",
+   "when": "before the outputs are published",
+   "can": "It blocks on a difference nobody can explain",
+   "tests": 5
+  }
+ ],
+ "cases": [
+  {
+   "case": "Case 1",
+   "name": "A refund stored as a positive amount",
+   "where": "Mon 08-24 · store S03, Lotus Calder Bridge",
+   "caught_by": [
+    "gate_clean · refund gives money back · set aside",
+    "gate_clean · line adds up · set aside"
+   ],
+   "now": "1 row set aside. S03: do not pay yet"
+  },
+  {
+   "case": "Case 2",
+   "name": "One receipt in the file twice, with different line ids",
+   "where": "Tue 08-25 · store S01, Lotus Ashby High Street",
+   "caught_by": [
+    "gate_clean · true key unique · set aside"
+   ],
+   "now": "4 rows set aside. The day is right again, $819.77, and S01 can be paid for it"
+  },
+  {
+   "case": "Case 3",
+   "name": "A weight entered in grams, not kilograms",
+   "where": "Thu 08-27 · store S05, Lotus Fenwick Green",
+   "caught_by": [
+    "gate_clean · believable quantity · set aside"
+   ],
+   "now": "1 row set aside. S05: do not pay yet"
+  },
+  {
+   "case": "Case 4",
+   "name": "A price that was changed yesterday, charged at the old price",
+   "where": "Fri 08-28 · store S04, Lotus Calder Station",
+   "caught_by": [
+    "gate_clean · price of the day · warning"
+   ],
+   "now": "A warning on 6 lines. The store is $6.00 short, and the day can be paid"
+  },
+  {
+   "case": "Case 5",
+   "name": "A sale at 03:10 in a store that closes at 22:00",
+   "where": "Sun 08-30 · store S02, Lotus Ashby Market Square",
+   "caught_by": [
+    "gate_clean · inside opening hours · set aside"
+   ],
+   "now": "4 rows set aside. S02: do not pay yet"
+  },
+  {
+   "case": "Case 6",
+   "name": "A sale for a product that is not in products",
+   "where": "Sat 08-29 · store S06, Lotus Fenwick Harbour",
+   "caught_by": [
+    "gate_clean · every sale has a product · set aside"
+   ],
+   "now": "3 rows set aside. S06: do not pay yet"
+  },
+  {
+   "case": "Case 7",
+   "name": "One store sends no file",
+   "where": "Tue 08-25 · store S04, Lotus Calder Station",
+   "caught_by": [
+    "gate_publish · store is not ready to pay · warning",
+    "the model store_day_status"
+   ],
+   "now": "Nothing to set aside. The status says: no sales file arrived. S04: do not pay yet"
+  },
+  {
+   "case": "Case 9",
+   "name": "One store's whole file sent twice",
+   "where": "Fri 08-28 · store S02, Lotus Ashby Market Square",
+   "caught_by": [
+    "gate_clean · true key unique · set aside"
+   ],
+   "now": "167 rows set aside. The day is right again, $1,034.28, and S02 can be paid for it"
+  },
+  {
+   "case": "Case 10",
+   "name": "The supplier renames a column",
+   "where": "Tue 08-25 · the price file of supplier SUP-B",
+   "caught_by": [
+    "gate_landing · file is missing a column · file refused",
+    "gate_landing · the supplier's contract · file refused"
+   ],
+   "now": "The whole file is refused at the door. The last good cost is used for 12 products"
+  },
+  {
+   "case": "Case 11",
+   "name": "The supplier sends cost in cents",
+   "where": "Fri 08-28 · the price file of supplier SUP-C",
+   "caught_by": [
+    "gate_landing · the supplier's contract · file refused"
+   ],
+   "now": "The whole file is refused at the door. The last good cost is used for 15 products"
+  },
+  {
+   "case": "Case 12",
+   "name": "A stock count is missing for one day",
+   "where": "Fri 08-28 · store S05, Whole milk 2L",
+   "caught_by": [
+    "gate_clean · a count for every day · warning",
+    "gate_publish · order without a count · warning"
+   ],
+   "now": "A warning. The order list says \"no count: order by hand\" where it said 18"
+  },
+  {
+   "case": "Case 13",
+   "name": "The same member twice, with different letter case in the email",
+   "where": "Wed 08-26 · the loyalty app · members M-0117 and M-0304",
+   "caught_by": [
+    "gate_clean · one person once · set aside"
+   ],
+   "now": "M-0304 is set aside by number. Marketing has one row for the person"
+  }
+ ],
+ "lab_cases": [
+  {
+   "case": "Planted in the lab",
+   "name": "A store is deleted from the stores table",
+   "caught_by": [
+    "gate_clean · six stores once · block"
+   ],
+   "now": "gate_clean blocks. Three tasks never start, and the outputs keep their last good numbers"
+  },
+  {
+   "case": "Planted in the lab",
+   "name": "A valid row with a wrong quantity",
+   "caught_by": [
+    "gate_publish · unexplained difference · block"
+   ],
+   "now": "Every row check passes. gate_publish blocks on a difference nobody can explain"
+  }
+ ],
+ "set_aside": {
+  "sales_lines": 177,
+  "raw_sales_lines": 3,
+  "members": 1,
+  "supplier_prices": 0,
+  "stock_counts": 0
+ },
+ "refused_files": [
+  "supplier_prices_SUP-B_2026-08-25.csv",
+  "supplier_prices_SUP-C_2026-08-28.csv"
+ ],
+ "can_be_paid": 1,
+ "handled": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13
+ ],
+ "false_alarms": 0,
+ "clean_weeks_failed": 0,
+ "dbt": {
+  "landing": 2,
+  "clean": 39,
+  "publish": 5,
+  "files": 42,
+  "unit_tests": 2,
+  "models": 4
+ },
+ "quiz": [
+  {
+   "question": "On Mon 08-24 gate_clean sets one refund row aside at S03. The report now says $786.69 for the store. Is that the right number, and can the manager be paid from it?",
+   "answer": "No, twice. The receipts say $777.20. Setting a row aside does not repair it: the refund is not added any more, and it is not taken away either. The pipeline never guesses. So the output says what it is missing: Mon 08-24: 1 row set aside ($9.49): A line adds up; A refund gives money back. Do not pay yet."
+  },
+  {
+   "question": "On Tue 08-25 four lines of S01 are set aside too. But the report says S01 can be paid. Why is one store held back and the other not?",
+   "answer": "Because of what is left. The four lines were extra copies of one receipt. With the copies removed, S01's lines add up to the tills' own total, to the cent: $1,615.01. S03's do not. The publish gate does not ask whether rows were set aside. It asks whether the day still adds up."
+  },
+  {
+   "question": "A teammate says: make every failed test block. That is the safe choice. What would this week have looked like?",
+   "answer": "Nothing would have been published on 7 of 7 nights. Each of those nights had at least one failed test, even if only a warning about butter. Five stores would wait for a file that one store never sent. Block is for a fault that makes every number wrong, such as a broken stores table. For one bad row, set it aside. For news, warn."
+  }
+ ],
+ "words": [
+  {
+   "term": "Generic test",
+   "meaning": "A dbt test that is ready-made and switched on with one line, such as `not_null` or `unique`."
+  },
+  {
+   "term": "Singular test",
+   "meaning": "A dbt test that is one query in one file, written for one rule."
+  },
+  {
+   "term": "Severity",
+   "meaning": "How serious a failed test is for dbt: `error` stops the gate, `warn` lets the run go on."
+  },
+  {
+   "term": "Stored failures",
+   "meaning": "The rows a test returned, kept by dbt in a table named after the test."
+  },
+  {
+   "term": "Unit test",
+   "meaning": "A test of your SQL on a few rows typed by hand, with the answer typed beside them. A data test checks tonight's data."
+  },
+  {
+   "term": "Gate",
+   "meaning": "A step in the pipeline that runs checks and decides whether the data may go on."
+  },
+  {
+   "term": "Gate placement",
+   "meaning": "Where a gate stands: when the files land, after cleaning, or before publish. The same check protects different things in each place."
+  },
+  {
+   "term": "Warn or block",
+   "meaning": "The choice for a failed check: let the run go on and record it, or stop the run."
+  },
+  {
+   "term": "Write, audit, publish",
+   "meaning": "Build the output in a side table, check it there, and only then show it to its readers."
+  },
+  {
+   "term": "Upstream failure",
+   "meaning": "A task that failed earlier in the DAG. Airflow does not start the tasks after it, and marks them `upstream_failed`."
+  },
+  {
+   "term": "Quarantine",
+   "meaning": "Bad rows are set aside in their own table with the reason, and the good rows carry on."
+  },
+  {
+   "term": "Rejected rows",
+   "meaning": "The rows a check refused. Also called rejects."
+  },
+  {
+   "term": "Dead-letter table",
+   "meaning": "A table for things that could not be processed at all, such as a whole file that was refused."
+  },
+  {
+   "term": "Partial load",
+   "meaning": "A load where the good rows went on and the bad ones did not. The output must say what it is missing."
+  }
+ ],
+ "numbers": {
+  "notebooks": 8,
+  "tests": 103,
+  "dbt_tests": 46,
+  "unit_tests": 2,
+  "gates": 3,
+  "tasks": 8,
+  "rows_set_aside": 181,
+  "files_refused": 2,
+  "can_be_paid": 1,
+  "stores": 6,
+  "planted_cases_handled": 13,
+  "planted_cases": 13,
+  "false_alarms": 0,
+  "words": 14
+ },
+ "dag": {
+  "id": "lotus_nightly_m4",
+  "tasks": [
+   "stores_send_files",
+   "load",
+   "gate_landing",
+   "clean",
+   "gate_clean",
+   "build",
+   "gate_publish",
+   "publish"
+  ]
+ }
+}
+</script>
+<script>
+(function () {
+  'use strict';
+  var DATA = JSON.parse(document.getElementById('page-data').textContent);
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function get(path) { return path.split('.').reduce(function (o, k) { return o == null ? o : o[k]; }, DATA); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function byId(id) { return document.getElementById(id); }
+
+  // Fill every number from the data.
+  document.querySelectorAll('[data-k]').forEach(function (node) { node.textContent = get(node.dataset.k); });
+
+  // The bonus report of Sunday night, with its Pay? column and its reasons.
+  DATA.report.stores.forEach(function (s) {
+    var row = el('tr', s.pay ? null : 'bad');
+    row.appendChild(el('td', 'name', s.store));
+    row.appendChild(el('td', null, s.manager));
+    row.appendChild(el('td', 'r', s.net_sales));
+    row.appendChild(el('td', 'r', s.bonus));
+    row.appendChild(el('td', s.pay ? 'pay-yes' : 'pay-no', s.pay ? 'yes' : 'DO NOT PAY YET'));
+    byId('report-rows').appendChild(row);
+    s.why_not.forEach(function (why) {
+      var reason = el('tr', 'reason');
+      var cell = el('td', null, why);
+      cell.colSpan = 5;
+      reason.appendChild(cell);
+      byId('report-rows').appendChild(reason);
+    });
+  });
+
+  // The tasks of the DAG. The gates are marked.
+  var gateTasks = DATA.gates.map(function (g) { return g.task; });
+  DATA.dag.tasks.forEach(function (name, i) {
+    if (i) byId('tasks').appendChild(document.createTextNode(' → '));
+    byId('tasks').appendChild(el('code', gateTasks.indexOf(name) === -1 ? null : 'gate', name));
+  });
+  DATA.gates.forEach(function (g) {
+    var row = el('tr');
+    var name = el('td');
+    name.appendChild(el('code', null, g.task));
+    row.appendChild(name);
+    row.appendChild(el('td', 'wrap', g.when));
+    row.appendChild(el('td', 'wrap', g.can));
+    row.appendChild(el('td', 'r', g.tests));
+    byId('gate-rows').appendChild(row);
+  });
+
+  DATA.week.forEach(function (n) {
+    var row = el('tr');
+    row.appendChild(el('td', 'name', n.day));
+    row.appendChild(el('td', 'r', n.can_be_paid + ' of ' + n.stores));
+    row.appendChild(el('td', 'r', n.rows_set_aside));
+    row.appendChild(el('td', 'r', n.files_refused));
+    row.appendChild(el('td', 'r', n.warnings));
+    row.appendChild(el('td', 'r', n.passed + ' of ' + n.tests));
+    byId('week-rows').appendChild(row);
+  });
+  byId('aside-list').textContent = Object.keys(DATA.set_aside).filter(function (t) { return DATA.set_aside[t] > 0; })
+    .map(function (t) { return DATA.set_aside[t] + ' in ' + t; }).join(', ');
+  byId('refused').textContent = DATA.refused_files.join(' and ');
+
+  function caseRow(c, target, withWhere) {
+    var row = el('tr');
+    row.appendChild(el('td', 'wrap name', (withWhere ? c['case'] + '. ' : '') + c.name));
+    if (withWhere) row.appendChild(el('td', 'wrap', c.where));
+    var caught = el('td', 'wrap green caughtby');
+    c.caught_by.forEach(function (text, i) { if (i) caught.appendChild(el('br')); caught.appendChild(document.createTextNode(text)); });
+    row.appendChild(caught);
+    row.appendChild(el('td', 'wrap', c.now));
+    byId(target).appendChild(row);
+  }
+  DATA.cases.forEach(function (c) { caseRow(c, 'case-rows', true); });
+  DATA.lab_cases.forEach(function (c) { caseRow(c, 'lab-rows', false); });
+
+  DATA.words.forEach(function (w) {
+    var card = el('div', 'word rise');
+    card.appendChild(el('b', null, w.term));
+    card.appendChild(el('span', null, w.meaning.replace(/`/g, '')));
+    byId('word-list').appendChild(card);
+  });
+
+  DATA.quiz.forEach(function (q, i) {
+    var box = el('details', 'quiz rise');
+    box.appendChild(el('summary', null, (i + 1) + '. ' + q.question));
+    box.appendChild(el('p', null, q.answer));
+    byId('quiz-list').appendChild(box);
+  });
+
+  function countUp(node) {
+    var target = Number(get(node.dataset.k));
+    if (reduce || !isFinite(target)) return;
+    var start = performance.now();
+    (function tick(now) {
+      var t = Math.min(1, (now - start) / 900);
+      node.textContent = Math.round(target * (1 - Math.pow(1 - t, 3)));
+      if (t < 1) requestAnimationFrame(tick);
+    })(start);
+  }
+
+  // Reveal things as they scroll into view.
+  document.documentElement.classList.add('js');
+  var waiting = Array.prototype.slice.call(document.querySelectorAll('.rise'));
+  function reveal() {
+    var line = window.innerHeight * 0.92;
+    waiting = waiting.filter(function (node) {
+      if (node.getBoundingClientRect().top > line) return true;
+      node.classList.add('in');
+      node.querySelectorAll('[data-count]').forEach(countUp);
+      return false;
+    });
+  }
+  window.addEventListener('scroll', reveal, { passive: true });
+  window.addEventListener('resize', reveal);
+  reveal();
+
+  // Mark the section you are reading in the jump links.
+  var links = document.querySelectorAll('.nav a');
+  var spy = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + entry.target.id); });
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  document.querySelectorAll('section[id]').forEach(function (s) { spy.observe(s); });
+})();
+</script>
+</body>
+</html>

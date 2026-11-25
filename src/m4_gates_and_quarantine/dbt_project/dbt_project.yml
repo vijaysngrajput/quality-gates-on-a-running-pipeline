@@ -1,0 +1,32 @@
+# The dbt project: every rule of the pipeline, as a test.
+#
+# dbt holds the rule. A test is a query that returns the rows that break the rule.
+# Airflow runs the rule and acts on the result: see ../lotus_pipeline/gates.py.
+#
+#   tests/landing/   run when the files have landed, on the raw tables
+#   tests/clean/     run after cleaning, on the clean tables
+#   tests/publish/   run before the outputs are published, on the staging tables
+#   models/prepared/ data that must be prepared before it can be checked
+name: lotus
+version: "1.0.0"
+profile: lotus
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  lotus:
+    prepared:
+      +schema: prepared        # tables built only to be checked
+      +materialized: table
+
+data_tests:
+  lotus:
+    +store_failures: true      # keep the rows a test returns, in a table named after the test
+    +schema: audit             # ...in the schema `audit`
+
+flags:
+  send_anonymous_usage_stats: false

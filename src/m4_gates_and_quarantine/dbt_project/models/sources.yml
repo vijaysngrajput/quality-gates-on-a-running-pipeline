@@ -1,0 +1,85 @@
+# Every table the tests read. A source is a table that dbt did not build.
+# The pipeline builds them: load fills raw, clean fills clean, build fills staging.
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: Every file, copied as it arrived. Every value is text.
+    tables:
+      - name: sales_lines
+      - name: till_totals
+      - name: products
+      - name: stores
+      - name: stock_counts
+      - name: supplier_prices
+      - name: members
+      - name: loaded_files
+      - name: file_columns
+
+  - name: quarantine
+    schema: quarantine
+    description: Rows that were set aside, each with the reason.
+    tables:
+      - name: sales_lines
+      - name: raw_sales_lines
+      - name: supplier_prices
+      - name: stock_counts
+      - name: members
+
+  - name: ops
+    schema: ops
+    description: What the pipeline remembers about itself.
+    tables:
+      - name: refused_files
+
+  - name: staging
+    schema: staging
+    description: The outputs of tonight, written and not yet published.
+    tables:
+      - name: daily_store_sales
+      - name: replenishment_list
+  - name: clean
+    schema: clean
+    description: The same rows with types, and joined to products and stores.
+    tables:
+      - name: stores
+      - name: products
+      - name: members
+      - name: stock_counts
+      - name: supplier_prices
+      - name: calendar
+      - name: till_totals
+        # A generic test with more than one column: written once, in macros/, used here.
+        data_tests:
+          - unique_together:
+              name: one_total_per_till_per_day
+              arguments:
+                columns: [store_id, till_id, business_date]
+              config:
+                tags: [clean]
+                severity: error
+                meta: {number: 14, action: block, lens: data, question: "Unique?",
+                       protects: "Everyone who is protected by the till total: it is only as good as this table"}
+      - name: sales_lines
+        # Three of the five standard checks from milestone 1. In dbt they are GENERIC tests:
+        # ready-made, and switched on with one line each.
+        columns:
+          - name: line_id
+            data_tests:
+              - not_null:
+                  name: standard_key_is_not_null
+                  config: {tags: [clean], severity: error,
+                           meta: {number: 102, action: block, lens: data, question: "Complete?", protects: ""}}
+              - unique:
+                  name: standard_key_is_unique
+                  config: {tags: [clean], severity: error,
+                           meta: {number: 103, action: block, lens: data, question: "Unique?", protects: ""}}
+          - name: line_type
+            data_tests:
+              - accepted_values:
+                  name: standard_status_is_allowed
+                  arguments:
+                    values: ["sale", "refund"]
+                  config: {tags: [clean], severity: error,
+                           meta: {number: 104, action: block, lens: data, question: "Valid?", protects: ""}}

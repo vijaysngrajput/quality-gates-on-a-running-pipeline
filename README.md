@@ -15,7 +15,7 @@ The head of retail operations asks that every Monday. The pipeline has five chec
 | **Who it is for** | You know some Python and a little SQL. You have never built a pipeline, and never used dbt, Docker or Airflow. You do not need another D8Loop project first |
 | **What you need** | Git, Python 3.12 or later, and [uv](https://docs.astral.sh/uv/). Docker from milestone 1 on, installed click by click in [its README](src/m1_green_checks_wrong_number/#set-up) |
 | **What it costs** | Nothing. No API key, no cloud account, no AI. Everything runs on your computer |
-| **Status** | Milestones 1 to 3 of 5 are complete. Milestones 4 and 5 are being built |
+| **Status** | Milestones 1 to 4 of 5 are complete. Milestone 5 is being built |
 
 It is the third project of the [D8Loop Data Engineering Projects](https://www.d8loop.com/modules/knowledge-corner/data-engineering-projects#data-quality-and-reliability) series, in the **Data quality and reliability** category. The first two are [Retail Profit Stack](https://github.com/vijaysngrajput/retail-profit-stack) and [Daily Orders: API to Warehouse](https://github.com/vijaysngrajput/daily-orders-api-to-warehouse).
 
@@ -114,7 +114,7 @@ Five milestones. Each one ends with something that is **still wrong**. That is t
 | [1. Green checks, wrong number](src/m1_green_checks_wrong_number/) | Install Docker, run the given pipeline, work one store's number out by hand, and find they differ. Ask who uses each table. Meet the check card. Read the table before checking it | We found one error by luck. We have no checks that would have caught it | 8 |
 | [2. Checks with a reason](src/m2_checks_with_a_reason/) | Write the checks for `sales_lines` through each lens, by hand first. See what the common version of each check misses | One table is done well. There are five more, and they are nothing like it | 8 |
 | [3. Every table is different](src/m3_every_table_is_different/) | A check card and checks for the other five tables. A written contract for the supplier's file. The seven cards side by side | The checks exist in notebooks. The pipeline does not run them, and a failure changes nothing | 8 |
-| 4. Gates and quarantine | Every check becomes a dbt test, and a gate task in Airflow. Block, quarantine or warn | A gate fails at 02:00, and nobody knows | Planned |
+| [4. Gates and quarantine](src/m4_gates_and_quarantine/) | Every check becomes a dbt test, and three gate tasks in Airflow act on them: block, quarantine or warn. The report says which store to pay, and why not | A gate fails at 02:00, and nobody knows until a store manager complains | 8 |
 | 5. Know, alert, recover | Run history, alerts, and four recovery drills with a backfill | Nothing | Planned |
 
 You practise the five things this category is made of: **quality checks, quarantine, alerts, backfills and run history**.
@@ -146,8 +146,8 @@ The pages ending in `.html` are animated. GitHub shows only their source, so vie
 | Page | What it shows |
 |---|---|
 | [One receipt, from the till to the bonus](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/understand_business/lotus_retails.html) | Who uses which table, and what a wrong value does to each of them |
-| Flow pages: [1](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m1_green_checks_wrong_number/milestone_1_flow.html) · [2](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m2_checks_with_a_reason/milestone_2_flow.html) · [3](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m3_every_table_is_different/milestone_3_flow.html) | The whole pipeline at each milestone, with real rows moving through it. The same layout every time, so you see what changed |
-| Recap pages: [1](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m1_green_checks_wrong_number/milestone_1_recap.html) · [2](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m2_checks_with_a_reason/milestone_2_recap.html) · [3](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m3_every_table_is_different/milestone_3_recap.html) | What was asked, what you built, what you learned, what is still wrong |
+| Flow pages: [1](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m1_green_checks_wrong_number/milestone_1_flow.html) · [2](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m2_checks_with_a_reason/milestone_2_flow.html) · [3](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m3_every_table_is_different/milestone_3_flow.html) · [4](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m4_gates_and_quarantine/milestone_4_flow.html) | The whole pipeline at each milestone, with real rows moving through it. The same layout every time, so you see what changed |
+| Recap pages: [1](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m1_green_checks_wrong_number/milestone_1_recap.html) · [2](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m2_checks_with_a_reason/milestone_2_recap.html) · [3](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m3_every_table_is_different/milestone_3_recap.html) · [4](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m4_gates_and_quarantine/milestone_4_recap.html) | What was asked, what you built, what you learned, what is still wrong |
 | [The check cards](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/checks/check_cards.html) | Every table's check card side by side, growing as the project goes on |
 
 No number on these pages is typed by hand. A script runs the real code and writes what happened into the page, and a test fails when a page is out of date.
@@ -159,6 +159,8 @@ No number on these pages is typed by hand. A script runs the real code and write
 | *Milestone 2. The same refund, caught by a check that knows what a refund is.* | *The recap page of milestone 2.* |
 | ![Milestone 3: a supplier sends cents](images/m3_flow.png) | ![The recap page of milestone 3](images/m3_recap.png) |
 | *Milestone 3. A supplier's file with a perfect shape and a wrong meaning.* | *The recap page of milestone 3.* |
+| ![Milestone 4: a row is stopped at a gate](images/m4_flow.png) | ![The recap page of milestone 4](images/m4_recap.png) |
+| *Milestone 4. The refund stops at a gate and is set aside, with its reason.* | *The recap page of milestone 4.* |
 
 ## The check card
 
@@ -246,6 +248,7 @@ cd store_systems && uv run pytest                      # the stores and the answ
 cd src/m1_green_checks_wrong_number && uv run pytest   # milestone 1
 cd src/m2_checks_with_a_reason && uv run pytest        # milestone 2
 cd src/m3_every_table_is_different && uv run pytest    # milestone 3
+cd src/m4_gates_and_quarantine && uv run pytest        # milestone 4: about two minutes, it runs dbt many times
 uv run pytest checks                                   # the check cards page, from the project folder
 ```
 
@@ -253,7 +256,7 @@ Nothing needs to be running. When the warehouse is up, the pipeline tests also r
 
 ## Built with
 
-Python, [uv](https://docs.astral.sh/uv/), pandas, PyYAML, DuckDB, Postgres 16, Docker Compose, Apache Airflow 3.4 and pytest. dbt arrives in milestone 4.
+Python, [uv](https://docs.astral.sh/uv/), pandas, PyYAML, DuckDB, Postgres 16, Docker Compose, dbt 1.12 with dbt-postgres and dbt-duckdb, Apache Airflow 3.4 and pytest.
 
 ## What this project is not
 

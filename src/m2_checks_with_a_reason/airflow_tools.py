@@ -9,6 +9,7 @@ You could type each one in a terminal, from the project folder:
 import json
 import subprocess
 import time
+from datetime import date, timedelta
 from pathlib import Path
 
 PROJECT_DIR = Path(__file__).resolve().parents[2]  # where docker-compose.yml is
@@ -78,24 +79,24 @@ def tasks(dag_id: str = DAG) -> list[str]:
 def run_night(day: str, dag_id: str = DAG, seconds: int = 300) -> list[dict]:
     """Ask Airflow to run one business day, wait for it, and return the state of every task.
 
-    Running the same day again is safe: the old run is removed first.
+    Airflow keeps one run per DAG and day. So the first time this TRIGGERS a new run,
+    and after that it CLEARS the run that is there, which makes Airflow run it again.
     """
-    run_id = f"night_{day}"
-    airflow("dags", "delete-run", dag_id, run_id, "--yes", check=False)  # not in every version
-    done = airflow(
-        "dags", "trigger", dag_id, "--logical-date", f"{day}T07:00:00+00:00", "--run-id", run_id,
-        check=False,
-    )  # fmt: skip
-    if "already exists" in done:
-        run_id = f"night_{day}_{int(time.time())}"
+    after = (date.fromisoformat(day) + timedelta(days=1)).isoformat()
+    earlier = [r for r in _json("dags", "list-runs", dag_id) if r["logical_date"].startswith(day)]
+    if earlier:
+        run_id, last_start = earlier[0]["run_id"], earlier[0]["start_date"]
+        airflow("tasks", "clear", dag_id, "-s", day, "-e", after, "-y")
+    else:
+        run_id, last_start = f"night_{day}", None
         airflow("dags", "trigger", dag_id, "--logical-date", f"{day}T07:00:00+00:00",
                 "--run-id", run_id)  # fmt: skip
     deadline = time.time() + seconds
     while time.time() < deadline:
-        states = task_states(run_id, dag_id)
         runs = [r for r in _json("dags", "list-runs", dag_id) if r["run_id"] == run_id]
-        if runs and runs[0]["state"] in ("success", "failed"):
-            return states
+        started_again = runs and runs[0]["start_date"] and runs[0]["start_date"] != last_start
+        if started_again and runs[0]["state"] in ("success", "failed"):
+            return task_states(run_id, dag_id)
         time.sleep(2)
     raise TimeoutError(f"The run for {day} did not finish within {seconds} seconds.")
 

@@ -44,8 +44,11 @@ services:
       LOTUS_PG_HOST: warehouse
       LOTUS_PG_PORT: "5432"
       LOTUS_LANDING: /var/lotus/landing                     # where the stores' files arrive
+      # A connection for Airflow's own SQL operators, used by one lab DAG in milestone 4.
+      AIRFLOW_CONN_LOTUS_WAREHOUSE: postgresql://lotus:lotus@warehouse:5432/lotus
       DBT_TARGET_PATH: /tmp/dbt-target                      # dbt's working files, from milestone 4
       DBT_LOG_PATH: /tmp/dbt-logs
+      LOTUS_ALERTS_LOG: /var/lotus/alerts.log               # every alert, one line each, from milestone 5
       PYTHONDONTWRITEBYTECODE: "1"
     volumes:
       - .:/opt/lotus                      # this project, so Airflow runs the code you read
