@@ -9,6 +9,7 @@ If the gate blocks, publish does not run. The tables people read keep their last
     output.daily_store_sales    one row per store per day. The bonus is paid from it
     output.replenishment_list   one row per store per product: how much to order
     output.store_day_status     new: can this store's day be paid from, and if not, why
+    output.stores               new: the stores as they were when the outputs were last published
 """
 
 from datetime import date
@@ -103,6 +104,10 @@ def publish(wh: Warehouse, day: date) -> dict[str, int]:
     )
     wh.execute("DELETE FROM output.replenishment_list WHERE for_date = CAST(? AS DATE) + 1", (day,))
     wh.execute("INSERT INTO output.replenishment_list SELECT * FROM staging.replenishment_list")
+
+    # The report reads the stores from here, so a blocked night cannot change its list of stores.
+    wh.execute("DROP TABLE IF EXISTS output.stores")
+    wh.execute("CREATE TABLE output.stores AS SELECT * FROM clean.stores")
 
     wh.execute("DROP TABLE IF EXISTS output.store_day_status")
     wh.execute("CREATE TABLE output.store_day_status AS SELECT * FROM prepared.store_day_status")

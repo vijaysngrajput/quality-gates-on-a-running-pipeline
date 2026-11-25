@@ -15,7 +15,7 @@ SELECT s.store_id,
        s.store_name,
        s.manager_name,
        coalesce(sum(d.net_sales_cents), 0) AS net_sales_cents
-FROM clean.stores s
+FROM output.stores s
 LEFT JOIN output.daily_store_sales d
   ON d.store_id = s.store_id
  AND d.sales_date BETWEEN ? AND ?

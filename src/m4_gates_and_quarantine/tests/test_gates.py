@@ -9,8 +9,9 @@ from datetime import date
 import pytest
 
 from conftest import WEEK, plant, rows, snapshot
-from lotus_pipeline import pipeline
+from lotus_pipeline import pipeline, report
 from lotus_pipeline.gates import GateBlocked
+from lotus_pipeline.warehouse import connect
 from store_systems import truth
 from store_systems.catalog import BONUS_WEEK_START, PRODUCTS, STORES
 
@@ -191,6 +192,8 @@ def test_a_broken_reference_table_blocks_and_the_outputs_keep_their_last_good_nu
         run_from("clean", lab)
     assert "BLOCK" in str(blocked.value) and "There are six stores, each once" in str(blocked.value)
     assert published() == before  # publish did not run
+    with connect() as wh:  # and the report still lists all six stores, with their old numbers
+        assert len(report.bonus_report(wh, lab)["stores"]) == 6
     assert snapshot(lab)["gates"]["six_stores_once"]["status"] == "fail"
 
 
