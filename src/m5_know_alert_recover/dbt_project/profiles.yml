@@ -1,0 +1,19 @@
+# How dbt reaches the warehouse. The values come from the environment, with the project's
+# defaults. The pipeline sets them: see ../lotus_pipeline/dbt_runner.py.
+lotus:
+  target: "{{ env_var('LOTUS_WAREHOUSE', 'postgres') }}"
+  outputs:
+    postgres:                  # the real warehouse, in Docker
+      type: postgres
+      host: "{{ env_var('LOTUS_PG_HOST', '127.0.0.1') }}"
+      port: "{{ env_var('LOTUS_PG_PORT', '5450') | int }}"
+      user: lotus
+      password: lotus
+      dbname: "{{ env_var('LOTUS_DATABASE', 'lotus_m5') }}"
+      schema: public
+      threads: 1
+    duckdb:                    # one file, for the two-minute run and the tests
+      type: duckdb
+      path: "{{ env_var('LOTUS_DUCKDB_PATH', 'lotus.duckdb') }}"
+      schema: main
+      threads: 1

@@ -1,0 +1,82 @@
+{
+  "night": "2026-08-30",
+  "stores": {
+    "S01": {
+      "pay": true,
+      "net_sales_cents": 515325,
+      "bonus_cents": 5153,
+      "why_not": []
+    },
+    "S02": {
+      "pay": true,
+      "net_sales_cents": 574863,
+      "bonus_cents": 5749,
+      "why_not": []
+    },
+    "S03": {
+      "pay": true,
+      "net_sales_cents": 508762,
+      "bonus_cents": 5088,
+      "why_not": []
+    },
+    "S04": {
+      "pay": false,
+      "net_sales_cents": 458557,
+      "bonus_cents": 4586,
+      "why_not": [
+        "Tue 08-25: no sales file arrived. The tills counted $587.42"
+      ]
+    },
+    "S05": {
+      "pay": true,
+      "net_sales_cents": 359305,
+      "bonus_cents": 3593,
+      "why_not": []
+    },
+    "S06": {
+      "pay": true,
+      "net_sales_cents": 441889,
+      "bonus_cents": 4419,
+      "why_not": []
+    }
+  },
+  "can_be_paid": [
+    "S01",
+    "S02",
+    "S03",
+    "S05",
+    "S06"
+  ],
+  "health": {
+    "nights": 7,
+    "nights_published": 7,
+    "files_expected": 41,
+    "files_on_time": 39,
+    "files_on_time_percent": 95.1,
+    "files_on_time_target": 98,
+    "late_files": [
+      {
+        "store_id": "S06",
+        "day": "2026-08-27",
+        "hours_late": 23.7
+      }
+    ],
+    "missing_files": [
+      {
+        "store_id": "S04",
+        "day": "2026-08-25"
+      }
+    ],
+    "store_days": 41,
+    "store_days_ok": 40
+  },
+  "alerts_sent_per_night": [
+    1,
+    2,
+    0,
+    2,
+    3,
+    1,
+    1
+  ]
+}

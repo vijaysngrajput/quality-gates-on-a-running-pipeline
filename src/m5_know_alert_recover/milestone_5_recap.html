@@ -1,0 +1,1152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Milestone 5 recap: Know, alert, recover</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f4ef; --surface: #fffdf9; --ink: #1d2327; --muted: #5c6670; --line: #d9d4c8;
+    --accent: #0f6b5c; --accent-ink: #ffffff; --accent-soft: #dcefe9;
+    --neg: #a23b2a; --neg-soft: #f6e1dc; --pos: #1f6f43; --pos-soft: #dff0e5;
+    --warn: #8a5a00; --warn-soft: #f7ebcf; --tag-bg: #ecebe4;
+    --shadow: 0 1px 2px rgba(29, 35, 39, .06), 0 6px 18px rgba(29, 35, 39, .06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --bg: #14181a; --surface: #1c2226; --ink: #e8e6e1; --muted: #9aa4ab; --line: #2e373c;
+      --accent: #5fc5b0; --accent-ink: #0d1f1c; --accent-soft: #1d3a35;
+      --neg: #e58a78; --neg-soft: #3a2420; --pos: #7fd0a0; --pos-soft: #1d3527;
+      --warn: #e2b85c; --warn-soft: #3a3019; --tag-bg: #262e33;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 18px rgba(0, 0, 0, .25);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15.5px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .page { max-width: 980px; margin: 0 auto; padding: 36px 24px 64px; }
+  .eyebrow { margin: 0 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0 0 8px; font: 600 38px/1.12 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; text-wrap: balance; }
+  h2 { margin: 0 0 6px; font: 600 26px/1.2 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; text-wrap: balance; }
+  h3 { margin: 0 0 4px; font-size: 16px; }
+  p { margin: 0 0 12px; }
+  .lede { max-width: 62ch; color: var(--muted); font-size: 17px; }
+  .num { font-variant-numeric: tabular-nums; }
+  a { color: var(--accent); }
+  code { font: 13.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+  /* Jump links */
+  .nav { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 6px; margin: 22px -8px 0; padding: 10px 8px; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .nav a { padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font-size: 13.5px; font-weight: 500; text-decoration: none; }
+  .nav a:hover, .nav a.on { border-color: var(--accent); }
+  .nav a.on { background: var(--accent); color: var(--accent-ink); }
+  a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  section { padding: 44px 0 6px; scroll-margin-top: 56px; }
+  .kicker { margin: 0 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+  /* Things slide up as they come into view. They are never hidden, so the page reads without JavaScript. */
+  .js .rise { opacity: .25; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+  .js .rise.in { opacity: 1; transform: none; }
+
+  .tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
+  .tile { padding: 14px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; text-align: center; }
+  .tile b { display: block; font: 600 30px/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-variant-numeric: tabular-nums; }
+  .tile span { color: var(--muted); font-size: 13px; line-height: 1.3; display: block; }
+  .tile.bad b { color: var(--neg); }
+
+  blockquote { margin: 14px 0 18px; padding: 14px 18px; border-left: 4px solid var(--accent); background: var(--surface); border-radius: 0 12px 12px 0; font: 500 18px/1.45 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+  .card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  .card .a { display: block; margin: 4px 0 2px; font-size: 23px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .card small { color: var(--muted); }
+
+  /* The bonus report, as a table */
+  .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 8px 14px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  tr:last-child td { border-bottom: 0; }
+  td.r, th.r { text-align: right; }
+  tr.bad td { background: var(--neg-soft); }
+  tr.bad td.flag { color: var(--neg); font-weight: 600; }
+  .green { color: var(--pos); font-weight: 600; }
+
+  /* The pipeline, drawn small */
+  .pipe { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px; margin: 16px 0 12px; }
+  .box { position: relative; padding: 12px; background: var(--surface); border: 2px solid var(--line); border-radius: 12px; transition: border-color .4s, box-shadow .4s; }
+  .box + .box::before { content: "\2192"; position: absolute; left: -17px; top: 16px; color: var(--muted); }
+  .box.lit { border-color: var(--accent); box-shadow: var(--shadow); }
+  .box .role { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .box b { display: block; line-height: 1.25; }
+  .box > span:not(.role) { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; }
+  .box .n { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .btn { padding: 7px 14px; font: inherit; font-weight: 500; color: var(--bg); background: var(--ink); border: 1px solid var(--ink); border-radius: 8px; cursor: pointer; }
+  .hand { margin-top: 10px; padding: 9px 12px; border: 2px dashed var(--line); border-radius: 12px; color: var(--muted); font-size: 13.5px; }
+  .tasks { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 4px; margin: 0 0 12px; font-size: 13.5px; color: var(--muted); }
+  .tasks code { padding: 2px 10px; border: 2px solid var(--pos); border-radius: 999px; background: var(--pos-soft); color: var(--ink); font-weight: 600; font-size: 12.5px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  ul.plain { margin: 6px 0 0; padding-left: 18px; }
+
+  .versus { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .versus .bad { border-color: var(--neg); background: var(--neg-soft); }
+  .versus .good { border-color: var(--pos); background: var(--pos-soft); }
+  .versus .bad h3 { color: var(--neg); }
+  .versus .good h3 { color: var(--pos); }
+  .line {
+    margin: 12px 0 0; padding: 10px 14px; overflow-x: auto; background: var(--surface); border: 1px solid var(--neg); border-radius: 10px;
+    font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  ol.learned { margin: 12px 0 0; padding: 0; list-style: none; counter-reset: n; display: grid; gap: 10px; }
+  ol.learned li { counter-increment: n; position: relative; padding: 12px 16px 12px 56px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  ol.learned li::before { content: counter(n); position: absolute; left: 14px; top: 12px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  ol.learned b { display: block; }
+  ol.learned span { color: var(--muted); }
+
+  .words { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+  .word { padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  .word b { color: var(--accent); }
+  .word span { display: block; font-size: 14px; }
+
+  /* The week: what the report says against the answer key */
+  .chart { display: grid; gap: 8px; margin: 16px 0 6px; padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  .chart-row { display: grid; grid-template-columns: 44px minmax(0, 1fr) 190px; gap: 12px; align-items: center; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .track { position: relative; height: 22px; border-radius: 6px; background: var(--tag-bg); }
+  .track i { display: block; height: 100%; width: 0; border-radius: 6px; background: var(--neg); transition: width 1s ease; }
+  .chart-row .what { color: var(--neg); font-weight: 600; }
+  .limit { position: absolute; top: -5px; bottom: -5px; width: 3px; border-radius: 2px; background: var(--ink); }
+  .chart .legend { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+  details.quiz { margin-top: 10px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  details.quiz summary { cursor: pointer; font-weight: 600; }
+  details.quiz p { margin: 8px 0 0; color: var(--muted); }
+  details.quiz[open] { border-color: var(--accent); }
+
+  .wrong { margin-top: 14px; padding: 16px 20px; border: 1px solid var(--neg); border-radius: 12px; background: var(--neg-soft); }
+  .wrong b { display: block; color: var(--neg); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .wrong span { font: 600 20px/1.35 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+
+  pre { margin: 8px 0 0; padding: 12px 14px; overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .next { margin-top: 14px; padding: 18px 20px; background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; }
+  .foot { margin: 40px 0 0; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 760px) {
+    .page { padding: 24px 16px 48px; }
+    h1 { font-size: 29px; } h2 { font-size: 22px; }
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .versus, .words, .two { grid-template-columns: minmax(0, 1fr); }
+    .pipe { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .box + .box::before { content: "\2193"; left: 16px; top: -22px; }
+    .chart-row { grid-template-columns: 40px minmax(0, 1fr); }
+    .chart-row .what { grid-column: 2; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .js .rise { opacity: 1; transform: none; }
+  }
+
+  /* New in milestone 2 */
+  td.wrap, th.wrap { white-space: normal; }
+  td.name { min-width: 230px; }
+  .tile span i { font-style: normal; }
+  td small { display: block; color: var(--muted); font-size: 12.5px; white-space: normal; }
+  .lens-tag { display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--tag-bg); color: var(--muted); font-size: 11.5px; font-weight: 600; }
+  tr.caught td.flag { color: var(--neg); font-weight: 600; }
+  .lens-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 14px 0; }
+  .lens-row .card b.n { display: block; font: 600 26px/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+  .beside { margin-top: 12px; padding: 12px 14px; border: 2px solid var(--accent); border-radius: 12px; background: var(--surface); }
+  .beside .tag { display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 11.5px; font-weight: 600; }
+  .beside b { display: block; margin-top: 4px; }
+  .beside span.what { display: block; color: var(--muted); font-size: 13.5px; }
+  @media (max-width: 760px) { .lens-row { grid-template-columns: minmax(0, 1fr); } }
+  /* New in milestone 3 */
+  td.c, th.c { text-align: center; }
+  td.has { font-weight: 700; color: var(--accent); }
+  td.none { color: var(--line); }
+  th.newcol { color: var(--accent); }
+  tr.one td:first-child { font-weight: 600; }
+  .door { color: var(--pos); font-weight: 600; }
+  td.caughtby { min-width: 250px; }
+  td.wrap.door, td.wrap { min-width: 120px; }
+  /* Milestone 4: the bonus report with its Pay? column */
+  td.pay-yes { color: var(--pos); font-weight: 700; }
+  td.pay-no { color: var(--neg); font-weight: 700; white-space: nowrap; }
+  tr.reason td { padding-top: 0; border-top: 0; color: var(--muted); font-size: 13.5px; white-space: normal; }
+  .tasks code.gate { border-color: var(--accent); background: var(--accent-soft); }
+
+  /* New in milestone 5: the Monday answer, alerts, health, drills, the look back */
+  .answer { margin-top: 14px; padding: 16px 18px; background: var(--surface); border: 2px solid var(--accent); border-radius: 14px; }
+  .answer .verdict { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: baseline; margin: 0 0 10px; font: 600 24px/1.25 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+  .answer .verdict .yes { color: var(--pos); }
+  .answer .verdict .no { color: var(--neg); }
+  .dots { display: flex; gap: 8px; margin: 6px 0 12px; align-items: center; flex-wrap: wrap; }
+  .dots b { min-width: 74px; font-size: 13px; color: var(--muted); font-weight: 600; }
+  .dots i { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--line); background: var(--tag-bg); transition: background .5s ease, border-color .5s ease; }
+  .dots i.paid { background: var(--pos); border-color: var(--pos); }
+  td.eq { color: var(--pos); font-weight: 700; }
+  td.neq { color: var(--neg); font-weight: 700; }
+  .sum td { font-weight: 700; border-top: 2px solid var(--line); }
+  td.t { white-space: normal; min-width: 220px; color: var(--muted); font-size: 13px; }
+  .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+  .three .card h3 { color: var(--accent); }
+  .three .card ul { margin: 6px 0 0; padding-left: 18px; font-size: 14px; }
+  .healthrow { display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: 4px 10px; padding: 8px 14px; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+  .healthrow:last-child { border-bottom: 0; }
+  .healthrow .mark { font: 700 11px/1.9 system-ui, sans-serif; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  .healthrow .mark.ok { color: var(--pos); }
+  .healthrow .mark.miss { color: var(--neg); }
+  .drills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+  .drill { padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  .drill h3 { margin: 0 0 6px; }
+  .drill h3 small { color: var(--muted); font-weight: 500; }
+  .drill dl { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 3px 10px; margin: 0; font-size: 13.5px; }
+  .drill dt { color: var(--muted); font-weight: 600; }
+  .drill dd { margin: 0; overflow-wrap: anywhere; }
+  .drill dd.ok { color: var(--pos); font-weight: 700; }
+  .look { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+  .look li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 4px 12px; padding: 10px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  .look li .n { grid-row: span 2; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .look li b { font-size: 14.5px; }
+  .look li span.w { color: var(--muted); font-size: 13.5px; }
+  .look li.last { border-color: var(--pos); background: var(--pos-soft); }
+  .look li.last .n { background: var(--pos); }
+  .beyond { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+  .beyond dl { margin: 6px 0 0; font-size: 13.5px; }
+  .beyond dt { font-weight: 600; margin-top: 6px; }
+  .beyond dd { margin: 0; color: var(--muted); }
+  .done { margin-top: 14px; padding: 16px 20px; border: 1px solid var(--pos); border-radius: 12px; background: var(--pos-soft); }
+  .done b { display: block; color: var(--pos); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .done span { font: 600 20px/1.35 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+  @media (max-width: 760px) { .three, .drills, .beyond { grid-template-columns: minmax(0, 1fr); } .drill dl { grid-template-columns: 80px minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <p class="eyebrow">Milestone 5 of 5 · recap · the end of the project</p>
+    <h1>Know, alert, recover</h1>
+    <p class="lede">Lotus Retails is a chain of supermarkets. Customers pay at a <strong>till</strong>: the machine at the counter, also called a cash register. In milestone 4 a wrong row was stopped at 02:00, and nobody heard about it. Now the pipeline remembers its runs, tells the person who can act, and takes a corrected file back. The answer to the Monday question is below.</p>
+    <div class="tiles">
+      <div class="tile rise"><b class="num" data-k="numbers.notebooks" data-count></b><span>lab notebooks</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.tests" data-count></b><span>tests of the code</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.dbt_tests" data-count></b><span>dbt tests at three gates</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.alerts_sent" data-count></b><span>alerts sent in the week, not <i data-k="numbers.alerts_shouted"></i></span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.can_be_paid_after" data-count></b><span>of <i data-k="numbers.stores"></i> stores can be paid, after one night's re-run each</span></div>
+      <div class="tile rise"><b class="num" data-k="numbers.words" data-count></b><span>new words</span></div>
+    </div>
+  </header>
+
+  <nav class="nav" aria-label="Sections">
+    <a href="#asked">1. The answer</a>
+    <a href="#built">2. Built</a>
+    <a href="#alerts">3. Alerts</a>
+    <a href="#health">4. Health</a>
+    <a href="#drills">5. Drills</a>
+    <a href="#learned">6. Learned</a>
+    <a href="#words">7. Words</a>
+    <a href="#quiz">8. Quiz</a>
+    <a href="#wrong">9. Nothing wrong</a>
+    <a href="#setup">Set up</a>
+  </nav>
+
+  <section id="asked">
+    <p class="kicker">1 · The Monday question, and the answer</p>
+    <h2>Yes for five stores. No for one. And the row that says why.</h2>
+    <p>Every Monday the head of retail operations asks:</p>
+    <blockquote class="rise" data-k="question"></blockquote>
+    <div class="answer rise">
+      <p class="verdict"><span class="yes"><span data-k="after.can_be_paid"></span> of <span data-k="numbers.stores"></span> stores can be paid</span><span class="no">1 cannot</span></p>
+      <div class="dots" id="dots-before"><b>On Sunday night</b></div>
+      <div class="dots" id="dots-after"><b>After the re-runs</b></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Store</th><th>Manager</th><th class="r">Net sales</th><th class="r">Answer key</th><th class="c">Equal?</th><th>Pay?</th></tr></thead>
+          <tbody id="report-rows"></tbody>
+        </table>
+      </div>
+      <p style="margin:12px 0 0">The report is for the week to <span data-k="after.through"></span>. The answer key is the true number, worked out from the till journal. Each store that can be paid has exactly the answer key's net sales. The one store that cannot be paid has a row that says why. That is the whole question, both sentences.</p>
+    </div>
+    <p style="margin-top:12px"><b>Before:</b> on Sunday night, <span data-k="numbers.can_be_paid_before"></span> of <span data-k="numbers.stores"></span> stores could be paid. Four wrong files had been set aside by the gates, and four people had been told. <b>After:</b> the four stores sent corrected files, and only the four nights that were wrong were run again.</p>
+  </section>
+
+  <section id="built">
+    <p class="kicker">2 · What you built</p>
+    <h2>Know, alert, recover</h2>
+    <div class="three">
+      <div class="card rise"><h3>Know</h3><ul><li>A run history: one row for every step of every night</li><li>Four health numbers, each with a target</li><li>Two new tests: a file arrived on time, and a price is believable</li></ul></div>
+      <div class="card rise"><h3>Alert</h3><ul><li>A callback: Airflow runs it when a task fails or publish succeeds</li><li>Each alert goes to the person who can act: page, ticket or message</li><li>A problem is sent once, and closed when it is gone</li></ul></div>
+      <div class="card rise"><h3>Recover</h3><ul><li>Fix the source, never the warehouse</li><li>Run only that night again, with one command</li><li>A changed file is loaded again. A file that did not change is skipped</li></ul></div>
+    </div>
+    <p class="tasks" id="tasks" style="margin-top:14px">Airflow DAG <b data-k="dag.id"></b>: </p>
+    <div class="table-wrap rise" style="margin-top:12px">
+      <table>
+        <thead><tr><th>Gate</th><th class="r">dbt tests</th></tr></thead>
+        <tbody id="gate-rows"></tbody>
+      </table>
+    </div>
+    <h3 style="margin-top:18px">Four nights were run again</h3>
+    <div class="table-wrap rise">
+      <table>
+        <thead><tr><th>Case</th><th class="wrap">Night run again</th><th class="wrap">What the store fixed</th><th class="wrap">Files loaded again</th><th class="wrap">Closed</th></tr></thead>
+        <tbody id="recovery-rows"></tbody>
+      </table>
+    </div>
+    <p style="margin-top:12px"><b>The outcome.</b> Open the <a href="milestone_5_flow.html">flow page</a>, pick a fault, and watch it stopped, told and made right.</p>
+  </section>
+
+  <section id="alerts">
+    <p class="kicker">3 · Alerts, night by night</p>
+    <h2><span data-k="alerts_sent"></span> alerts, not <span data-k="alerts_shouted"></span></h2>
+    <p>One alert for every failed test on every night would have been <span data-k="alerts_shouted"></span> messages. People stop reading that many. That is <b>alert fatigue</b>. So each problem is sent once, when it is new. After that it is counted as still open, and it is closed when it is gone.</p>
+    <div class="table-wrap rise">
+      <table>
+        <thead><tr><th>Night</th><th class="r wrap">Stores that can be paid</th><th class="r">Sent</th><th class="r wrap">Still open</th><th class="r">Resolved</th><th class="r wrap">In the digest</th><th class="r wrap">Shouted</th><th class="wrap">What was sent</th></tr></thead>
+        <tbody id="week-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="health">
+    <p class="kicker">4 · Health</p>
+    <h2>Four numbers, each with a target</h2>
+    <p>"On time" is a number now: the share of sales files that arrived by 01:00. A number you measure is an SLI. The target for it is an SLO. This week the target was missed, by one late file and one file that never came.</p>
+    <div class="table-wrap rise"><div id="health-rows"></div></div>
+  </section>
+
+  <section id="drills">
+    <p class="kicker">5 · Four drills</p>
+    <h2>A fault on purpose, on a clean Thursday</h2>
+    <p>Each drill switches on one fault in the stores. Then it shows which gate caught it, what the manager saw, who was told, and how the day was made right.</p>
+    <div class="drills" id="drill-list"></div>
+  </section>
+
+  <section id="learned">
+    <p class="kicker">6 · What you learned</p>
+    <h2>Five things</h2>
+    <ol class="learned">
+      <li class="rise"><b>A check that nobody hears about protects nobody.</b><span>The gates of milestone 4 were right all week. The head of retail operations still found out on Monday.</span></li>
+      <li class="rise"><b>Say "on time" as a number, with a target, and measure it.</b><span>39 of 41 files by 01:00 is 95.1%. The target is 98%. Now everyone can see the miss.</span></li>
+      <li class="rise"><b>An alert goes to the person who can act, once, with what to do.</b><span>A page wakes someone. A ticket is for today. A message can wait. Ten alerts are read. Seventy are not.</span></li>
+      <li class="rise"><b>Never repair in the warehouse. Fix the source and run the day again.</b><span>The tables are built again from the raw rows every night, so a hand fix is gone tomorrow.</span></li>
+      <li class="rise"><b>A safe re-run makes recovery boring, and boring is the goal.</b><span>Run the night again and nothing is counted twice. The number equals the answer key.</span></li>
+    </ol>
+  </section>
+
+  <section id="words">
+    <p class="kicker">7 · New words</p>
+    <h2>Words you can now explain</h2>
+    <div class="words" id="word-list"></div>
+    <p style="margin-top:12px">The whole project has <span data-k="numbers.all_words"></span> words. Each one has an interview line in the project's <a href="../../GLOSSARY.md">glossary</a>.</p>
+  </section>
+
+  <section id="quiz">
+    <p class="kicker">8 · Three questions</p>
+    <h2>What would you say?</h2>
+    <p>Answer in your head first. Then open the answer.</p>
+    <div id="quiz-list"></div>
+  </section>
+
+  <section id="wrong">
+    <p class="kicker">9 · What is still wrong</p>
+    <h2>Nothing is still wrong</h2>
+    <div class="done rise"><b>Still wrong</b><span data-k="nothing_wrong"></span></div>
+    <p style="margin-top:12px">What is open is honest. One store's file never came, and the report says so. That is the pipeline telling the truth.</p>
+    <h3 style="margin-top:18px">A look back over the five milestones</h3>
+    <p>Each milestone ended with one line that was still wrong. The next one fixed it.</p>
+    <ol class="look" id="look"></ol>
+    <div class="beyond">
+      <div class="card rise"><h3>What belongs to other projects</h3><dl id="other-projects"></dl></div>
+      <div class="card rise"><h3>What a real team would plug in</h3><dl id="real-team"></dl></div>
+    </div>
+  </section>
+
+  <section id="setup">
+    <p class="kicker">Set up</p>
+    <h2>What this milestone needs</h2>
+    <p>Nothing new is installed. Git, Python 3.12 or later, <a href="https://docs.astral.sh/uv/">uv</a> and Docker, as in milestone 1. No API key, no cloud account, no AI. The alerts need no service: they go to a table and a log file.</p>
+    <h3 style="margin-top:14px">From the project folder</h3>
+    <pre>uv sync
+docker compose up -d --build   # the warehouse, and Airflow</pre>
+    <p style="margin-top:10px">To run one night, and its alerts, as a plain program:</p>
+    <pre>uv run python -m store_systems deliver --through 2026-08-24
+cd src/m5_know_alert_recover
+uv run python -m lotus_pipeline run --day 2026-08-24
+uv run python -m lotus_pipeline alerts --day 2026-08-24
+uv run pytest                                  # this milestone's tests</pre>
+    <p style="margin-top:10px">To fix a store and run one night again, read <code>RUNBOOK.md</code>. When you are done: <code>docker compose down</code>.</p>
+  </section>
+
+  <p class="foot">Every number on this page is written by <code>lotus_pipeline/flow_data.py</code> from a real run of this milestone's code, and a test checks that they still match. No name, email or phone number of a member is shown. All data is fictional. Lotus Retails does not exist.</p>
+</div>
+
+<script id="page-data" type="application/json">
+{
+ "question": "Can I pay the bonus from last week's net sales, store by store? And if I cannot trust a number, which one, and why?",
+ "nothing_wrong": "Nothing is still wrong. A wrong row is stopped, a person is told on the night, and a fixed day comes back right.",
+ "before": {
+  "through": "Sun 08-30",
+  "stores": [
+   {
+    "store": "S01 Lotus Ashby High Street",
+    "manager": "Marta Lindqvist",
+    "net_sales": "$5,153.25",
+    "answer_key": "$5,153.25",
+    "equal": true,
+    "bonus": "$51.53",
+    "pay": true,
+    "why_not": []
+   },
+   {
+    "store": "S02 Lotus Ashby Market Square",
+    "manager": "Dana Okafor",
+    "net_sales": "$5,724.68",
+    "answer_key": "$5,748.63",
+    "equal": false,
+    "bonus": "–",
+    "pay": false,
+    "why_not": [
+     "Sun 08-30: 4 rows set aside ($23.95): Nothing is sold while the store is closed"
+    ]
+   },
+   {
+    "store": "S03 Lotus Calder Bridge",
+    "manager": "Tomas Reyes",
+    "net_sales": "$5,097.11",
+    "answer_key": "$5,087.62",
+    "equal": false,
+    "bonus": "–",
+    "pay": false,
+    "why_not": [
+     "Mon 08-24: 1 row set aside ($9.49): A line adds up; A refund gives money back"
+    ]
+   },
+   {
+    "store": "S04 Lotus Calder Station",
+    "manager": "Ines Marchetti",
+    "net_sales": "$4,585.57",
+    "answer_key": "$5,172.99",
+    "equal": false,
+    "bonus": "–",
+    "pay": false,
+    "why_not": [
+     "Tue 08-25: no sales file arrived. The tills counted $587.42"
+    ]
+   },
+   {
+    "store": "S05 Lotus Fenwick Green",
+    "manager": "Samir Haddad",
+    "net_sales": "$3,591.53",
+    "answer_key": "$3,593.05",
+    "equal": false,
+    "bonus": "–",
+    "pay": false,
+    "why_not": [
+     "Thu 08-27: 1 row set aside ($1,522.20): A weight is a believable weight"
+    ]
+   },
+   {
+    "store": "S06 Lotus Fenwick Harbour",
+    "manager": "Aiko Tanaka",
+    "net_sales": "$4,400.92",
+    "answer_key": "$4,418.89",
+    "equal": false,
+    "bonus": "–",
+    "pay": false,
+    "why_not": [
+     "Sat 08-29: 3 rows set aside ($17.97): Every sale is for a product that exists"
+    ]
+   }
+  ],
+  "can_be_paid": 1
+ },
+ "after": {
+  "through": "Sun 08-30",
+  "stores": [
+   {
+    "store": "S01 Lotus Ashby High Street",
+    "manager": "Marta Lindqvist",
+    "net_sales": "$5,153.25",
+    "answer_key": "$5,153.25",
+    "equal": true,
+    "bonus": "$51.53",
+    "pay": true,
+    "why_not": []
+   },
+   {
+    "store": "S02 Lotus Ashby Market Square",
+    "manager": "Dana Okafor",
+    "net_sales": "$5,748.63",
+    "answer_key": "$5,748.63",
+    "equal": true,
+    "bonus": "$57.49",
+    "pay": true,
+    "why_not": []
+   },
+   {
+    "store": "S03 Lotus Calder Bridge",
+    "manager": "Tomas Reyes",
+    "net_sales": "$5,087.62",
+    "answer_key": "$5,087.62",
+    "equal": true,
+    "bonus": "$50.88",
+    "pay": true,
+    "why_not": []
+   },
+   {
+    "store": "S04 Lotus Calder Station",
+    "manager": "Ines Marchetti",
+    "net_sales": "$4,585.57",
+    "answer_key": "$5,172.99",
+    "equal": false,
+    "bonus": "–",
+    "pay": false,
+    "why_not": [
+     "Tue 08-25: no sales file arrived. The tills counted $587.42"
+    ]
+   },
+   {
+    "store": "S05 Lotus Fenwick Green",
+    "manager": "Samir Haddad",
+    "net_sales": "$3,593.05",
+    "answer_key": "$3,593.05",
+    "equal": true,
+    "bonus": "$35.93",
+    "pay": true,
+    "why_not": []
+   },
+   {
+    "store": "S06 Lotus Fenwick Harbour",
+    "manager": "Aiko Tanaka",
+    "net_sales": "$4,418.89",
+    "answer_key": "$4,418.89",
+    "equal": true,
+    "bonus": "$44.19",
+    "pay": true,
+    "why_not": []
+   }
+  ],
+  "can_be_paid": 5,
+  "open_tickets": [
+   "S04 Tue 08-25: No sales file arrived"
+  ]
+ },
+ "week": [
+  {
+   "day": "Mon 08-24",
+   "can_be_paid": 5,
+   "sent": 1,
+   "still_open": 0,
+   "resolved": 0,
+   "digest": 0,
+   "shouted": 3,
+   "titles": [
+    "S03 Mon 08-24: Rows were set aside, and the day does not add up"
+   ]
+  },
+  {
+   "day": "Tue 08-25",
+   "can_be_paid": 4,
+   "sent": 2,
+   "still_open": 1,
+   "resolved": 0,
+   "digest": 2,
+   "shouted": 7,
+   "titles": [
+    "The file supplier_prices_SUP-B_2026-08-25.csv was refused",
+    "S04 Tue 08-25: No sales file arrived"
+   ]
+  },
+  {
+   "day": "Wed 08-26",
+   "can_be_paid": 4,
+   "sent": 0,
+   "still_open": 5,
+   "resolved": 0,
+   "digest": 1,
+   "shouted": 8,
+   "titles": []
+  },
+  {
+   "day": "Thu 08-27",
+   "can_be_paid": 2,
+   "sent": 2,
+   "still_open": 6,
+   "resolved": 0,
+   "digest": 0,
+   "shouted": 9,
+   "titles": [
+    "S05 Thu 08-27: Rows were set aside, and the day does not add up",
+    "S06 Thu 08-27: No sales file arrived"
+   ]
+  },
+  {
+   "day": "Fri 08-28",
+   "can_be_paid": 3,
+   "sent": 3,
+   "still_open": 7,
+   "resolved": 1,
+   "digest": 3,
+   "shouted": 14,
+   "titles": [
+    "S05 Fri 08-28 has a product with no stock count",
+    "S04 Fri 08-28 charged a price that is not in the price list",
+    "The file supplier_prices_SUP-C_2026-08-28.csv was refused"
+   ]
+  },
+  {
+   "day": "Sat 08-29",
+   "can_be_paid": 2,
+   "sent": 1,
+   "still_open": 12,
+   "resolved": 1,
+   "digest": 0,
+   "shouted": 14,
+   "titles": [
+    "S06 Sat 08-29: Rows were set aside, and the day does not add up"
+   ]
+  },
+  {
+   "day": "Sun 08-30",
+   "can_be_paid": 1,
+   "sent": 1,
+   "still_open": 13,
+   "resolved": 0,
+   "digest": 0,
+   "shouted": 15,
+   "titles": [
+    "S02 Sun 08-30: Rows were set aside, and the day does not add up"
+   ]
+  }
+ ],
+ "alerts_sent": 10,
+ "alerts_shouted": 70,
+ "health": {
+  "lines": [
+   {
+    "mark": "ok",
+    "label": "Did it run?",
+    "text": "7 of 7 nights published"
+   },
+   {
+    "mark": "miss",
+    "label": "Is the data fresh?",
+    "text": "39 of 41 sales files by 01:00: 95.1%. Target 98%"
+   },
+   {
+    "mark": "",
+    "label": "Did every store report?",
+    "text": "36 of 41 store days can be paid from"
+   },
+   {
+    "mark": "miss",
+    "label": "late",
+    "text": "S06 08-27, 23.7 hours after it was due"
+   },
+   {
+    "mark": "miss",
+    "label": "missing",
+    "text": "S04 08-25"
+   }
+  ],
+  "nights": 7,
+  "nights_published": 7,
+  "files_expected": 41,
+  "files_on_time": 39,
+  "files_on_time_percent": 95.1,
+  "files_on_time_target": 98,
+  "store_days": 41,
+  "store_days_ok": 36
+ },
+ "recovery": [
+  {
+   "case": "Case 1",
+   "night": "Mon 08-24",
+   "fix": "The store's back office runs the export again. The refund has its minus sign now.",
+   "loaded_again": [
+    "sales_lines_S03_2026-08-24.csv"
+   ],
+   "resolved": [
+    "S03 Mon 08-24: Rows were set aside, and the day does not add up"
+   ]
+  },
+  {
+   "case": "Case 3",
+   "night": "Thu 08-27",
+   "fix": "The export program is corrected. The scale's 1,180 grams are written as 1.180 kg.",
+   "loaded_again": [
+    "sales_lines_S05_2026-08-27.csv"
+   ],
+   "resolved": [
+    "S05 Thu 08-27: Rows were set aside, and the day does not add up"
+   ]
+  },
+  {
+   "case": "Case 6",
+   "night": "Sat 08-29 and Sun 08-30",
+   "fix": "The buying team types Pumpkin soup into the price list. The sales file itself was right all along.",
+   "loaded_again": [
+    "products_2026-07-27.csv",
+    "products_2026-07-28.csv",
+    "products_2026-07-29.csv",
+    "products_2026-07-30.csv",
+    "products_2026-07-31.csv",
+    "products_2026-08-01.csv",
+    "products_2026-08-02.csv",
+    "products_2026-08-03.csv",
+    "products_2026-08-04.csv",
+    "products_2026-08-05.csv",
+    "products_2026-08-06.csv",
+    "products_2026-08-07.csv",
+    "products_2026-08-08.csv",
+    "products_2026-08-09.csv",
+    "products_2026-08-10.csv",
+    "products_2026-08-11.csv",
+    "products_2026-08-12.csv",
+    "products_2026-08-13.csv",
+    "products_2026-08-14.csv",
+    "products_2026-08-15.csv",
+    "products_2026-08-16.csv",
+    "products_2026-08-17.csv",
+    "products_2026-08-18.csv",
+    "products_2026-08-19.csv",
+    "products_2026-08-20.csv",
+    "products_2026-08-21.csv",
+    "products_2026-08-22.csv",
+    "products_2026-08-23.csv",
+    "products_2026-08-24.csv",
+    "products_2026-08-25.csv",
+    "products_2026-08-26.csv",
+    "products_2026-08-27.csv",
+    "products_2026-08-28.csv",
+    "products_2026-08-29.csv",
+    "products_2026-08-30.csv"
+   ],
+   "resolved": [
+    "S06 Sat 08-29: Rows were set aside, and the day does not add up"
+   ]
+  },
+  {
+   "case": "Case 5",
+   "night": "Sun 08-30",
+   "fix": "The till's clock is set right. The receipt is stamped 21:40 on Sunday again.",
+   "loaded_again": [
+    "sales_lines_S02_2026-08-30.csv"
+   ],
+   "resolved": [
+    "S02 Sun 08-30: Rows were set aside, and the day does not add up"
+   ]
+  }
+ ],
+ "drills": [
+  {
+   "drill": "A store's file arrives twice",
+   "store": "S03",
+   "gate": "gate_clean",
+   "set_aside": "121 lines",
+   "manager_saw": "yes: the day is right",
+   "told": "Nobody had to act. A message waits in the digest",
+   "fixed": "No fix. The gate removes the copies every night",
+   "right_again": true
+  },
+  {
+   "drill": "A column is renamed",
+   "store": "S04",
+   "gate": "gate_landing",
+   "set_aside": "The whole file: sales_lines_S04_2026-08-20.csv",
+   "manager_saw": "DO NOT PAY YET",
+   "told": "S04 Thu 08-20: The sales file was refused",
+   "fixed": "The store sent the file again, with the agreed columns",
+   "right_again": true
+  },
+  {
+   "drill": "A file is a day late",
+   "store": "S05",
+   "gate": "gate_publish",
+   "set_aside": "Nothing. There was nothing to set aside",
+   "manager_saw": "DO NOT PAY YET",
+   "told": "S05 Thu 08-20: No sales file arrived",
+   "fixed": "No fix. The file arrived by itself the next night",
+   "right_again": true
+  },
+  {
+   "drill": "A batch of impossible prices",
+   "store": "S06",
+   "gate": "gate_clean",
+   "set_aside": "118 lines",
+   "manager_saw": "DO NOT PAY YET",
+   "told": "S06 Thu 08-20: Rows were set aside, and the day does not add up",
+   "fixed": "The store sent the file again, with the real prices",
+   "right_again": true
+  }
+ ],
+ "dbt": {
+  "landing": 3,
+  "clean": 40,
+  "publish": 5
+ },
+ "other_projects": [
+  [
+   "Building a pipeline from nothing",
+   "Daily Orders: API to Warehouse"
+  ],
+  [
+   "Checks on events as they arrive",
+   "The clickstream project"
+  ],
+  [
+   "A lake, and table formats",
+   "The lakehouse project"
+  ],
+  [
+   "A dashboard on top of the tables",
+   "The warehouse project"
+  ],
+  [
+   "AI",
+   "Retail Profit Stack"
+  ]
+ ],
+ "a_real_team": [
+  [
+   "A paging service, and chat alerts",
+   "Here the callback is real, and the alert goes to a table and a log file. A team would send the same alert to PagerDuty, Slack or email"
+  ],
+  [
+   "A quality tool",
+   "Great Expectations or Soda, in place of hand-written tests. The reasons for each check stay the same"
+  ],
+  [
+   "A schema registry",
+   "A service that stores every agreed schema and refuses a breaking change by itself. Here the contract is one page, written by hand"
+  ],
+  [
+   "Lineage tools",
+   "They draw the map of what reads what. Here it was drawn by hand"
+  ],
+  [
+   "Machine-learned anomaly detection",
+   "For patterns a four-week average cannot see: a slow drift, a holiday that moves"
+  ]
+ ],
+ "quiz": [
+  {
+   "question": "It is Wed 08-26, 02:00. S04 sent no sales file for Tuesday. The pipeline publishes the other five stores and marks S04 \"do not pay yet\". Milestone 4 did that too. What is different tonight?",
+   "answer": "Someone is told. When publish succeeds, Airflow calls a callback, and one ticket goes to the head of retail operations: \"S04 Tue 08-25: No sales file arrived\". It says how much is in doubt and what to do: ask the store's back office for the file. On Tuesday night the store can still send it. On Monday morning it is too late."
+  },
+  {
+   "question": "The same ticket about S04 is still true on Wednesday, Thursday and Friday night. A teammate wants it sent again every night, so nobody forgets. Good idea?",
+   "answer": "No. That is how 70 alerts come from one week in place of 10: every failed test, every night. People then stop reading them, and miss the one that is new. That is alert fatigue. Send a problem once, when it is new. Count it as still open after that, and say so when it is resolved."
+  },
+  {
+   "question": "The store sends the right file for Monday. A colleague offers to save time: change the one wrong row in the warehouse by hand. What do you say?",
+   "answer": "Never repair in the warehouse. The clean tables are built again from the raw rows every night, so the hand-made fix is gone tomorrow, and nobody can see it was made. Let the store send the corrected file, and run that one night again. The load step sees that the file changed and loads it again, and a file that did not change is skipped. That is a safe re-run."
+  }
+ ],
+ "words": [
+  {
+   "term": "Run history",
+   "meaning": "What the pipeline remembers about its own runs: which night, which step, how it ended, how long it took."
+  },
+  {
+   "term": "Freshness",
+   "meaning": "How new the data is. A freshness check asks: did the newest data arrive in time?"
+  },
+  {
+   "term": "Volume",
+   "meaning": "How much data arrived. A volume check asks: is the row count near the usual count?"
+  },
+  {
+   "term": "SLI, SLO and SLA",
+   "meaning": "An SLI is a number you measure, such as the share of files that arrived by 01:00. An SLO is the target for it. An SLA is a promise to other people, with a cost when it is broken."
+  },
+  {
+   "term": "Observability",
+   "meaning": "Being able to tell from outside whether the data is right, not only whether the job ran. It watches five signals: freshness, volume, schema, distribution and lineage. Also called the five pillars."
+  },
+  {
+   "term": "Alert",
+   "meaning": "A message to a person that something needs them: what failed, how bad it is, what to do."
+  },
+  {
+   "term": "Callback",
+   "meaning": "A function Airflow calls by itself when a task changes state, such as when it fails."
+  },
+  {
+   "term": "Routing",
+   "meaning": "Sending each alert to the person who can act on it."
+  },
+  {
+   "term": "Alert fatigue",
+   "meaning": "People get so many alerts that they stop reading them."
+  },
+  {
+   "term": "Runbook",
+   "meaning": "A short note that says what an alert means and the first things to check."
+  },
+  {
+   "term": "Incident",
+   "meaning": "A time when the data was wrong or late for the people who use it."
+  },
+  {
+   "term": "Root cause",
+   "meaning": "The first thing that went wrong, the one that made the others happen."
+  },
+  {
+   "term": "Reprocessing",
+   "meaning": "Loading and building the same data again, after the source was corrected."
+  },
+  {
+   "term": "Backfill",
+   "meaning": "Running the pipeline again for past days, with one command."
+  },
+  {
+   "term": "Safe re-run",
+   "meaning": "A run that can be repeated and gives the same result: nothing is counted twice."
+  },
+  {
+   "term": "Incident note",
+   "meaning": "A short written record of an incident: what happened, who was hurt, why, and what was changed. Also called a post-mortem."
+  }
+ ],
+ "journey": [
+  [
+   "1",
+   "Green checks, wrong number",
+   "We found one error by luck, and we have a list of worries. We have no checks that would have caught it."
+  ],
+  [
+   "2",
+   "Checks with a reason",
+   "One table is done well. There are five more, and they are nothing like it."
+  ],
+  [
+   "3",
+   "Every table is different",
+   "The checks exist in notebooks. The pipeline does not run them, and a failure changes nothing."
+  ],
+  [
+   "4",
+   "Gates and quarantine",
+   "A gate fails at 02:00, and nobody knows until a store manager complains."
+  ],
+  [
+   "5",
+   "Know, alert, recover",
+   "Nothing"
+  ]
+ ],
+ "late": "S06 08-27, 23.7 hours late",
+ "missing": "S04 08-25",
+ "numbers": {
+  "notebooks": 8,
+  "tests": 140,
+  "dbt_tests": 48,
+  "alerts_sent": 10,
+  "alerts_shouted": 70,
+  "files_on_time": 39,
+  "files_expected": 41,
+  "can_be_paid_before": 1,
+  "can_be_paid_after": 5,
+  "stores": 6,
+  "drills": 4,
+  "planted_cases": 13,
+  "words": 16,
+  "all_words": 69
+ },
+ "dag": {
+  "id": "lotus_nightly_m5",
+  "tasks": [
+   "stores_send_files",
+   "load",
+   "gate_landing",
+   "clean",
+   "gate_clean",
+   "build",
+   "gate_publish",
+   "publish"
+  ]
+ }
+}
+</script>
+<script>
+(function () {
+  'use strict';
+  var DATA = JSON.parse(document.getElementById('page-data').textContent);
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function get(path) { return path.split('.').reduce(function (o, k) { return o == null ? o : o[k]; }, DATA); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function byId(id) { return document.getElementById(id); }
+
+  // Fill every number from the data.
+  document.querySelectorAll('[data-k]').forEach(function (node) { node.textContent = get(node.dataset.k); });
+
+  // Six dots: which stores could be paid.
+  function dots(id, stores) {
+    stores.forEach(function (s) {
+      var d = el('i');
+      d.title = s.store + (s.pay ? ': yes' : ': do not pay yet');
+      byId(id).appendChild(d);
+      if (s.pay) { if (reduce) d.className = 'paid'; else setTimeout(function () { d.className = 'paid'; }, 500); }
+    });
+  }
+  dots('dots-before', DATA.before.stores);
+  dots('dots-after', DATA.after.stores);
+
+  // The final report, beside the answer key.
+  DATA.after.stores.forEach(function (s) {
+    var row = el('tr', s.pay ? null : 'bad');
+    row.appendChild(el('td', 'name', s.store));
+    row.appendChild(el('td', null, s.manager));
+    row.appendChild(el('td', 'r', s.net_sales));
+    row.appendChild(el('td', 'r', s.answer_key));
+    row.appendChild(el('td', 'c ' + (s.equal ? 'eq' : 'neq'), s.equal ? 'equal' : 'not equal'));
+    row.appendChild(el('td', s.pay ? 'pay-yes' : 'pay-no', s.pay ? 'yes' : 'DO NOT PAY YET'));
+    byId('report-rows').appendChild(row);
+    s.why_not.forEach(function (why) {
+      var reason = el('tr', 'reason');
+      var cell = el('td', null, why);
+      cell.colSpan = 6;
+      reason.appendChild(cell);
+      byId('report-rows').appendChild(reason);
+    });
+  });
+
+  // The tasks of the DAG, and the tests of each gate.
+  DATA.dag.tasks.forEach(function (name, i) {
+    if (i) byId('tasks').appendChild(document.createTextNode(' → '));
+    byId('tasks').appendChild(el('code', name.indexOf('gate_') === 0 ? 'gate' : null, name));
+  });
+  ['landing', 'clean', 'publish'].forEach(function (g) {
+    var row = el('tr');
+    var name = el('td');
+    name.appendChild(el('code', null, 'gate_' + g));
+    row.appendChild(name);
+    row.appendChild(el('td', 'r', DATA.dbt[g]));
+    byId('gate-rows').appendChild(row);
+  });
+
+  DATA.recovery.forEach(function (r) {
+    var row = el('tr');
+    row.appendChild(el('td', 'name', r.case));
+    row.appendChild(el('td', 'wrap', r.night));
+    row.appendChild(el('td', 'wrap', r.fix));
+    row.appendChild(el('td', 'wrap', r.loaded_again.length > 2 ? r.loaded_again[0] + ' and ' + (r.loaded_again.length - 1) + ' more' : r.loaded_again.join(', ')));
+    row.appendChild(el('td', 'wrap green', r.resolved.length ? 'RESOLVED: ' + r.resolved.join('; ') : 'no ticket was open'));
+    byId('recovery-rows').appendChild(row);
+  });
+
+  // Alerts, night by night.
+  var total = { sent: 0, still_open: 0, resolved: 0, digest: 0, shouted: 0 };
+  DATA.week.forEach(function (n) {
+    var row = el('tr');
+    row.appendChild(el('td', 'name', n.day));
+    row.appendChild(el('td', 'r', n.can_be_paid + ' of ' + DATA.numbers.stores));
+    ['sent', 'still_open', 'resolved', 'digest', 'shouted'].forEach(function (k) { row.appendChild(el('td', 'r', n[k])); total[k] += n[k]; });
+    row.appendChild(el('td', 't', n.titles.length ? n.titles.join('; ') : 'nothing new'));
+    byId('week-rows').appendChild(row);
+  });
+  var sum = el('tr', 'sum');
+  sum.appendChild(el('td', null, 'The week'));
+  sum.appendChild(el('td', 'r', ''));
+  ['sent', 'still_open', 'resolved', 'digest', 'shouted'].forEach(function (k) { sum.appendChild(el('td', 'r', k === 'still_open' || k === 'digest' ? '' : total[k])); });
+  sum.appendChild(el('td', 't', 'A still-open problem is counted again each night, so its total is not shown.'));
+  byId('week-rows').appendChild(sum);
+
+  // Health.
+  DATA.health.lines.forEach(function (h) {
+    var row = el('div', 'healthrow');
+    row.appendChild(el('span', 'mark ' + h.mark, h.mark === 'ok' ? 'met' : h.mark === 'miss' ? 'missed' : 'info'));
+    var text = el('span');
+    text.appendChild(el('b', null, h.label + ' '));
+    text.appendChild(document.createTextNode(h.text));
+    row.appendChild(text);
+    byId('health-rows').appendChild(row);
+  });
+
+  // The four drills.
+  DATA.drills.forEach(function (d, i) {
+    var box = el('div', 'drill rise');
+    var title = el('h3', null, 'Drill ' + (i + 1) + ': ' + d.drill + ' ');
+    title.appendChild(el('small', null, 'store ' + d.store));
+    box.appendChild(title);
+    var dl = el('dl');
+    [['Caught by', d.gate + '. Set aside: ' + d.set_aside], ['Manager saw', d.manager_saw], ['Told', d.told], ['The fix', d.fixed], ['Right again', d.right_again ? 'yes, equal to the answer key' : 'no']].forEach(function (p) {
+      dl.appendChild(el('dt', null, p[0]));
+      dl.appendChild(el('dd', p[0] === 'Right again' && d.right_again ? 'ok' : null, p[1]));
+    });
+    box.appendChild(dl);
+    byId('drill-list').appendChild(box);
+  });
+
+  DATA.words.forEach(function (w) {
+    var card = el('div', 'word rise');
+    card.appendChild(el('b', null, w.term));
+    card.appendChild(el('span', null, w.meaning.replace(/`/g, '')));
+    byId('word-list').appendChild(card);
+  });
+
+  DATA.quiz.forEach(function (q, i) {
+    var box = el('details', 'quiz rise');
+    box.appendChild(el('summary', null, (i + 1) + '. ' + q.question));
+    box.appendChild(el('p', null, q.answer));
+    byId('quiz-list').appendChild(box);
+  });
+
+  // The look back.
+  DATA.journey.forEach(function (j, i) {
+    var li = el('li', i === DATA.journey.length - 1 ? 'last' : null);
+    li.appendChild(el('span', 'n', j[0]));
+    li.appendChild(el('b', null, 'Milestone ' + j[0] + ': ' + j[1]));
+    li.appendChild(el('span', 'w', 'Still wrong: ' + j[2]));
+    byId('look').appendChild(li);
+  });
+  [['other-projects', DATA.other_projects], ['real-team', DATA.a_real_team]].forEach(function (pair) {
+    pair[1].forEach(function (row) {
+      byId(pair[0]).appendChild(el('dt', null, row[0]));
+      byId(pair[0]).appendChild(el('dd', null, row[1]));
+    });
+  });
+
+  function countUp(node) {
+    var target = Number(get(node.dataset.k));
+    if (reduce || !isFinite(target)) return;
+    var start = performance.now();
+    (function tick(now) {
+      var t = Math.min(1, (now - start) / 900);
+      node.textContent = Math.round(target * (1 - Math.pow(1 - t, 3)));
+      if (t < 1) requestAnimationFrame(tick);
+    })(start);
+  }
+
+  // Reveal things as they scroll into view.
+  document.documentElement.classList.add('js');
+  var waiting = Array.prototype.slice.call(document.querySelectorAll('.rise'));
+  function reveal() {
+    var line = window.innerHeight * 0.92;
+    waiting = waiting.filter(function (node) {
+      if (node.getBoundingClientRect().top > line) return true;
+      node.classList.add('in');
+      node.querySelectorAll('[data-count]').forEach(countUp);
+      return false;
+    });
+  }
+  window.addEventListener('scroll', reveal, { passive: true });
+  window.addEventListener('resize', reveal);
+  reveal();
+
+  // Mark the section you are reading in the jump links.
+  var links = document.querySelectorAll('.nav a');
+  var spy = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + entry.target.id); });
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  document.querySelectorAll('section[id]').forEach(function (s) { spy.observe(s); });
+})();
+</script>
+</body>
+</html>

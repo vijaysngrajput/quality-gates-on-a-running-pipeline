@@ -1,6 +1,6 @@
 # Check card: `supplier_prices`
 
-**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.
+**State after milestone 5:** all eight questions are answered, and the card is complete.
 
 ## 1. What does one row mean?
 
@@ -70,7 +70,15 @@ Each check is now a dbt test, and a gate in the pipeline acts on it. The test's 
 | 32 | A product costs less than it sells for | `gate_clean` | **Quarantine.** The bad rows are set aside with this reason. The good rows carry on |
 | 33 | A supplier row fits its product | `gate_clean` | **Quarantine.** The bad rows are set aside with this reason. The good rows carry on |
 
-**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert.
+**Who is told?** Since milestone 5, Airflow tells a person on the night, from a task callback. A **page** wakes someone. A **ticket** is for today. A **message** waits in a digest. Each alert is sent once, says what to do, and links to `RUNBOOK.md`.
+
+| # | Check | Level | Who is told |
+|---|---|---|---|
+| 29 | A file has the columns we expect | Ticket: the file was refused | Finance and the buying team, for a supplier's file. The store, for its own |
+| 30 | Every supplier row has a cost | Ticket | Finance, and the buying team |
+| 31 | A cost is near the cost in the last file | Ticket | Finance, and the buying team |
+| 32 | A product costs less than it sells for | Ticket | Finance, and the buying team |
+| 33 | A supplier row fits its product | Ticket | Finance, and the buying team |
 
 ## 8. The proof
 

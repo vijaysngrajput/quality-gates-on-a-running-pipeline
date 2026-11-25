@@ -15,7 +15,7 @@ The head of retail operations asks that every Monday. The pipeline has five chec
 | **Who it is for** | You know some Python and a little SQL. You have never built a pipeline, and never used dbt, Docker or Airflow. You do not need another D8Loop project first |
 | **What you need** | Git, Python 3.12 or later, and [uv](https://docs.astral.sh/uv/). Docker from milestone 1 on, installed click by click in [its README](src/m1_green_checks_wrong_number/#set-up) |
 | **What it costs** | Nothing. No API key, no cloud account, no AI. Everything runs on your computer |
-| **Status** | Milestones 1 to 4 of 5 are complete. Milestone 5 is being built |
+| **Status** | All five milestones are complete |
 
 It is the third project of the [D8Loop Data Engineering Projects](https://www.d8loop.com/modules/knowledge-corner/data-engineering-projects#data-quality-and-reliability) series, in the **Data quality and reliability** category. The first two are [Retail Profit Stack](https://github.com/vijaysngrajput/retail-profit-stack) and [Daily Orders: API to Warehouse](https://github.com/vijaysngrajput/daily-orders-api-to-warehouse).
 
@@ -57,7 +57,37 @@ Five checks, all green. Now add up store S03's receipts yourself:
 
 That contrast is the project: **the same data, the same day, green checks, and a wrong number.**
 
-`uv run python try_it.py --finished` will run the finished pipeline on the same night, with one store marked "do not pay yet", the rows set aside, and the reason. It arrives with milestone 5.
+Now run the finished pipeline on the same night:
+
+```sh
+uv run python try_it.py --finished
+```
+
+```
+gate clean: 40 tests, 38 passed.
+    set aside       1  A line adds up
+    set aside       1  A refund gives money back
+    rows set aside: 1 in sales_lines
+alerts:       1 sent (0 page, 1 ticket). 0 still open, not sent again. 0 resolved. 0 in the digest.
+    TICKET  to Head of retail operations: S03 Mon 08-24: Rows were set aside, and the day does not add up. ...
+
+  S03  Lotus Calder Bridge        Tomas Reyes            $786.69           -   DO NOT PAY YET
+         Mon 08-24: 1 row set aside ($9.49): A line adds up; A refund gives money back
+
+  5 of 6 stores can be paid.
+```
+
+A gate stopped the bad row. The report says which store to hold back, and why. And the right person was told.
+
+## Or run it from a page, and break it
+
+```sh
+uv run python pipeline_live/server.py
+```
+
+The [live page](pipeline_live/) opens in your browser. It needs no Docker. Run a night, make a store send its file twice or a day late, fix a planted fault, and run the night again. A second page shows the alerts, as a paging tool would.
+
+![The live page: the finished pipeline, run by you](images/live.png)
 
 ## The idea
 
@@ -115,7 +145,7 @@ Five milestones. Each one ends with something that is **still wrong**. That is t
 | [2. Checks with a reason](src/m2_checks_with_a_reason/) | Write the checks for `sales_lines` through each lens, by hand first. See what the common version of each check misses | One table is done well. There are five more, and they are nothing like it | 8 |
 | [3. Every table is different](src/m3_every_table_is_different/) | A check card and checks for the other five tables. A written contract for the supplier's file. The seven cards side by side | The checks exist in notebooks. The pipeline does not run them, and a failure changes nothing | 8 |
 | [4. Gates and quarantine](src/m4_gates_and_quarantine/) | Every check becomes a dbt test, and three gate tasks in Airflow act on them: block, quarantine or warn. The report says which store to pay, and why not | A gate fails at 02:00, and nobody knows until a store manager complains | 8 |
-| 5. Know, alert, recover | Run history, alerts, and four recovery drills with a backfill | Nothing | Planned |
+| [5. Know, alert, recover](src/m5_know_alert_recover/) | Run history and four health numbers. Alerts from Airflow to the person who can act. Four recovery drills with a backfill | Nothing | 8 |
 
 You practise the five things this category is made of: **quality checks, quarantine, alerts, backfills and run history**.
 
@@ -124,6 +154,8 @@ You practise the five things this category is made of: **quality checks, quarant
 Thirteen faults are planted on known dates, so each can be checked with a pencil. **Every one passes all five standard checks.** That is the point.
 
 At the end of the bonus week the starter pipeline has run seven nights. All 35 checks are green, and all six stores have a wrong number.
+
+At the end of the project the answer to the Monday question is: **yes for five stores, no for one, and here is the row that says why.**
 
 | Case | What happens | Lens |
 |---|---|---|
@@ -146,8 +178,9 @@ The pages ending in `.html` are animated. GitHub shows only their source, so vie
 | Page | What it shows |
 |---|---|
 | [One receipt, from the till to the bonus](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/understand_business/lotus_retails.html) | Who uses which table, and what a wrong value does to each of them |
-| Flow pages: [1](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m1_green_checks_wrong_number/milestone_1_flow.html) · [2](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m2_checks_with_a_reason/milestone_2_flow.html) · [3](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m3_every_table_is_different/milestone_3_flow.html) · [4](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m4_gates_and_quarantine/milestone_4_flow.html) | The whole pipeline at each milestone, with real rows moving through it. The same layout every time, so you see what changed |
-| Recap pages: [1](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m1_green_checks_wrong_number/milestone_1_recap.html) · [2](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m2_checks_with_a_reason/milestone_2_recap.html) · [3](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m3_every_table_is_different/milestone_3_recap.html) · [4](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m4_gates_and_quarantine/milestone_4_recap.html) | What was asked, what you built, what you learned, what is still wrong |
+| Flow pages: [1](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m1_green_checks_wrong_number/milestone_1_flow.html) · [2](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m2_checks_with_a_reason/milestone_2_flow.html) · [3](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m3_every_table_is_different/milestone_3_flow.html) · [4](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m4_gates_and_quarantine/milestone_4_flow.html) · [5](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m5_know_alert_recover/milestone_5_flow.html) | The whole pipeline at each milestone, with real rows moving through it. The same layout every time, so you see what changed |
+| Recap pages: [1](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m1_green_checks_wrong_number/milestone_1_recap.html) · [2](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m2_checks_with_a_reason/milestone_2_recap.html) · [3](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m3_every_table_is_different/milestone_3_recap.html) · [4](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m4_gates_and_quarantine/milestone_4_recap.html) · [5](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m5_know_alert_recover/milestone_5_recap.html) |
+| [The live page](pipeline_live/) | The finished pipeline, run by you, with buttons to plant each fault. And the alerts page. They need a small local server, so they are not online | What was asked, what you built, what you learned, what is still wrong |
 | [The check cards](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/checks/check_cards.html) | Every table's check card side by side, growing as the project goes on |
 
 No number on these pages is typed by hand. A script runs the real code and writes what happened into the page, and a test fails when a page is out of date.
@@ -161,6 +194,8 @@ No number on these pages is typed by hand. A script runs the real code and write
 | *Milestone 3. A supplier's file with a perfect shape and a wrong meaning.* | *The recap page of milestone 3.* |
 | ![Milestone 4: a row is stopped at a gate](images/m4_flow.png) | ![The recap page of milestone 4](images/m4_recap.png) |
 | *Milestone 4. The refund stops at a gate and is set aside, with its reason.* | *The recap page of milestone 4.* |
+| ![Milestone 5: someone is told, and the number comes back right](images/m5_flow.png) | ![The alerts page](images/alerts.png) |
+| *Milestone 5. The right person is told on the night, and the number comes back right.* | *The alerts page: who is told, how urgently, and what to do.* |
 
 ## The check card
 
@@ -214,6 +249,7 @@ Shared by every milestone:
 | [docs/source_data_proposal.md](docs/source_data_proposal.md) | The design of the tables, the planted cases and the answer key |
 | `docker-compose.yml`, `docker/` | The warehouse and Airflow |
 | `try_it.py` | The two-minute run |
+| [pipeline_live/](pipeline_live/) | The live page and the alerts page |
 
 ## Set up
 
@@ -228,6 +264,7 @@ docker compose up -d --build   # the warehouse and Airflow. The first time takes
 |---|---|
 | 5450 | The warehouse: Postgres |
 | 8080 | Airflow's page |
+| 8040 | The live page |
 
 Daily Orders uses ports 5440 and 8080. Stop its Airflow before you start this one, or start this one on another port: `LOTUS_AIRFLOW_PORT=8081 docker compose up -d`.
 
@@ -239,7 +276,7 @@ Nothing in this project stops by itself. From the project folder:
 docker compose down
 ```
 
-This stops and removes both containers, and keeps your data. `docker compose ps` should then list no containers. How to delete the data and free the disk space is in [milestone 1's README](src/m1_green_checks_wrong_number/#shut-it-down).
+This stops and removes both containers, and keeps your data. `docker compose ps` should then list no containers. The live page is stopped with **Ctrl+C** in its terminal. How to delete the data and free the disk space is in [milestone 1's README](src/m1_green_checks_wrong_number/#shut-it-down).
 
 ## Run the tests
 
@@ -249,10 +286,12 @@ cd src/m1_green_checks_wrong_number && uv run pytest   # milestone 1
 cd src/m2_checks_with_a_reason && uv run pytest        # milestone 2
 cd src/m3_every_table_is_different && uv run pytest    # milestone 3
 cd src/m4_gates_and_quarantine && uv run pytest        # milestone 4: about two minutes, it runs dbt many times
+cd src/m5_know_alert_recover && uv run pytest          # milestone 5: about three minutes
+uv run pytest pipeline_live                            # the live page, from the project folder
 uv run pytest checks                                   # the check cards page, from the project folder
 ```
 
-Nothing needs to be running. When the warehouse is up, the pipeline tests also run on Postgres.
+Nothing needs to be running: the tests use DuckDB, their own files and their own database. When the warehouse is up, the pipeline tests also run on Postgres. When Airflow is up, one test in each milestone asks the real Airflow to read the DAG.
 
 ## Built with
 

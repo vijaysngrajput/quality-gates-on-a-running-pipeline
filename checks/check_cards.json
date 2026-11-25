@@ -18,7 +18,7 @@
    "card_in": 1,
    "has_card": true,
    "file": "checks/sales_lines.md",
-   "state": "**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.",
+   "state": "**State after milestone 5:** all eight questions are answered, and the card is complete.",
    "answered": 8,
    "questions": [
     {
@@ -461,7 +461,96 @@
       },
       {
        "type": "p",
-       "text": "**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert."
+       "text": "**Who is told?** Since milestone 5, Airflow tells a person on the night, from a task callback. A **page** wakes someone. A **ticket** is for today. A **message** waits in a digest. Each alert is sent once, says what to do, and links to `RUNBOOK.md`."
+      },
+      {
+       "type": "table",
+       "head": [
+        "#",
+        "Check",
+        "Level",
+        "Who is told"
+       ],
+       "rows": [
+        [
+         "1",
+         "A cell that must be filled is filled",
+         "Ticket: one for the store's day, with the reasons",
+         "Head of retail operations"
+        ],
+        [
+         "2",
+         "One item line is stored once",
+         "Message",
+         "The data engineer on call"
+        ],
+        [
+         "3",
+         "A receipt id has the right shape",
+         "Ticket: one for the store's day, with the reasons",
+         "Head of retail operations"
+        ],
+        [
+         "4",
+         "A line adds up",
+         "Ticket: one for the store's day, with the reasons",
+         "Head of retail operations"
+        ],
+        [
+         "5",
+         "Every sale is for a product that exists",
+         "Ticket: one for the store's day, with the reasons",
+         "Head of retail operations"
+        ],
+        [
+         "6",
+         "A refund gives money back",
+         "Ticket: one for the store's day, with the reasons",
+         "Head of retail operations"
+        ],
+        [
+         "7",
+         "A refund is not larger than the sale",
+         "Ticket: one for the store's day, with the reasons",
+         "Head of retail operations"
+        ],
+        [
+         "8",
+         "The price charged is the price valid that day",
+         "Ticket",
+         "Finance"
+        ],
+        [
+         "9",
+         "Nothing is sold while the store is closed",
+         "Ticket: one for the store's day, with the reasons",
+         "Head of retail operations"
+        ],
+        [
+         "10",
+         "A weight is a believable weight",
+         "Ticket: one for the store's day, with the reasons",
+         "Head of retail operations"
+        ],
+        [
+         "11",
+         "The receipts add up to the till's own total",
+         "Page, when nobody can explain the difference. Otherwise a ticket",
+         "The data engineer on call. Head of retail operations"
+        ],
+        [
+         "12",
+         "Every open store reported",
+         "Ticket",
+         "Head of retail operations"
+        ],
+        [
+         "13",
+         "A store's day is near its normal day",
+         "Message",
+         "Head of retail operations"
+        ]
+       ]
       }
      ]
     },
@@ -571,7 +660,7 @@
    "card_in": 2,
    "has_card": true,
    "file": "checks/till_totals.md",
-   "state": "**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.",
+   "state": "**State after milestone 5:** all eight questions are answered, and the card is complete.",
    "answered": 8,
    "questions": [
     {
@@ -816,7 +905,36 @@
       },
       {
        "type": "p",
-       "text": "**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert."
+       "text": "**Who is told?** Since milestone 5, Airflow tells a person on the night, from a task callback. A **page** wakes someone. A **ticket** is for today. A **message** waits in a digest. Each alert is sent once, says what to do, and links to `RUNBOOK.md`."
+      },
+      {
+       "type": "table",
+       "head": [
+        "#",
+        "Check",
+        "Level",
+        "Who is told"
+       ],
+       "rows": [
+        [
+         "14",
+         "A till has one total for a day",
+         "Page",
+         "The data engineer on call"
+        ],
+        [
+         "15",
+         "A till's total adds up",
+         "Page",
+         "The data engineer on call"
+        ],
+        [
+         "16",
+         "Every till of an open store sent its total",
+         "Ticket: the store's day says \"no till total\"",
+         "Head of retail operations"
+        ]
+       ]
       }
      ]
     },
@@ -867,7 +985,7 @@
    "card_in": 3,
    "has_card": true,
    "file": "checks/products.md",
-   "state": "**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.",
+   "state": "**State after milestone 5:** all eight questions are answered, and the card is complete.",
    "answered": 8,
    "questions": [
     {
@@ -1169,7 +1287,48 @@
       },
       {
        "type": "p",
-       "text": "**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert."
+       "text": "**Who is told?** Since milestone 5, Airflow tells a person on the night, from a task callback. A **page** wakes someone. A **ticket** is for today. A **message** waits in a digest. Each alert is sent once, says what to do, and links to `RUNBOOK.md`."
+      },
+      {
+       "type": "table",
+       "head": [
+        "#",
+        "Check",
+        "Level",
+        "Who is told"
+       ],
+       "rows": [
+        [
+         "17",
+         "A product has one price on any day",
+         "Page",
+         "The data engineer on call"
+        ],
+        [
+         "18",
+         "A product on sale has a price on every day",
+         "Page",
+         "The data engineer on call"
+        ],
+        [
+         "19",
+         "A product row makes sense",
+         "Page",
+         "The data engineer on call"
+        ],
+        [
+         "20",
+         "A new price is near the old price",
+         "Ticket",
+         "The buying team"
+        ],
+        [
+         "21",
+         "A retired product has a last day",
+         "Message",
+         "The buying team"
+        ]
+       ]
       }
      ]
     },
@@ -1230,7 +1389,7 @@
    "card_in": 3,
    "has_card": true,
    "file": "checks/stores.md",
-   "state": "**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.",
+   "state": "**State after milestone 5:** all eight questions are answered, and the card is complete.",
    "answered": 8,
    "questions": [
     {
@@ -1494,7 +1653,42 @@
       },
       {
        "type": "p",
-       "text": "**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert."
+       "text": "**Who is told?** Since milestone 5, Airflow tells a person on the night, from a task callback. A **page** wakes someone. A **ticket** is for today. A **message** waits in a digest. Each alert is sent once, says what to do, and links to `RUNBOOK.md`."
+      },
+      {
+       "type": "table",
+       "head": [
+        "#",
+        "Check",
+        "Level",
+        "Who is told"
+       ],
+       "rows": [
+        [
+         "22",
+         "There are six stores, each once",
+         "Page",
+         "The data engineer on call"
+        ],
+        [
+         "23",
+         "A store row makes sense",
+         "Page",
+         "The data engineer on call"
+        ],
+        [
+         "24",
+         "Every file is from a store we know",
+         "Page",
+         "The data engineer on call"
+        ],
+        [
+         "25",
+         "The stores table is the same as yesterday",
+         "Ticket",
+         "Head of retail operations"
+        ]
+       ]
       }
      ]
     },
@@ -1555,7 +1749,7 @@
    "card_in": 3,
    "has_card": true,
    "file": "checks/stock_counts.md",
-   "state": "**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.",
+   "state": "**State after milestone 5:** all eight questions are answered, and the card is complete.",
    "answered": 8,
    "questions": [
     {
@@ -1804,7 +1998,36 @@
       },
       {
        "type": "p",
-       "text": "**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert."
+       "text": "**Who is told?** Since milestone 5, Airflow tells a person on the night, from a task callback. A **page** wakes someone. A **ticket** is for today. A **message** waits in a digest. Each alert is sent once, says what to do, and links to `RUNBOOK.md`."
+      },
+      {
+       "type": "table",
+       "head": [
+        "#",
+        "Check",
+        "Level",
+        "Who is told"
+       ],
+       "rows": [
+        [
+         "26",
+         "A snapshot has a row for every day",
+         "Ticket: the order list says \"no count\"",
+         "The replenishment team"
+        ],
+        [
+         "27",
+         "A product is counted once a day",
+         "Message",
+         "The replenishment team"
+        ],
+        [
+         "28",
+         "A count is a believable count",
+         "Ticket",
+         "The replenishment team"
+        ]
+       ]
       }
      ]
     },
@@ -1855,7 +2078,7 @@
    "card_in": 3,
    "has_card": true,
    "file": "checks/supplier_prices.md",
-   "state": "**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.",
+   "state": "**State after milestone 5:** all eight questions are answered, and the card is complete.",
    "answered": 8,
    "questions": [
     {
@@ -2132,7 +2355,48 @@
       },
       {
        "type": "p",
-       "text": "**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert."
+       "text": "**Who is told?** Since milestone 5, Airflow tells a person on the night, from a task callback. A **page** wakes someone. A **ticket** is for today. A **message** waits in a digest. Each alert is sent once, says what to do, and links to `RUNBOOK.md`."
+      },
+      {
+       "type": "table",
+       "head": [
+        "#",
+        "Check",
+        "Level",
+        "Who is told"
+       ],
+       "rows": [
+        [
+         "29",
+         "A file has the columns we expect",
+         "Ticket: the file was refused",
+         "Finance and the buying team, for a supplier's file. The store, for its own"
+        ],
+        [
+         "30",
+         "Every supplier row has a cost",
+         "Ticket",
+         "Finance, and the buying team"
+        ],
+        [
+         "31",
+         "A cost is near the cost in the last file",
+         "Ticket",
+         "Finance, and the buying team"
+        ],
+        [
+         "32",
+         "A product costs less than it sells for",
+         "Ticket",
+         "Finance, and the buying team"
+        ],
+        [
+         "33",
+         "A supplier row fits its product",
+         "Ticket",
+         "Finance, and the buying team"
+        ]
+       ]
       }
      ]
     },
@@ -2182,7 +2446,7 @@
    "card_in": 3,
    "has_card": true,
    "file": "checks/members.md",
-   "state": "**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.",
+   "state": "**State after milestone 5:** all eight questions are answered, and the card is complete.",
    "answered": 8,
    "questions": [
     {
@@ -2454,7 +2718,42 @@
       },
       {
        "type": "p",
-       "text": "**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert."
+       "text": "**Who is told?** Since milestone 5, Airflow tells a person on the night, from a task callback. A **page** wakes someone. A **ticket** is for today. A **message** waits in a digest. Each alert is sent once, says what to do, and links to `RUNBOOK.md`."
+      },
+      {
+       "type": "table",
+       "head": [
+        "#",
+        "Check",
+        "Level",
+        "Who is told"
+       ],
+       "rows": [
+        [
+         "34",
+         "One person is one member",
+         "Message",
+         "Marketing"
+        ],
+        [
+         "35",
+         "An email has the shape of an email",
+         "Message",
+         "Marketing"
+        ],
+        [
+         "36",
+         "A member row has what marketing needs",
+         "Message",
+         "Marketing"
+        ],
+        [
+         "37",
+         "A member has a real store and a past join date",
+         "Message",
+         "Marketing"
+        ]
+       ]
       }
      ]
     },

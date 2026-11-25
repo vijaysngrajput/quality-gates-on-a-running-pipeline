@@ -23,16 +23,12 @@ FINISHED = PROJECT_DIR / "src" / "m5_know_alert_recover"
 
 def main() -> int:
     finished = "--finished" in sys.argv[1:]
-    if finished and not FINISHED.exists():
-        print("The finished pipeline is built in milestones 2 to 5, and they are not here yet.")
-        print("Today this project holds milestone 1: the given pipeline, and the wrong number.")
-        print("Run it:  uv run python try_it.py")
-        return 0
-
     shutil.rmtree(FOLDER, ignore_errors=True)
     os.environ["LOTUS_WAREHOUSE"] = "duckdb"
     os.environ["LOTUS_LANDING"] = str(FOLDER / "landing")
     os.environ["LOTUS_DUCKDB_PATH"] = str(FOLDER / "lotus.duckdb")
+    os.environ["LOTUS_ALERTS_LOG"] = str(FOLDER / "alerts.log")
+    os.environ["DBT_TARGET_PATH"] = str(FOLDER / "dbt_target")
     sys.path.insert(0, str(FINISHED if finished else GIVEN))
 
     from lotus_pipeline import pipeline
@@ -44,6 +40,11 @@ def main() -> int:
     print(f"stores:  {count} files sent: four earlier weeks, and this Monday.\n")
     pipeline.run(NIGHT)
 
+    if finished:
+        print()
+        print("The same data, the same night. Now a gate stopped the bad row, the report says")
+        print("which store to hold back and why, and the right person was told.")
+        print("The five milestones build this, one step at a time:  README.md")
     if not finished:
         right = truth.daily_store_sales(build())[(NIGHT, "S03")]["net_sales_cents"]
         print()

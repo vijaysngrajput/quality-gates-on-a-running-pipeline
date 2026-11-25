@@ -1,6 +1,6 @@
 # Check card: `stock_counts`
 
-**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.
+**State after milestone 5:** all eight questions are answered, and the card is complete.
 
 ## 1. What does one row mean?
 
@@ -66,7 +66,13 @@ Each check is now a dbt test, and a gate in the pipeline acts on it. The test's 
 | 27 | A product is counted once a day | `gate_clean` | **Warn.** The run continues, and the warning is recorded |
 | 28 | A count is a believable count | `gate_clean` | **Quarantine.** The bad rows are set aside with this reason. The good rows carry on |
 
-**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert.
+**Who is told?** Since milestone 5, Airflow tells a person on the night, from a task callback. A **page** wakes someone. A **ticket** is for today. A **message** waits in a digest. Each alert is sent once, says what to do, and links to `RUNBOOK.md`.
+
+| # | Check | Level | Who is told |
+|---|---|---|---|
+| 26 | A snapshot has a row for every day | Ticket: the order list says "no count" | The replenishment team |
+| 27 | A product is counted once a day | Message | The replenishment team |
+| 28 | A count is a believable count | Ticket | The replenishment team |
 
 ## 8. The proof
 

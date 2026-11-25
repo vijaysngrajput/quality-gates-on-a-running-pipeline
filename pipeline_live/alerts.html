@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lotus Retails: the alerts page</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f4ef; --surface: #fffdf9; --ink: #1d2327; --muted: #5c6670; --line: #d9d4c8;
+    --accent: #0f6b5c; --accent-ink: #ffffff; --accent-soft: #dcefe9;
+    --neg: #a23b2a; --neg-soft: #f6e1dc; --pos: #1f6f43; --pos-soft: #dff0e5;
+    --warn: #8a5a00; --warn-soft: #f7ebcf; --tag-bg: #ecebe4;
+    --shadow: 0 1px 2px rgba(29, 35, 39, .06), 0 6px 18px rgba(29, 35, 39, .06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --bg: #14181a; --surface: #1c2226; --ink: #e8e6e1; --muted: #9aa4ab; --line: #2e373c;
+      --accent: #5fc5b0; --accent-ink: #0d1f1c; --accent-soft: #1d3a35;
+      --neg: #e58a78; --neg-soft: #3a2420; --pos: #7fd0a0; --pos-soft: #1d3527;
+      --warn: #e2b85c; --warn-soft: #3a3019; --tag-bg: #262e33;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 18px rgba(0, 0, 0, .25);
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 28px 24px 56px; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  a { color: var(--accent); }
+  .eyebrow { margin: 0 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0 0 8px; font: 600 34px/1.15 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; text-wrap: balance; }
+  .lede { margin: 0 0 18px; max-width: 74ch; color: var(--muted); font-size: 16px; }
+  h2 { margin: 0 0 6px; font-size: 17px; line-height: 1.25; }
+  .kicker { margin: 0 0 4px; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 0 0 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .btns { display: flex; flex-wrap: wrap; gap: 6px; }
+  .btn { padding: 7px 14px; font: inherit; font-weight: 500; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+  .btn:hover:not(:disabled) { border-color: var(--accent); }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .btn.small { padding: 4px 10px; font-size: 13px; }
+  :is(.btn, select, summary, a):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  select { font: inherit; padding: 6px 8px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+  .clock { margin-left: auto; padding: 4px 10px; border-radius: 999px; background: var(--tag-bg); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .busy { display: none; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
+  body.running .busy { display: inline-flex; }
+  .spin { width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spin { animation: none; } * { transition: none !important; } }
+
+  .message { margin: 0 0 14px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); }
+  .message.good { border-color: var(--pos); background: var(--pos-soft); }
+  .message.bad { border-color: var(--neg); background: var(--neg-soft); }
+  .message.warn { border-color: var(--warn); background: var(--warn-soft); }
+  .message b { display: block; }
+
+  /* The DAG */
+  .dag { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 12px; padding: 9px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; font-size: 13px; }
+  .dag .label { color: var(--muted); margin-right: 4px; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; border: 2px solid var(--line); font: 600 12.5px ui-monospace, Menlo, Consolas, monospace; }
+  .pill small { font: 400 11.5px system-ui, sans-serif; color: var(--muted); }
+  .pill.ok { border-color: var(--pos); background: var(--pos-soft); }
+  .pill.blocked, .pill.error { border-color: var(--neg); background: var(--neg-soft); }
+  .pill.not { border-style: dashed; color: var(--muted); }
+  .arrow { color: var(--muted); }
+
+  /* The six stages */
+  .lane { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 18px; align-items: stretch; margin-bottom: 14px; }
+  .stage { position: relative; display: flex; flex-direction: column; min-height: 210px; padding: 10px; background: var(--surface); border: 2px solid var(--line); border-radius: 12px; }
+  .stage + .stage::before { content: "\2192"; position: absolute; left: -15px; top: 18px; color: var(--muted); font-size: 15px; line-height: 1; }
+  .stage.gates { border-color: var(--accent); }
+  .stage.bad { border-color: var(--neg); }
+  .role { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .name { margin: 1px 0 6px; font-size: 14.5px; font-weight: 600; line-height: 1.25; }
+  .stage p { margin: 0 0 6px; font-size: 12.5px; color: var(--muted); }
+  .stage p b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .card { margin: 0 0 6px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 8px; font-size: 12.5px; line-height: 1.35; background: var(--bg); }
+  .card b { display: block; font-size: 12.5px; }
+  .card.good { border-color: var(--pos); background: var(--pos-soft); }
+  .card.bad { border-color: var(--neg); background: var(--neg-soft); }
+  .card.warn { border-color: var(--warn); background: var(--warn-soft); }
+  .card small { color: var(--muted); }
+
+  .grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+  .col { display: grid; gap: 14px; min-width: 0; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; min-width: 0; }
+  .panel.dashed { border-style: dashed; }
+  .panel p { margin: 0 0 6px; }
+  .muted { color: var(--muted); }
+  .scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 5px 8px; text-align: left; border-top: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); border-top: 0; }
+  td.num, th.num { text-align: right; white-space: nowrap; }
+  tr.wait td { background: var(--neg-soft); }
+  .yes { color: var(--pos); font-weight: 600; }
+  .no { color: var(--neg); font-weight: 700; white-space: nowrap; }
+  .why { display: block; color: var(--muted); font-size: 12.5px; }
+  .tag { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600; background: var(--tag-bg); color: var(--muted); white-space: nowrap; }
+  .tag.page, .tag.block { background: var(--neg-soft); color: var(--neg); }
+  .tag.ticket, .tag.quarantine, .tag.refuse_file { background: var(--warn-soft); color: var(--warn); }
+  .tag.ok, .tag.resolved { background: var(--pos-soft); color: var(--pos); }
+  ul.plain { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+  ul.plain li { padding: 6px 9px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px; background: var(--bg); }
+  ol.try { margin: 0; padding-left: 20px; display: grid; gap: 7px; font-size: 13.5px; }
+  details { margin-top: 8px; }
+  summary { cursor: pointer; font-weight: 600; font-size: 13.5px; }
+  pre.out { margin: 8px 0 0; padding: 9px 12px; overflow-x: auto; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; font-size: 12px; line-height: 1.45; white-space: pre; }
+  .fields { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 6px 0 8px; }
+  .fields label { font-size: 13px; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+  .fixes { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px; margin-top: 8px; }
+  .fixes .btn { text-align: left; font-size: 12.5px; padding: 6px 10px; line-height: 1.3; }
+  .fixes .btn b { display: block; font-size: 12.5px; }
+  .fixes .btn.done { border-color: var(--pos); background: var(--pos-soft); }
+  .still { margin: 16px 0 0; color: var(--muted); font-size: 13.5px; }
+
+  @media (max-width: 1000px) {
+    .lane { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .stage:nth-child(4)::before { display: none; }
+    .grid { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 620px) {
+    .wrap { padding: 20px 14px 40px; }
+    h1 { font-size: 27px; }
+    .lane { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+    .stage { min-height: 0; }
+    .stage + .stage::before { content: "\2193"; left: 16px; top: -19px; display: block !important; }
+    .clock { margin-left: 0; }
+  }
+</style>
+<style>
+  .alert { padding: 10px 12px; border: 1px solid var(--line); border-left-width: 5px; border-radius: 10px; background: var(--surface); }
+  .alert.page { border-left-color: var(--neg); }
+  .alert.ticket { border-left-color: var(--warn); }
+  .alert.message { border-left-color: var(--line); }
+  .alert.closed { opacity: .75; border-left-color: var(--pos); }
+  .alert h3 { margin: 2px 0 4px; font-size: 15px; line-height: 1.3; }
+  .alert p { margin: 0 0 3px; font-size: 13.5px; }
+  .alert .meta { color: var(--muted); font-size: 12.5px; }
+  .list { display: grid; gap: 8px; }
+  .counts { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+  .count { padding: 8px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-width: 110px; }
+  .count b { display: block; font: 600 24px/1.1 "Iowan Old Style", Palatino, Georgia, serif; font-variant-numeric: tabular-nums; }
+  .count span { font-size: 12.5px; color: var(--muted); }
+  .count.page b { color: var(--neg); }
+  .count.ticket b { color: var(--warn); }
+  section + section { margin-top: 18px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">The finished pipeline · who was told</p>
+  <h1>The alerts page</h1>
+  <p class="lede">An alert tells the person who can act: what failed, how bad it is, and what to do. In a real team this page would be an email, a Slack channel, or a paging service such as PagerDuty. Here it stays on your computer, so no account is needed. Under Airflow these alerts are sent by a task callback. The decision about level and person is the same.</p>
+
+  <div class="toolbar">
+    <div class="btns">
+      <a class="btn primary" href="/">The live page</a>
+      <label style="font-size:13px;color:var(--muted);display:inline-flex;gap:6px;align-items:center">To whom <select id="who"><option value="">Everyone</option></select></label>
+      <button class="btn" id="shout" type="button" aria-pressed="false">What shouting would have sent</button>
+    </div>
+    <span class="clock" id="clock">Loading</span>
+  </div>
+
+  <div class="counts" id="counts"></div>
+  <div id="message" class="message" hidden></div>
+
+  <section id="shouted-box" class="panel dashed" hidden>
+    <p class="kicker">Shouting</p>
+    <h2>One alert for every failed test, to everyone, every night</h2>
+    <p class="muted" id="shouted-sub"></p>
+    <pre class="out" id="shouted"></pre>
+  </section>
+
+  <section>
+    <p class="kicker">Open</p>
+    <h2>Problems that are still there</h2>
+    <p class="muted">Most urgent first: a page wakes someone, a ticket is for today, a message waits in a digest. Each was sent once, on the night it was new.</p>
+    <div class="list" id="open"></div>
+  </section>
+
+  <section>
+    <p class="kicker">Resolved</p>
+    <h2>Problems that are gone</h2>
+    <div class="list" id="resolved"></div>
+  </section>
+
+  <section class="panel">
+    <p class="kicker">The alerts log</p>
+    <h2>One line for every alert that was sent</h2>
+    <p class="muted">The same lines are in the file <code>alerts.log</code> under <code>data/live/</code>.</p>
+    <pre class="out" id="log"></pre>
+  </section>
+
+  <p class="still">This page asks the live warehouse again every few seconds. Run a night on the live page, and it changes here.</p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var state = null, shouting = false, last = "";
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(value) {
+    return String(value === null || value === undefined ? "" : value)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function card(a, closed) {
+    return '<article class="alert ' + esc(a.level) + (closed ? " closed" : "") + '">' +
+      '<span class="tag ' + (closed ? "resolved" : esc(a.level)) + '">' + (closed ? "resolved" : esc(a.level)) + "</span> " +
+      '<span class="meta">to ' + esc(a.to_whom) + " · new on the night of " + esc(a.first_night_text) +
+      (closed ? " · gone on the night of " + esc(a.resolved_night_text) : "") + "</span>" +
+      "<h3>" + esc(a.title) + "</h3>" +
+      "<p><b>How bad:</b> " + esc(a.how_bad) + "</p>" +
+      "<p><b>What to do:</b> " + esc(a.what_to_do) + "</p>" +
+      '<p class="meta">Runbook: <a href="' + esc(a.runbook_url) + '" rel="noopener">' + esc(a.runbook) + "</a></p></article>";
+  }
+  function render() {
+    var a = state.alerts, who = $("who").value;
+    var keep = function (x) { return !who || x.to_whom === who; };
+    var open = a.open.filter(keep), closed = a.resolved.filter(keep);
+    $("clock").textContent = "Last run: night of " + state.last_run.day_text;
+    var count = function (level) { return a.open.filter(function (x) { return x.level === level; }).length; };
+    $("counts").innerHTML =
+      '<div class="count page"><b>' + count("page") + "</b><span>pages open</span></div>" +
+      '<div class="count ticket"><b>' + count("ticket") + "</b><span>tickets open</span></div>" +
+      '<div class="count"><b>' + count("message") + "</b><span>messages in the digest</span></div>" +
+      '<div class="count"><b>' + a.resolved.length + "</b><span>resolved</span></div>" +
+      '<div class="count"><b>' + (a.sent || 0) + "</b><span>sent on the last night</span></div>";
+    $("open").innerHTML = open.length ? open.map(function (x) { return card(x, false); }).join("")
+      : '<p class="muted">Nothing is open' + (who ? " for " + esc(who) : "") + ". Nobody needs to act.</p>";
+    $("resolved").innerHTML = closed.length ? closed.map(function (x) { return card(x, true); }).join("")
+      : '<p class="muted">Nothing has been resolved yet.</p>';
+    $("log").textContent = a.log.length ? a.log.join("\n") : "No alert has been sent yet.";
+    var select = $("who"), options = '<option value="">Everyone</option>' + a.people.map(function (p) {
+      return '<option value="' + esc(p) + '">' + esc(p) + "</option>";
+    }).join("");
+    if (select.dataset.people !== a.people.join("|")) {
+      select.innerHTML = options; select.value = who; select.dataset.people = a.people.join("|");
+    }
+    $("shouted-box").hidden = !shouting;
+    $("shouted-sub").textContent = "On the night of " + state.last_run.day_text + " that is " + a.shouted.length +
+      " alerts, where " + (a.sent || 0) + " were sent. And the same ones again tomorrow. People stop reading them: that is alert fatigue.";
+    $("shouted").textContent = a.shouted.length ? a.shouted.join("\n") : "No test failed on that night.";
+  }
+  function load() {
+    fetch("/api/state").then(function (r) { return r.json(); }).then(function (data) {
+      var seen = JSON.stringify([data.alerts, data.last_run.day]);
+      $("message").hidden = true;
+      if (seen === last) return;
+      last = seen; state = data; render();
+    }).catch(function () {
+      $("message").hidden = false;
+      $("message").className = "message bad";
+      $("message").textContent = "The server does not answer. Is it still running in its terminal?";
+    });
+  }
+  $("who").addEventListener("change", function () { if (state) render(); });
+  $("shout").addEventListener("click", function () {
+    shouting = !shouting;
+    this.setAttribute("aria-pressed", String(shouting));
+    this.textContent = shouting ? "Hide the shouting" : "What shouting would have sent";
+    if (state) render();
+  });
+  load();
+  setInterval(load, 4000);
+})();
+</script>
+</body>
+</html>

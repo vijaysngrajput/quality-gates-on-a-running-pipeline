@@ -1,6 +1,6 @@
 # Check card: `sales_lines`
 
-**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.
+**State after milestone 5:** all eight questions are answered, and the card is complete.
 
 A check card is filled in **before** any check is written. It is one short page. It says why a check exists.
 
@@ -104,7 +104,23 @@ Each check is now a dbt test, and a gate in the pipeline acts on it. The test's 
 | 12 | Every open store reported | `gate_publish` | **Warn**, and a partial load. The other stores are published. This store's day is marked "do not pay yet: no sales file arrived" |
 | 13 | A store's day is near its normal day | `gate_clean` | **Warn.** The run continues, and the warning is recorded |
 
-**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert.
+**Who is told?** Since milestone 5, Airflow tells a person on the night, from a task callback. A **page** wakes someone. A **ticket** is for today. A **message** waits in a digest. Each alert is sent once, says what to do, and links to `RUNBOOK.md`.
+
+| # | Check | Level | Who is told |
+|---|---|---|---|
+| 1 | A cell that must be filled is filled | Ticket: one for the store's day, with the reasons | Head of retail operations |
+| 2 | One item line is stored once | Message | The data engineer on call |
+| 3 | A receipt id has the right shape | Ticket: one for the store's day, with the reasons | Head of retail operations |
+| 4 | A line adds up | Ticket: one for the store's day, with the reasons | Head of retail operations |
+| 5 | Every sale is for a product that exists | Ticket: one for the store's day, with the reasons | Head of retail operations |
+| 6 | A refund gives money back | Ticket: one for the store's day, with the reasons | Head of retail operations |
+| 7 | A refund is not larger than the sale | Ticket: one for the store's day, with the reasons | Head of retail operations |
+| 8 | The price charged is the price valid that day | Ticket | Finance |
+| 9 | Nothing is sold while the store is closed | Ticket: one for the store's day, with the reasons | Head of retail operations |
+| 10 | A weight is a believable weight | Ticket: one for the store's day, with the reasons | Head of retail operations |
+| 11 | The receipts add up to the till's own total | Page, when nobody can explain the difference. Otherwise a ticket | The data engineer on call. Head of retail operations |
+| 12 | Every open store reported | Ticket | Head of retail operations |
+| 13 | A store's day is near its normal day | Message | Head of retail operations |
 
 ## 8. The proof
 

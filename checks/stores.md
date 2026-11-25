@@ -1,6 +1,6 @@
 # Check card: `stores`
 
-**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.
+**State after milestone 5:** all eight questions are answered, and the card is complete.
 
 A till is the machine at the counter where a customer pays. It is also called a cash register.
 
@@ -69,7 +69,14 @@ Each check is now a dbt test, and a gate in the pipeline acts on it. The test's 
 | 24 | Every file is from a store we know | `gate_clean` | **Block.** The gate fails, the tasks after it do not run, and the outputs keep their last good numbers |
 | 25 | The stores table is the same as yesterday | `gate_clean` | **Warn.** The run continues, and the warning is recorded |
 
-**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert.
+**Who is told?** Since milestone 5, Airflow tells a person on the night, from a task callback. A **page** wakes someone. A **ticket** is for today. A **message** waits in a digest. Each alert is sent once, says what to do, and links to `RUNBOOK.md`.
+
+| # | Check | Level | Who is told |
+|---|---|---|---|
+| 22 | There are six stores, each once | Page | The data engineer on call |
+| 23 | A store row makes sense | Page | The data engineer on call |
+| 24 | Every file is from a store we know | Page | The data engineer on call |
+| 25 | The stores table is the same as yesterday | Ticket | Head of retail operations |
 
 ## 8. The proof
 

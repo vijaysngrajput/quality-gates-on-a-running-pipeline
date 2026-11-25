@@ -102,6 +102,102 @@ DETAILS = {
     },
 }
 
+# What the finished pipeline does with each case. The website shows it when a visitor picks
+# a fault. A test in milestone 5 proves every line of it on real runs.
+FINISHED = {
+    1: (
+        "gate_clean",
+        "quarantine",
+        "The row is set aside. The store waits: do not pay yet",
+        "Head of retail operations",
+        "The store sends a corrected file. Monday is run again",
+    ),
+    2: (
+        "gate_clean",
+        "quarantine",
+        "The extra copies are set aside. The day is right again, and the store is paid",
+        "Nobody. A message in the digest",
+        "None needed",
+    ),
+    3: (
+        "gate_clean",
+        "quarantine",
+        "The row is set aside. The store waits: do not pay yet",
+        "Head of retail operations",
+        "The store sends a corrected file. Thursday is run again",
+    ),
+    4: (
+        "gate_clean",
+        "warn",
+        "A warning. The sales number is right, and the store is paid",
+        "Finance",
+        "The store updates the prices in its tills",
+    ),
+    5: (
+        "gate_clean",
+        "quarantine",
+        "The rows are set aside. The store waits: do not pay yet",
+        "Head of retail operations",
+        "The store sends a corrected file. Sunday is run again",
+    ),
+    6: (
+        "gate_clean",
+        "quarantine",
+        "The lines are recorded from the raw rows. The store waits: do not pay yet",
+        "Head of retail operations",
+        "The buying team types the product. Saturday is run again",
+    ),
+    7: (
+        "gate_publish",
+        "warn",
+        "The other five stores are published. This store waits: no sales file arrived",
+        "Head of retail operations",
+        "None by Monday. This is the one store that cannot be paid",
+    ),
+    8: (
+        "gate_publish",
+        "warn",
+        "The store waits for one night. Freshness names the file: 23.7 hours late",
+        "Head of retail operations, then closed the next night",
+        "None needed. The file arrives by itself",
+    ),
+    9: (
+        "gate_clean",
+        "quarantine",
+        "The copies of the second file are set aside. The day is right again",
+        "Nobody. A message in the digest",
+        "None needed",
+    ),
+    10: (
+        "gate_landing",
+        "refuse_file",
+        "The file is refused. The last good costs stay in use",
+        "Finance, and the buying team",
+        "The supplier sends a file that keeps the contract",
+    ),
+    11: (
+        "gate_landing",
+        "refuse_file",
+        "The file is refused by the contract. The last good costs stay in use",
+        "Finance, and the buying team",
+        "The supplier sends a file in dollars",
+    ),
+    12: (
+        "gate_clean",
+        "warn",
+        "A warning. The order list says: no count, order by hand",
+        "The replenishment team",
+        "The store counts the shelf",
+    ),
+    13: (
+        "gate_clean",
+        "quarantine",
+        "The newer member is set aside, by number only. One email is sent",
+        "Marketing",
+        "Marketing merges the two accounts",
+    ),
+}
+
 
 def _sales_errors(world: World) -> dict[int, dict]:
     """What the starter pipeline gets wrong in net sales, case by case, in cents."""
@@ -170,6 +266,12 @@ def planted_cases(world: World) -> list[dict]:
                 "passes_the_five_standard_checks": True,
                 **DETAILS[number],
                 **amounts[number],
+                "finished_pipeline": dict(
+                    zip(
+                        ("gate", "action", "what_happens", "who_is_told", "recovery"),
+                        FINISHED[number],
+                    )
+                ),
             }
         )
     return cases

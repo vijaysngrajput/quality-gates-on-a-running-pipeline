@@ -1,6 +1,6 @@
 # Check card: `members`
 
-**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.
+**State after milestone 5:** all eight questions are answered, and the card is complete.
 
 ## 1. What does one row mean?
 
@@ -71,7 +71,14 @@ Each check is now a dbt test, and a gate in the pipeline acts on it. The test's 
 | 36 | A member row has what marketing needs | `gate_clean` | **Quarantine.** The bad rows are set aside with this reason. The good rows carry on |
 | 37 | A member has a real store and a past join date | `gate_clean` | **Warn.** The run continues, and the warning is recorded |
 
-**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert.
+**Who is told?** Since milestone 5, Airflow tells a person on the night, from a task callback. A **page** wakes someone. A **ticket** is for today. A **message** waits in a digest. Each alert is sent once, says what to do, and links to `RUNBOOK.md`.
+
+| # | Check | Level | Who is told |
+|---|---|---|---|
+| 34 | One person is one member | Message | Marketing |
+| 35 | An email has the shape of an email | Message | Marketing |
+| 36 | A member row has what marketing needs | Message | Marketing |
+| 37 | A member has a real store and a past join date | Message | Marketing |
 
 ## 8. The proof
 

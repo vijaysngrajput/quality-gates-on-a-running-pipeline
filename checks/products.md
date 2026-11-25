@@ -1,6 +1,6 @@
 # Check card: `products`
 
-**State after milestone 4:** all eight questions are answered. One part of question 7 is still open: who is told. That is milestone 5.
+**State after milestone 5:** all eight questions are answered, and the card is complete.
 
 ## 1. What does one row mean?
 
@@ -75,7 +75,15 @@ Each check is now a dbt test, and a gate in the pipeline acts on it. The test's 
 | 20 | A new price is near the old price | `gate_clean` | **Warn.** The run continues, and the warning is recorded |
 | 21 | A retired product has a last day | `gate_clean` | **Warn.** The run continues, and the warning is recorded |
 
-**Who is told?** Not yet. A gate can fail at 02:00 and nobody knows. Milestone 5 sends the alert.
+**Who is told?** Since milestone 5, Airflow tells a person on the night, from a task callback. A **page** wakes someone. A **ticket** is for today. A **message** waits in a digest. Each alert is sent once, says what to do, and links to `RUNBOOK.md`.
+
+| # | Check | Level | Who is told |
+|---|---|---|---|
+| 17 | A product has one price on any day | Page | The data engineer on call |
+| 18 | A product on sale has a price on every day | Page | The data engineer on call |
+| 19 | A product row makes sense | Page | The data engineer on call |
+| 20 | A new price is near the old price | Ticket | The buying team |
+| 21 | A retired product has a last day | Message | The buying team |
 
 ## 8. The proof
 

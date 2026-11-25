@@ -16,7 +16,14 @@
     "Till total"
    ],
    "born_in": "export program",
-   "week_error_cents": 1898
+   "week_error_cents": 1898,
+   "finished_pipeline": {
+    "gate": "gate_clean",
+    "action": "quarantine",
+    "what_happens": "The row is set aside. The store waits: do not pay yet",
+    "who_is_told": "Head of retail operations",
+    "recovery": "The store sends a corrected file. Monday is run again"
+   }
   },
   {
    "case": 2,
@@ -34,7 +41,14 @@
     "Till total"
    ],
    "born_in": "export program",
-   "week_error_cents": 1807
+   "week_error_cents": 1807,
+   "finished_pipeline": {
+    "gate": "gate_clean",
+    "action": "quarantine",
+    "what_happens": "The extra copies are set aside. The day is right again, and the store is paid",
+    "who_is_told": "Nobody. A message in the digest",
+    "recovery": "None needed"
+   }
   },
   {
    "case": 3,
@@ -53,7 +67,14 @@
    "born_in": "export program",
    "week_error_cents": 152068,
    "true_line_cents": 152,
-   "file_line_cents": 152220
+   "file_line_cents": 152220,
+   "finished_pipeline": {
+    "gate": "gate_clean",
+    "action": "quarantine",
+    "what_happens": "The row is set aside. The store waits: do not pay yet",
+    "who_is_told": "Head of retail operations",
+    "recovery": "The store sends a corrected file. Thursday is run again"
+   }
   },
   {
    "case": 4,
@@ -72,7 +93,14 @@
    "born_in": "till",
    "week_error_cents": 0,
    "packs": 12,
-   "store_short_cents": 600
+   "store_short_cents": 600,
+   "finished_pipeline": {
+    "gate": "gate_clean",
+    "action": "warn",
+    "what_happens": "A warning. The sales number is right, and the store is paid",
+    "who_is_told": "Finance",
+    "recovery": "The store updates the prices in its tills"
+   }
   },
   {
    "case": 5,
@@ -89,7 +117,14 @@
     "Store hours"
    ],
    "born_in": "till",
-   "week_error_cents": -2395
+   "week_error_cents": -2395,
+   "finished_pipeline": {
+    "gate": "gate_clean",
+    "action": "quarantine",
+    "what_happens": "The rows are set aside. The store waits: do not pay yet",
+    "who_is_told": "Head of retail operations",
+    "recovery": "The store sends a corrected file. Sunday is run again"
+   }
   },
   {
    "case": 6,
@@ -106,7 +141,14 @@
     "Every sale has a product"
    ],
    "born_in": "buying team",
-   "week_error_cents": -1797
+   "week_error_cents": -1797,
+   "finished_pipeline": {
+    "gate": "gate_clean",
+    "action": "quarantine",
+    "what_happens": "The lines are recorded from the raw rows. The store waits: do not pay yet",
+    "who_is_told": "Head of retail operations",
+    "recovery": "The buying team types the product. Saturday is run again"
+   }
   },
   {
    "case": 7,
@@ -124,7 +166,14 @@
     "Every store reported"
    ],
    "born_in": "store back office",
-   "week_error_cents": -58742
+   "week_error_cents": -58742,
+   "finished_pipeline": {
+    "gate": "gate_publish",
+    "action": "warn",
+    "what_happens": "The other five stores are published. This store waits: no sales file arrived",
+    "who_is_told": "Head of retail operations",
+    "recovery": "None by Monday. This is the one store that cannot be paid"
+   }
   },
   {
    "case": 8,
@@ -143,7 +192,14 @@
    ],
    "born_in": "store back office",
    "week_error_cents": 0,
-   "error_for_one_night_cents": -61644
+   "error_for_one_night_cents": -61644,
+   "finished_pipeline": {
+    "gate": "gate_publish",
+    "action": "warn",
+    "what_happens": "The store waits for one night. Freshness names the file: 23.7 hours late",
+    "who_is_told": "Head of retail operations, then closed the next night",
+    "recovery": "None needed. The file arrives by itself"
+   }
   },
   {
    "case": 9,
@@ -161,7 +217,14 @@
     "Till total"
    ],
    "born_in": "export program",
-   "week_error_cents": 103428
+   "week_error_cents": 103428,
+   "finished_pipeline": {
+    "gate": "gate_clean",
+    "action": "quarantine",
+    "what_happens": "The copies of the second file are set aside. The day is right again",
+    "who_is_told": "Nobody. A message in the digest",
+    "recovery": "None needed"
+   }
   },
   {
    "case": 10,
@@ -178,7 +241,14 @@
     "Expected columns"
    ],
    "born_in": "supplier",
-   "products_without_cost": 12
+   "products_without_cost": 12,
+   "finished_pipeline": {
+    "gate": "gate_landing",
+    "action": "refuse_file",
+    "what_happens": "The file is refused. The last good costs stay in use",
+    "who_is_told": "Finance, and the buying team",
+    "recovery": "The supplier sends a file that keeps the contract"
+   }
   },
   {
    "case": 11,
@@ -195,7 +265,14 @@
     "Change against the last file"
    ],
    "born_in": "supplier",
-   "products_100_times_too_dear": 15
+   "products_100_times_too_dear": 15,
+   "finished_pipeline": {
+    "gate": "gate_landing",
+    "action": "refuse_file",
+    "what_happens": "The file is refused by the contract. The last good costs stay in use",
+    "who_is_told": "Finance, and the buying team",
+    "recovery": "The supplier sends a file in dollars"
+   }
   },
   {
    "case": 12,
@@ -216,7 +293,14 @@
    "true_stock": 3.0,
    "true_order": 15.0,
    "order_with_no_count": 18.0,
-   "over_order": 3.0
+   "over_order": 3.0,
+   "finished_pipeline": {
+    "gate": "gate_clean",
+    "action": "warn",
+    "what_happens": "A warning. The order list says: no count, order by hand",
+    "who_is_told": "The replenishment team",
+    "recovery": "The store counts the shelf"
+   }
   },
   {
    "case": 13,
@@ -234,7 +318,14 @@
    ],
    "born_in": "loyalty app",
    "first": "M-0117",
-   "second": "M-0304"
+   "second": "M-0304",
+   "finished_pipeline": {
+    "gate": "gate_clean",
+    "action": "quarantine",
+    "what_happens": "The newer member is set aside, by number only. One email is sent",
+    "who_is_told": "Marketing",
+    "recovery": "Marketing merges the two accounts"
+   }
   }
  ],
  "not_wrong": [
