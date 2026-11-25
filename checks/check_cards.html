@@ -164,7 +164,7 @@
    "card_in": 1,
    "has_card": true,
    "file": "checks/sales_lines.md",
-   "state": "**State after milestone 2:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.",
+   "state": "**State after milestone 3:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.",
    "answered": 7,
    "questions": [
     {
@@ -624,7 +624,7 @@
    "card_in": 2,
    "has_card": true,
    "file": "checks/till_totals.md",
-   "state": "**State after milestone 2:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.",
+   "state": "**State after milestone 3:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.",
    "answered": 7,
    "questions": [
     {
@@ -885,11 +885,317 @@
    "made": "Typed by the buying team",
    "why": "It changes. A price has a start and an end. A product can be retired",
    "card_in": 3,
-   "has_card": false,
-   "file": null,
-   "state": "",
-   "answered": 0,
-   "questions": []
+   "has_card": true,
+   "file": "checks/products.md",
+   "state": "**State after milestone 3:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.",
+   "answered": 7,
+   "questions": [
+    {
+     "number": 1,
+     "question": "What does one row mean?",
+     "title": "What does one row mean?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "One product at one price. A product whose price changed once has two rows: the old price with its last day, and the new price with its first day."
+      },
+      {
+       "type": "p",
+       "text": "The key is `product_id` + `valid_from`. `product_id` alone is **not** the key."
+      }
+     ]
+    },
+    {
+     "number": 2,
+     "question": "Who uses this table, and what do they decide with it?",
+     "title": "Who uses this table, and what do they decide with it?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Who",
+        "What they decide",
+        "What goes wrong for them when the data is bad"
+       ],
+       "rows": [
+        [
+         "Every sales line, through the join in the cleaning step",
+         "Nothing. It is joined to the price valid on its day",
+         "No price on that day: the line is dropped. Two prices on that day: the line is counted twice"
+        ],
+        [
+         "Store managers and the head of retail operations, through `daily_store_sales`",
+         "Pay, and the sign-off",
+         "Sales too low or too high, for every store at once"
+        ],
+        [
+         "The replenishment team",
+         "Which products to order",
+         "A retired product is ordered for ever"
+        ],
+        [
+         "The price check on `sales_lines`",
+         "Whether a store charged today's price",
+         "A wrong price list makes every right sale look wrong"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "It is a critical table. It has about 40 rows, and every sale in the company passes through it."
+      }
+     ]
+    },
+    {
+     "number": 3,
+     "question": "How is the data made? So what can go wrong?",
+     "title": "How is the data made? So what can go wrong?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "The buying team types it. A person, a form, and no till."
+      },
+      {
+       "type": "table",
+       "head": [
+        "Step",
+        "Made by",
+        "What can go wrong"
+       ],
+       "rows": [
+        [
+         "A new product is typed",
+         "A person",
+         "It is typed late. The tills already sell it"
+        ],
+        [
+         "A price changes",
+         "A person closes the old row and opens a new one",
+         "The old row is not closed: two prices on one day. The new row starts too late: a day with no price"
+        ],
+        [
+         "A price is typed",
+         "A person",
+         "A slip of the finger: 5190 where 519 was meant"
+        ],
+        [
+         "A product is retired",
+         "A person",
+         "The status changes and the last day is forgotten"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 4,
+     "question": "Which of those would hurt most?",
+     "title": "Which of those would hurt most?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Rank",
+        "Worry",
+        "Why it is here"
+       ],
+       "rows": [
+        [
+         "1",
+         "Two prices on one day",
+         "Every sale of that product is counted twice, in every store. The standard unique check then fails on `sales_lines`, where nothing is wrong: it points at the wrong table"
+        ],
+        [
+         "2",
+         "A day with no price",
+         "Every sale of that product is dropped, in every store"
+        ],
+        [
+         "3",
+         "A price typed wrong",
+         "Every till charges it. Customers notice before the data team does"
+        ],
+        [
+         "4",
+         "A product that is not typed yet",
+         "Its sales are dropped. This is planted case 6, and check 5 on `sales_lines` catches it"
+        ],
+        [
+         "5",
+         "A retired product with no last day",
+         "It stays on the order list"
+        ],
+        [
+         "6",
+         "An untidy product name",
+         "It hurts nobody. **No check**"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 5,
+     "question": "What must be prepared before it can be checked?",
+     "title": "What must be prepared before it can be checked?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Worry",
+        "What must be prepared first"
+       ],
+       "rows": [
+        [
+         "Two prices on one day",
+         "Join the table to itself: each price row against the later rows of the same product"
+        ],
+        [
+         "A day with no price",
+         "For each price that ends, look for the one that starts the next day"
+        ],
+        [
+         "A price typed wrong",
+         "Join each price to the price before it"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "A table of prices is checked against **itself**, row against neighbouring row. Nothing like that was needed for `sales_lines`."
+      }
+     ]
+    },
+    {
+     "number": 6,
+     "question": "The check",
+     "title": "The check",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Five checks. The SQL is in `lotus_pipeline/other_checks.py`."
+      },
+      {
+       "type": "table",
+       "head": [
+        "#",
+        "Check",
+        "The limit",
+        "Lens",
+        "Question",
+        "How serious"
+       ],
+       "rows": [
+        [
+         "17",
+         "A product has one price on any day",
+         "No two price rows of one product cover the same day",
+         "Data",
+         "Unique?",
+         "High"
+        ],
+        [
+         "18",
+         "A product on sale has a price on every day",
+         "An active price that ends is followed, the next day, by another price",
+         "Data",
+         "Complete?",
+         "High"
+        ],
+        [
+         "19",
+         "A product row makes sense",
+         "A name. A price above zero. A unit of each or kg. A status of active or retired. A start that is not after its end",
+         "Data",
+         "Valid?",
+         "High"
+        ],
+        [
+         "20",
+         "A new price is near the old price",
+         "A new price is at most 2 times the old one, and at least half of it",
+         "Business",
+         "Accurate?",
+         "Medium. A real price can double. A person confirms"
+        ],
+        [
+         "21",
+         "A retired product has a last day",
+         "status is retired exactly when the last price row has an end date and nothing follows",
+         "Business",
+         "Consistent?",
+         "Low"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 7,
+     "question": "What happens when it fails?",
+     "title": "What happens when it fails?",
+     "answered": false,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Not yet. Today a failed check changes nothing: the checks are run by hand, with `python -m lotus_pipeline inspect`. Milestone 4 decides for each one: stop, set the rows aside, or warn. And who is told."
+      }
+     ]
+    },
+    {
+     "number": 8,
+     "question": "The proof",
+     "title": "The proof",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "The price list is right on every day of the five weeks. Each fault is planted in a test, on a private copy."
+      },
+      {
+       "type": "table",
+       "head": [
+        "Fault planted in a test",
+        "Caught by",
+        "A check that does not catch it, and why"
+       ],
+       "rows": [
+        [
+         "A second open price row for Whole milk",
+         "17",
+         "18: there is no day without a price. There is a day with two"
+        ],
+        [
+         "The new Eggs price starts two days late",
+         "18",
+         "17: no two rows overlap"
+        ],
+        [
+         "A price of zero, a unit of \"box\"",
+         "19",
+         "20: there is no earlier price to compare with"
+        ],
+        [
+         "Eggs at 5190, not 519",
+         "20",
+         "19: 5190 is a perfectly allowed price"
+        ],
+        [
+         "Bagels retired, with no last day",
+         "21",
+         "18: the row never ends, so no gap follows it"
+        ]
+       ]
+      }
+     ]
+    }
+   ]
   },
   {
    "table": "stores",
@@ -897,11 +1203,285 @@
    "made": "Typed once, rarely changed",
    "why": "Tiny. Wrong here is wrong everywhere",
    "card_in": 3,
-   "has_card": false,
-   "file": null,
-   "state": "",
-   "answered": 0,
-   "questions": []
+   "has_card": true,
+   "file": "checks/stores.md",
+   "state": "**State after milestone 3:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.",
+   "answered": 7,
+   "questions": [
+    {
+     "number": 1,
+     "question": "What does one row mean?",
+     "title": "What does one row mean?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "One store, with its opening hours and its manager. Six rows. The key is `store_id`."
+      }
+     ]
+    },
+    {
+     "number": 2,
+     "question": "Who uses this table, and what do they decide with it?",
+     "title": "Who uses this table, and what do they decide with it?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Who",
+        "What they decide",
+        "What goes wrong for them when the data is bad"
+       ],
+       "rows": [
+        [
+         "Every sales line, through the join in the cleaning step",
+         "Nothing. It is joined to its store",
+         "A store that is missing: all its sales are dropped. A store that is there twice: all its sales are doubled"
+        ],
+        [
+         "Store managers",
+         "Their name is on the bonus report",
+         "The bonus goes to the wrong person"
+        ],
+        [
+         "The opening-hours check on `sales_lines`",
+         "Whether a sale was made while the store was closed",
+         "Wrong hours make right sales look wrong"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "Six rows, and a critical table. **Wrong here is wrong everywhere.**"
+      }
+     ]
+    },
+    {
+     "number": 3,
+     "question": "How is the data made? So what can go wrong?",
+     "title": "How is the data made? So what can go wrong?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "It was typed once, by head office, and it is rarely changed."
+      },
+      {
+       "type": "table",
+       "head": [
+        "Step",
+        "Made by",
+        "What can go wrong"
+       ],
+       "rows": [
+        [
+         "A store is typed, once",
+         "A person",
+         "A wrong hour, a wrong name"
+        ],
+        [
+         "A store is changed",
+         "A person, perhaps once a year",
+         "Nobody tells the data team. A row is deleted or added by mistake"
+        ],
+        [
+         "The whole table is sent every night",
+         "A program",
+         "Almost nothing"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 4,
+     "question": "Which of those would hurt most?",
+     "title": "Which of those would hurt most?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Rank",
+        "Worry",
+        "Why it is here"
+       ],
+       "rows": [
+        [
+         "1",
+         "A store is missing, or there twice",
+         "A whole store's sales vanish or double"
+        ],
+        [
+         "2",
+         "A file names a store that is not in the table",
+         "The join drops every row of that store"
+        ],
+        [
+         "3",
+         "A row changed and nobody said so",
+         "The table should stand still. A change is either news or a mistake"
+        ],
+        [
+         "4",
+         "Hours that make no sense",
+         "The opening-hours check reads them"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 5,
+     "question": "What must be prepared before it can be checked?",
+     "title": "What must be prepared before it can be checked?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Worry",
+        "What must be prepared first"
+       ],
+       "rows": [
+        [
+         "A store is missing, or there twice",
+         "Nothing but a count. For a table this small, the exact number of rows is a fact you can know"
+        ],
+        [
+         "A file names an unknown store",
+         "Collect the `store_id` of every store file, and join to `stores`"
+        ],
+        [
+         "A row changed",
+         "Keep yesterday's file, and compare it with today's, row by row"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "On `sales_lines` a row count told you nothing: \"not empty\" passed with one store missing. Here the row count is the best check there is. **The same check is useless on one table and exact on another.**"
+      }
+     ]
+    },
+    {
+     "number": 6,
+     "question": "The check",
+     "title": "The check",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Four checks. The SQL is in `lotus_pipeline/other_checks.py`."
+      },
+      {
+       "type": "table",
+       "head": [
+        "#",
+        "Check",
+        "The limit",
+        "Lens",
+        "Question",
+        "How serious"
+       ],
+       "rows": [
+        [
+         "22",
+         "There are six stores, each once",
+         "Exactly 6 rows, and no store_id twice",
+         "Data",
+         "Unique?",
+         "High"
+        ],
+        [
+         "23",
+         "A store row makes sense",
+         "A name, a town and a manager. It opens before it closes. It has at least one till",
+         "Data",
+         "Valid?",
+         "High"
+        ],
+        [
+         "24",
+         "Every file is from a store we know",
+         "Every store_id in the three store files is in the stores table",
+         "Data",
+         "Consistent?",
+         "High"
+        ],
+        [
+         "25",
+         "The stores table is the same as yesterday",
+         "No row is new, gone or different. A real change is confirmed by a person",
+         "Operational",
+         "Consistent?",
+         "Low. It is a reason to ask a person"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 7,
+     "question": "What happens when it fails?",
+     "title": "What happens when it fails?",
+     "answered": false,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Not yet. Today a failed check changes nothing: the checks are run by hand, with `python -m lotus_pipeline inspect`. Milestone 4 decides for each one: stop, set the rows aside, or warn. And who is told."
+      }
+     ]
+    },
+    {
+     "number": 8,
+     "question": "The proof",
+     "title": "The proof",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "The stores table is right, and the same, on every day of the five weeks. Each fault is planted in a test, on a private copy."
+      },
+      {
+       "type": "table",
+       "head": [
+        "Fault planted in a test",
+        "Caught by",
+        "A check that does not catch it, and why"
+       ],
+       "rows": [
+        [
+         "Store `S06` is deleted",
+         "22",
+         "23: the five rows that are left all make sense"
+        ],
+        [
+         "Store `S01` is there twice, so there are six rows again",
+         "22",
+         "A plain row count: six is the right number"
+        ],
+        [
+         "A till total from store `S07`",
+         "24",
+         "22: the stores table itself is fine"
+        ],
+        [
+         "`S02` now closes at 23:00",
+         "25",
+         "23: 23:00 is a perfectly allowed hour"
+        ],
+        [
+         "A store that closes when it opens",
+         "23",
+         "25, the next day: the table is the same as yesterday"
+        ]
+       ]
+      }
+     ]
+    }
+   ]
   },
   {
    "table": "stock_counts",
@@ -909,11 +1489,266 @@
    "made": "Counted by hand or by scanner",
    "why": "A count of one moment. A missing day is a gap, not a zero",
    "card_in": 3,
-   "has_card": false,
-   "file": null,
-   "state": "",
-   "answered": 0,
-   "questions": []
+   "has_card": true,
+   "file": "checks/stock_counts.md",
+   "state": "**State after milestone 3:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.",
+   "answered": 7,
+   "questions": [
+    {
+     "number": 1,
+     "question": "What does one row mean?",
+     "title": "What does one row mean?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "One product in one store on one day: how much was on the shelf at closing time."
+      },
+      {
+       "type": "p",
+       "text": "The key is `count_date` + `store_id` + `product_id`."
+      },
+      {
+       "type": "p",
+       "text": "This table is a **snapshot**. It does not hold things that happened, like a sale. It holds the state of something on each day. So a day that is missing is a **gap**. It is not a zero."
+      }
+     ]
+    },
+    {
+     "number": 2,
+     "question": "Who uses this table, and what do they decide with it?",
+     "title": "Who uses this table, and what do they decide with it?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Who",
+        "What they decide",
+        "What goes wrong for them when the data is bad"
+       ],
+       "rows": [
+        [
+         "The replenishment team, through `replenishment_list`",
+         "How much to order for tomorrow: twice what sold, less what is on the shelf",
+         "A missing count is read as an empty shelf, and they order too much. Food is wasted"
+        ],
+        [
+         "Finance, through the cost on the order list",
+         "What the order will cost",
+         "They approve an order that is too large"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 3,
+     "question": "How is the data made? So what can go wrong?",
+     "title": "How is the data made? So what can go wrong?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "A person walks the store before closing. Packed goods are scanned. Goods sold by weight are counted by hand."
+      },
+      {
+       "type": "table",
+       "head": [
+        "Step",
+        "Made by",
+        "What can go wrong"
+       ],
+       "rows": [
+        [
+         "A shelf is scanned",
+         "A person and a scanner",
+         "A shelf is skipped"
+        ],
+        [
+         "Loose goods are weighed and typed",
+         "A person",
+         "A slip of the finger. A count that is not possible"
+        ],
+        [
+         "The store sends the file",
+         "A back-office computer",
+         "A product twice"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 4,
+     "question": "Which of those would hurt most?",
+     "title": "Which of those would hurt most?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Rank",
+        "Worry",
+        "Why it is here"
+       ],
+       "rows": [
+        [
+         "1",
+         "A product is not counted",
+         "The pipeline reads the gap as zero and over-orders. Planted case 12"
+        ],
+        [
+         "2",
+         "A product is counted twice",
+         "Two numbers for one shelf. The join doubles the row"
+        ],
+        [
+         "3",
+         "A count that cannot be true",
+         "Below zero, or half a bottle"
+        ],
+        [
+         "4",
+         "A count that is a little off",
+         "People miscount. It hurts little, and nothing can test it. **No check**"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 5,
+     "question": "What must be prepared before it can be checked?",
+     "title": "What must be prepared before it can be checked?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Worry",
+        "What must be prepared first"
+       ],
+       "rows": [
+        [
+         "A product is not counted",
+         "The list of counts a day **should** have: every open store, every product on sale. Then look for what is not there"
+        ],
+        [
+         "A product is counted twice",
+         "Group by the key"
+        ],
+        [
+         "A count that cannot be true",
+         "Join to `products` for the unit"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "A check can only return rows that exist. To find a row that is **missing**, you must first build the rows you expected. That is the lesson of a snapshot."
+      }
+     ]
+    },
+    {
+     "number": 6,
+     "question": "The check",
+     "title": "The check",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Three checks. The SQL is in `lotus_pipeline/other_checks.py`."
+      },
+      {
+       "type": "table",
+       "head": [
+        "#",
+        "Check",
+        "The limit",
+        "Lens",
+        "Question",
+        "How serious"
+       ],
+       "rows": [
+        [
+         "26",
+         "A snapshot has a row for every day",
+         "Every product on sale has a count, in every open store, on every day",
+         "Data",
+         "Complete?",
+         "High"
+        ],
+        [
+         "27",
+         "A product is counted once a day",
+         "Each count_date + store_id + product_id is there exactly once",
+         "Data",
+         "Unique?",
+         "High"
+        ],
+        [
+         "28",
+         "A count is a believable count",
+         "Not empty, not below zero. Pieces are whole numbers. Counted on its own day, by scanner or by hand",
+         "Data",
+         "Valid?",
+         "Medium"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 7,
+     "question": "What happens when it fails?",
+     "title": "What happens when it fails?",
+     "answered": false,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Not yet. Today a failed check changes nothing: the checks are run by hand, with `python -m lotus_pipeline inspect`. Milestone 4 decides for each one: stop, set the rows aside, or warn. And who is told."
+      }
+     ]
+    },
+    {
+     "number": 8,
+     "question": "The proof",
+     "title": "The proof",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Fault",
+        "Caught by",
+        "A check that does not catch it, and why"
+       ],
+       "rows": [
+        [
+         "Planted case 12: no count for Whole milk 2L at `S05` on 08-28. The store sold 9 and has 3. The right order is 15. The pipeline orders 18",
+         "26",
+         "28: a row that is not there cannot have a wrong value. And all five standard checks"
+        ],
+        [
+         "A product counted twice, planted in a test",
+         "27",
+         "26: the count is there"
+        ],
+        [
+         "A count of −3, and of 2.5 bottles, planted in a test",
+         "28",
+         "27: the row is there once"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "A closed store is not a gap. `S01` was closed on 08-27 for a planned refit, the calendar says so, and check 26 does not expect its counts."
+      }
+     ]
+    }
+   ]
   },
   {
    "table": "supplier_prices",
@@ -921,11 +1756,281 @@
    "made": "A CSV file the supplier sends",
    "why": "Lotus does not control it. Columns move, units change, files repeat",
    "card_in": 3,
-   "has_card": false,
-   "file": null,
-   "state": "",
-   "answered": 0,
-   "questions": []
+   "has_card": true,
+   "file": "checks/supplier_prices.md",
+   "state": "**State after milestone 3:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.",
+   "answered": 7,
+   "questions": [
+    {
+     "number": 1,
+     "question": "What does one row mean?",
+     "title": "What does one row mean?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "One product's cost from one supplier, starting on one day. The key is `supplier_id` + `product_id` + `price_date`."
+      },
+      {
+       "type": "p",
+       "text": "Three suppliers each send one file a week."
+      }
+     ]
+    },
+    {
+     "number": 2,
+     "question": "Who uses this table, and what do they decide with it?",
+     "title": "Who uses this table, and what do they decide with it?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Who",
+        "What they decide",
+        "What goes wrong for them when the data is bad"
+       ],
+       "rows": [
+        [
+         "Finance",
+         "What to pay each supplier",
+         "A wrong cost is wrong money leaving the company"
+        ],
+        [
+         "Finance and the replenishment team, through the cost on `replenishment_list`",
+         "Whether to approve tomorrow's order",
+         "An order with no cost. Or an order that looks 100 times too dear"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 3,
+     "question": "How is the data made? So what can go wrong?",
+     "title": "How is the data made? So what can go wrong?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "**Lotus does not make this data, and does not control it.** Another company's program writes the file. That company can change the program on any day, and nobody at Lotus is told."
+      },
+      {
+       "type": "table",
+       "head": [
+        "Step",
+        "Made by",
+        "What can go wrong"
+       ],
+       "rows": [
+        [
+         "The supplier's system writes a CSV file",
+         "A program Lotus has never seen",
+         "A column is renamed, moved or removed. A column is added"
+        ],
+        [
+         "The cost is written",
+         "The same program",
+         "The unit of the number changes: cents where dollars were agreed"
+        ],
+        [
+         "The file is sent once a week",
+         "The supplier",
+         "The same file again. No file"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 4,
+     "question": "Which of those would hurt most?",
+     "title": "Which of those would hurt most?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Rank",
+        "Worry",
+        "Why it is here"
+       ],
+       "rows": [
+        [
+         "1",
+         "The same shape, a new meaning: cents for dollars",
+         "Every value is a valid number, and every one is 100 times too high. Planted case 11"
+        ],
+        [
+         "2",
+         "A renamed column",
+         "The load runs and the cost is empty. Planted case 10"
+        ],
+        [
+         "3",
+         "A cost per kilogram for a product sold by the piece",
+         "A wrong payment, on a valid row"
+        ],
+        [
+         "4",
+         "A new column",
+         "It hurts nobody today. It is worth knowing: the supplier changed something"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 5,
+     "question": "What must be prepared before it can be checked?",
+     "title": "What must be prepared before it can be checked?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Worry",
+        "What must be prepared first"
+       ],
+       "rows": [
+        [
+         "A renamed column",
+         "Keep the first line of every file. The loaded table cannot say which columns the file had"
+        ],
+        [
+         "Cents for dollars",
+         "Join each cost to the same product in the supplier's last file. And to the shelf price"
+        ],
+        [
+         "A wrong unit",
+         "Join to `products`"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "Two of these look at the file **before** it becomes a table. That is new. And the written agreement they are held against is in [`contracts/supplier_prices.yml`](../contracts/supplier_prices.yml)."
+      }
+     ]
+    },
+    {
+     "number": 6,
+     "question": "The check",
+     "title": "The check",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Five checks. The SQL is in `lotus_pipeline/other_checks.py`."
+      },
+      {
+       "type": "table",
+       "head": [
+        "#",
+        "Check",
+        "The limit",
+        "Lens",
+        "Question",
+        "How serious"
+       ],
+       "rows": [
+        [
+         "29",
+         "A file has the columns we expect",
+         "No expected column is missing. A column we did not expect is reported too",
+         "Data",
+         "Valid?",
+         "High when a column is missing. Low when a column is new"
+        ],
+        [
+         "30",
+         "Every supplier row has a cost",
+         "No empty unit_cost, product, supplier, unit or date",
+         "Data",
+         "Complete?",
+         "High"
+        ],
+        [
+         "31",
+         "A cost is near the cost in the last file",
+         "A cost is at most 2 times the last one, and at least half of it",
+         "Business",
+         "Accurate?",
+         "High"
+        ],
+        [
+         "32",
+         "A product costs less than it sells for",
+         "unit_cost_cents is below unit_price_cents",
+         "Business",
+         "Accurate?",
+         "High"
+        ],
+        [
+         "33",
+         "A supplier row fits its product",
+         "Each supplier + product + date is there once. The product exists. The unit is the product's unit",
+         "Data",
+         "Consistent?",
+         "High"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "Check 29 looks at every file of every table, not only the suppliers'. It is on this card because this is the file most likely to change."
+      }
+     ]
+    },
+    {
+     "number": 7,
+     "question": "What happens when it fails?",
+     "title": "What happens when it fails?",
+     "answered": false,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Not yet. Today a failed check changes nothing: the checks are run by hand, with `python -m lotus_pipeline inspect`. Milestone 4 decides for each one: stop, set the rows aside, or warn. And who is told."
+      }
+     ]
+    },
+    {
+     "number": 8,
+     "question": "The proof",
+     "title": "The proof",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Planted fault",
+        "Caught by",
+        "A check that does not catch it, and why"
+       ],
+       "rows": [
+        [
+         "Case 10: `SUP-B` renames `unit_cost` to `cost_per_unit`, 08-25. Twelve products have no cost",
+         "29, on the night the file arrives. And 30",
+         "31: an empty cost cannot be compared with anything"
+        ],
+        [
+         "Case 11: `SUP-C` sends cents, 08-28. Fifteen costs are 100 times too high",
+         "31 and 32",
+         "29: every column is there. 30: every cost is filled. The shape is perfect"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "The contract catches both at the door, before the load: `uv run python -m lotus_pipeline contract` refuses 2 of the 15 files."
+      },
+      {
+       "type": "p",
+       "text": "A cost that really changes is not a fault. Three costs change by a few cents during the five weeks, and no check returns them."
+      }
+     ]
+    }
+   ]
   },
   {
    "table": "members",
@@ -933,11 +2038,284 @@
    "made": "Typed by the customer in an app",
    "why": "People. The same person twice, half-filled rows, personal data",
    "card_in": 3,
-   "has_card": false,
-   "file": null,
-   "state": "",
-   "answered": 0,
-   "questions": []
+   "has_card": true,
+   "file": "checks/members.md",
+   "state": "**State after milestone 3:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.",
+   "answered": 7,
+   "questions": [
+    {
+     "number": 1,
+     "question": "What does one row mean?",
+     "title": "What does one row mean?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "One loyalty member: a person who signed up in the app. The key the app gives is `member_id`."
+      },
+      {
+       "type": "p",
+       "text": "A row is about a **person**. Three of its columns are personal data: the name, the email and the phone number."
+      }
+     ]
+    },
+    {
+     "number": 2,
+     "question": "Who uses this table, and what do they decide with it?",
+     "title": "Who uses this table, and what do they decide with it?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Who",
+        "What they decide",
+        "What goes wrong for them when the data is bad"
+       ],
+       "rows": [
+        [
+         "Marketing",
+         "Who gets an email, and at which address",
+         "One person stored twice gets two emails. A wrong address reaches a stranger"
+        ],
+        [
+         "The member",
+         "Nothing. They collect points",
+         "Their points are split over two accounts"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 3,
+     "question": "How is the data made? So what can go wrong?",
+     "title": "How is the data made? So what can go wrong?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Customers type it themselves, on a phone, standing in a shop."
+      },
+      {
+       "type": "table",
+       "head": [
+        "Step",
+        "Made by",
+        "What can go wrong"
+       ],
+       "rows": [
+        [
+         "A customer signs up",
+         "A person on a phone",
+         "A typing mistake in the email. Capital letters. A space at the end"
+        ],
+        [
+         "The same customer signs up again",
+         "The same person, months later",
+         "A second `member_id` for one person"
+        ],
+        [
+         "A customer skips a box",
+         "A person",
+         "A half-filled row"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "number": 4,
+     "question": "Which of those would hurt most?",
+     "title": "Which of those would hurt most?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Rank",
+        "Worry",
+        "Why it is here"
+       ],
+       "rows": [
+        [
+         "1",
+         "The same person twice",
+         "Two emails and two sets of points. Planted case 13"
+        ],
+        [
+         "2",
+         "An email that cannot be delivered",
+         "Marketing pays to send it, and nobody reads it"
+        ],
+        [
+         "3",
+         "No answer to \"may we email you?\"",
+         "An email to someone who did not say yes"
+        ],
+        [
+         "4",
+         "A member of a store that does not exist",
+         "Offers are sent by home store"
+        ],
+        [
+         "5",
+         "An empty phone number",
+         "The app does not ask for it. **No check**"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "One more worry is not about the rows. It is about the checks: a check prints its bad rows, and those rows hold a person's name and email."
+      }
+     ]
+    },
+    {
+     "number": 5,
+     "question": "What must be prepared before it can be checked?",
+     "title": "What must be prepared before it can be checked?",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Worry",
+        "What must be prepared first"
+       ],
+       "rows": [
+        [
+         "The same person twice",
+         "**Clean the value first.** Remove the spaces around the email and make it lower case. Then group by it"
+        ],
+        [
+         "An email that cannot be delivered",
+         "Take it apart at the @ sign"
+        ],
+        [
+         "A member of an unknown store",
+         "Join to `stores`"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "`Priya.Nair@Example.com` and `priya.nair@example.com` are two different texts and one person. A unique check on the email as typed finds nothing."
+      }
+     ]
+    },
+    {
+     "number": 6,
+     "question": "The check",
+     "title": "The check",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Four checks. The SQL is in `lotus_pipeline/other_checks.py`."
+      },
+      {
+       "type": "table",
+       "head": [
+        "#",
+        "Check",
+        "The limit",
+        "Lens",
+        "Question",
+        "How serious"
+       ],
+       "rows": [
+        [
+         "34",
+         "One person is one member",
+         "Each cleaned email belongs to one member_id",
+         "Data",
+         "Unique?",
+         "Medium. Nobody is paid wrongly. A person merges the two accounts"
+        ],
+        [
+         "35",
+         "An email has the shape of an email",
+         "One @, with text before it. A dot after it. No space inside",
+         "Data",
+         "Valid?",
+         "Medium"
+        ],
+        [
+         "36",
+         "A member row has what marketing needs",
+         "A name, a home store, a join date, and a yes or no to marketing. A phone may be empty",
+         "Data",
+         "Complete?",
+         "High for the marketing answer"
+        ],
+        [
+         "37",
+         "A member has a real store and a past join date",
+         "home_store_id is in the stores table. joined_on is not after the newest loaded day",
+         "Business",
+         "Consistent?",
+         "Low"
+        ]
+       ]
+      },
+      {
+       "type": "p",
+       "text": "**No check returns a name, an email or a phone number.** A bad row is named by its `member_id`. A check's output is printed, logged and copied into other tables, and personal data must not travel with it. A test proves it for every check on this card."
+      }
+     ]
+    },
+    {
+     "number": 7,
+     "question": "What happens when it fails?",
+     "title": "What happens when it fails?",
+     "answered": false,
+     "blocks": [
+      {
+       "type": "p",
+       "text": "Not yet. Today a failed check changes nothing: the checks are run by hand, with `python -m lotus_pipeline inspect`. Milestone 4 decides for each one: stop, set the rows aside, or warn. And who is told."
+      }
+     ]
+    },
+    {
+     "number": 8,
+     "question": "The proof",
+     "title": "The proof",
+     "answered": true,
+     "blocks": [
+      {
+       "type": "table",
+       "head": [
+        "Fault",
+        "Caught by",
+        "A check that does not catch it, and why"
+       ],
+       "rows": [
+        [
+         "Planted case 13: `M-0304` joins on 08-26 with the email of `M-0117`, in other letter case",
+         "34",
+         "A unique check on `member_id`, and one on `email` as typed: both are unique"
+        ],
+        [
+         "An email with no @, with two, with a space, planted in a test",
+         "35",
+         "34: the email belongs to one member"
+        ],
+        [
+         "No name, and no answer to marketing, planted in a test",
+         "36",
+         "35: the email is fine"
+        ],
+        [
+         "A home store `S09`, a join date in 2027, planted in a test",
+         "37",
+         "36: every cell is filled"
+        ]
+       ]
+      }
+     ]
+    }
+   ]
   }
  ]
 }

@@ -1,6 +1,6 @@
 # Check card: `till_totals`
 
-**State after milestone 2:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.
+**State after milestone 3:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.
 
 A till is the machine at the counter where a customer pays. It is also called a cash register.
 

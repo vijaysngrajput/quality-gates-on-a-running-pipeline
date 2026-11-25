@@ -89,7 +89,10 @@ class Warehouse:
         if error_type is None:
             self.commit()
         else:
-            self.rollback()
+            try:
+                self.rollback()
+            except Exception:  # nothing was open to roll back: the step had already committed
+                pass
         self.close()
 
 

@@ -1,6 +1,6 @@
 # Check card: `sales_lines`
 
-**State after milestone 2:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.
+**State after milestone 3:** questions 1 to 6 and 8 are answered. Question 7 needs gates, and those are built in milestone 4.
 
 A check card is filled in **before** any check is written. It is one short page. It says why a check exists.
 

@@ -2,3 +2,6 @@
 # The same packages as pyproject.toml, without the notebook and test tools.
 psycopg[binary]>=3.2.0
 pyyaml>=6.0
+# From milestone 4: dbt, for the gates. Under Docker the warehouse is Postgres.
+dbt-core>=1.10
+dbt-postgres>=1.9.0

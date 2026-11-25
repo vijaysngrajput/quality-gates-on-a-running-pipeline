@@ -26,15 +26,17 @@ Gates and rows set aside are still zero. The checks are run by hand. That is wha
 
 ## Read it in this order
 
-1. **[milestone_2_flow.html](milestone_2_flow.html)**: open it in a browser first. Pick a fault, and watch which check catches it.
+1. **[The flow page](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m2_checks_with_a_reason/milestone_2_flow.html)**: open it in a browser first. Pick a fault, and watch which check catches it.
 2. [docs/BRD.md](docs/BRD.md): the six wrong numbers, and the rules of the business.
 3. [docs/HLD.md](docs/HLD.md): a check taken apart, the three lenses, the four ways to prepare.
 4. [docs/LLD.md](docs/LLD.md): every check, its limit and its SQL. Keep it open for the next two steps.
 5. The notebooks in `notebooks/`, from `01` to `08`.
 6. The code in `lotus_pipeline/` and `tests/`.
 7. [checks/sales_lines.md](checks/sales_lines.md) and [checks/till_totals.md](checks/till_totals.md): the two check cards.
-8. **[milestone_2_flow.html](milestone_2_flow.html)** again.
-9. [milestone_2_recap.html](milestone_2_recap.html): a look back, and three questions.
+8. **[The flow page](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m2_checks_with_a_reason/milestone_2_flow.html)** again.
+9. [The recap page](https://vijaysngrajput.github.io/quality-gates-on-a-running-pipeline/src/m2_checks_with_a_reason/milestone_2_recap.html): a look back, and three questions.
+
+On GitHub these two links open the live pages. In your own copy of the project, the files are `milestone_2_flow.html` and `milestone_2_recap.html` in this folder: open them in a browser.
 
 ## What is in this folder
 
@@ -46,8 +48,8 @@ Gates and rows set aside are still zero. The checks are run by hand. That is wha
 | `checks/` | The check cards: `sales_lines.md`, now complete, and `till_totals.md` |
 | `dags/` | The Airflow DAG: `lotus_nightly_m2`. The same five tasks as before |
 | `tests/` | Tests for the production code |
-| [milestone_2_flow.html](milestone_2_flow.html) | The whole pipeline at this milestone, animated, with real rows |
-| [milestone_2_recap.html](milestone_2_recap.html) | The closing page |
+| `milestone_2_flow.html` | The whole pipeline at this milestone, animated, with real rows |
+| `milestone_2_recap.html` | The closing page |
 
 ## Set up
 

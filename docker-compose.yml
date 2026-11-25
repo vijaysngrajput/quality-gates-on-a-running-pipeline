@@ -44,6 +44,8 @@ services:
       LOTUS_PG_HOST: warehouse
       LOTUS_PG_PORT: "5432"
       LOTUS_LANDING: /var/lotus/landing                     # where the stores' files arrive
+      DBT_TARGET_PATH: /tmp/dbt-target                      # dbt's working files, from milestone 4
+      DBT_LOG_PATH: /tmp/dbt-logs
       PYTHONDONTWRITEBYTECODE: "1"
     volumes:
       - .:/opt/lotus                      # this project, so Airflow runs the code you read

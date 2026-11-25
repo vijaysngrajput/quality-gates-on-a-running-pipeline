@@ -54,6 +54,20 @@ The six dimensions have formal names at work: completeness, uniqueness, validity
 | **False negative** | A fault with no alarm. | Milestone 2, notebook 7 | "Leaving holidays out of the volume check has a price: a real fault on a holiday is a false negative for that check. I wrote that down, and the till total still covers the day." |
 | **Seasonality** | A pattern that repeats with the calendar: Saturdays are busy, holidays are quiet. | Milestone 2, notebook 7 | "Sales had a weekly seasonality, so I compared a Friday with earlier Fridays. A simple average works for a weekly pattern. A holiday that moves each year needs a calendar, or a model." |
 
-## Milestones 3 to 5
+## Milestone 3: Every table is different
+
+| Word | Meaning | Taught in | Say it in an interview |
+|---|---|---|---|
+| **Validity dates** | The first and the last day a row is true, such as the days a price applies. | Milestone 3, notebook 1 | "A price row had validity dates, so the key was the product and its start date. I checked each row against its neighbours: no two prices on one day, and no day without one. A gap of two days silently dropped every sale of that product." |
+| **Snapshot table** | A table that holds the state of something on each day, such as a stock count. A missing day is a gap, not a zero. | Milestone 3, notebook 3 | "The stock counts were a snapshot table. One missing count was read as an empty shelf, and the store ordered 18 bottles where 15 were needed. To find a missing row I first built the rows I expected." |
+| **Duplicate** | One real thing stored more than once under different keys, such as one person with two member ids. | Milestone 3, notebook 4 | "One customer signed up twice, with capital letters in her email the second time. The member id was unique and the email as typed was unique. I cleaned the email first, then grouped by it, and found her." |
+| **Personal data** | Data about a person: a name, an email, a phone number. It must not travel into logs and check results. | Milestone 3, notebook 4 | "A check prints its bad rows, and those lines end up in logs and in quarantine tables. So my checks on members return the member id only, and a test fails if a name or an email appears in any result." |
+| **Schema** | The shape of a table or a file: the column names, the type of each column, and the rules for the values. | Milestone 3, notebook 5 | "A loaded table cannot tell you which columns the file had. I kept the first line of every file in its own table, and compared it with the schema we expected." |
+| **Schema drift** | A schema that changes without anyone agreeing: a column renamed, added or removed. | Milestone 3, notebook 5 | "A supplier renamed its cost column. The load ran, twelve products had no cost, and nothing failed. That is schema drift, and only a check on the file's own columns sees it on the night it arrives." |
+| **Breaking change** | A change that removes or changes something a reader uses, so old readers fail. Its opposite is an additive change, which only adds. | Milestone 3, notebook 5 | "A renamed column is one breaking change and one additive change: the old name is gone, and a new one appeared. I refuse a file for the first and only report the second." |
+| **Change of meaning** | The shape stays the same and the meaning changes, such as dollars sent as cents. No schema check can see it. | Milestone 3, notebook 6 | "A supplier sent cents where dollars were agreed. Every column was there and every value was a valid number, 100 times too high. A value can only be judged beside something else, so I compared it with the last file and with the shelf price." |
+| **Data contract** | A written agreement between the producer of data and its consumers: an owner, the columns, the rules for the values, and a change policy. | Milestone 3, notebook 7 | "We wrote a one-page contract for the suppliers' file and held every file against it at the door. It refused 2 of 15 files before they were loaded. A check on a table speaks after the load. A contract speaks before it." |
+
+## Milestones 4 and 5
 
 Not built yet. Their words are added when each milestone is built.

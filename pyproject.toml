@@ -4,6 +4,9 @@ version = "0.1.0"
 description = "A learning project: decide which quality checks a table needs, and why."
 requires-python = ">=3.12"
 dependencies = [
+    "dbt-core>=1.10",
+    "dbt-duckdb>=1.11.1",
+    "dbt-postgres>=1.11.0",
     "duckdb>=1.4.0",
     "ipykernel>=7.0.0",
     "nbclient>=0.10.0",
